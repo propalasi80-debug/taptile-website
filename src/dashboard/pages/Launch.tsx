@@ -141,7 +141,7 @@ export default function Launch() {
               <CardTitle>Ship window</CardTitle>
               <p className="dash-metric-sm text-lime">{FILL_IN}</p>
               <p className="mt-[7px] text-[11px] text-ink-4">
-                Do not publish a date until case printing clears 25 of 25.
+                Do not publish a date until the 20 for sale are boxed with cables.
               </p>
             </Card>
           </>

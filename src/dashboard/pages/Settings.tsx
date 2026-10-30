@@ -213,7 +213,7 @@ export default function Settings() {
               <dl className="flex flex-col">
                 {[
                   ['Product', 'Taptile Dialect'],
-                  ['First run', `${FIGURES.runSize} units`],
+                  ['Batch 1', `${FIGURES.runSize} built · ${FIGURES.forSale} for sale`],
                   ['Unit price', FILL_IN],
                   ['Accounts', loading ? '—' : String(profiles.length)],
                 ].map(([label, value]) => (

@@ -115,12 +115,9 @@ begin
   end if;
 
   insert into public.inventory_items (name, category, per_unit, notes) values
-    ('PCB',                         'part',      1, 'Made and assembled by JLCPCB. 2-layer, 70 x 120 mm.'),
+    ('PCB, assembled by JLCPCB',    'part',      1, 'Arrives with the controller module, headers and hot-swap sockets already fitted. Bare boards, not finished Taptiles.'),
     ('Key switch (MX-compatible)',  'part',      9, '5-pin.'),
-    ('Hot-swap socket (Kailh MX)',  'part',      9, 'One under every switch.'),
     ('Rotary encoder (EC11)',       'part',      2, 'Vertical, 20 mm shaft, with push switch.'),
-    ('Controller module (KB2040)',  'part',      1, 'RP2040, Pro Micro form factor.'),
-    ('Female header 1x12',          'part',      2, '2.54 mm pitch. Socket for the module.'),
     ('Printed case',                'case',      1, ''),
     ('Keycap',                      'case',      9, ''),
     ('Knob',                        'case',      2, ''),

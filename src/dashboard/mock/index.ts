@@ -27,8 +27,12 @@ export interface Gate {
 
 /** Decisions, not estimates. */
 export const FIGURES = {
-  /** First production run. */
+  /** First production run: batch 1, all 25 built. */
   runSize: 25,
+  /** Of batch 1: sold, kept by the two founders, and used for marketing. */
+  forSale: 20,
+  keptByFounders: 2,
+  marketing: 3,
   /** The floor for opening pre-orders. */
   waitlistTarget: 50,
 } as const;
@@ -72,7 +76,7 @@ export const GATES: Gate[] = [
   },
   {
     title: '50 on the waitlist',
-    detail: 'The floor for opening pre-orders on a 25-unit run.',
+    detail: 'The floor for opening pre-orders on the 20 units of batch 1 that are for sale.',
     owner: 'Owner',
     state: 'prog',
   },
@@ -84,7 +88,7 @@ export const GATES: Gate[] = [
   },
   {
     title: 'Ship window set',
-    detail: '25 built. Waiting on 25 USB-C cables and 25 boxes (see Inventory). No public date until they are in.',
+    detail: 'Batch 1 is built (25; 20 for sale). Waiting on USB-C cables and boxes (see Inventory). No public date until they are in.',
     owner: 'Owner',
     state: 'block',
   },

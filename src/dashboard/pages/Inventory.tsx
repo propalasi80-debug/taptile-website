@@ -134,7 +134,8 @@ export default function Inventory() {
     .filter((item) => item.category === 'finished')
     .reduce((sum, item) => sum + item.on_hand, 0);
   const canShip = readyToShip(items);
-  const run = FIGURES.runSize;
+  // Batch 1: 25 built, of which 20 are for sale. Shipping targets the 20.
+  const run = FIGURES.forSale;
 
   /* ------------------------------------------------------------ actions --- */
 
@@ -346,14 +347,17 @@ export default function Inventory() {
         rail={
           <>
             <Card pad={16}>
-              <CardTitle>{`To ship the first ${run}`}</CardTitle>
+              <CardTitle>{`To ship batch 1 (${run} for sale)`}</CardTitle>
+              <p className="-mt-[4px] mb-[12px] text-[11px] text-ink-4">
+                {`${FIGURES.runSize} built: ${FIGURES.forSale} for sale · ${FIGURES.keptByFounders} kept · ${FIGURES.marketing} marketing`}
+              </p>
               {loadingFirst ? (
                 <Skeleton height={120} />
               ) : (
                 <div className="flex flex-col gap-[12px]">
                   <Bar
                     label="Finished units"
-                    value={`${number(finishedUnits)} / ${number(run)}`}
+                    value={`${number(Math.min(finishedUnits, run))} / ${number(run)}`}
                     pct={(finishedUnits / run) * 100}
                     active={finishedUnits < run}
                   />
@@ -378,7 +382,10 @@ export default function Inventory() {
                     {kit
                       .filter((item) => item.on_hand < item.per_unit * run)
                       .map((item) => `${number(item.per_unit * run - item.on_hand)} more ${item.name}`)
-                      .join(', ') || 'Nothing short for the run.'}
+                      .join(', ') || 'Nothing short for the units for sale.'}
+                  </p>
+                  <p className="text-[11px] text-ink-4">
+                    {`The ${FIGURES.marketing} marketing units need one more of each if they go out boxed.`}
                   </p>
                 </div>
               )}
@@ -458,11 +465,11 @@ export default function Inventory() {
           />
           <Kpi
             label="Ready to ship"
-            value={loadingFirst || canShip === null ? '—' : number(canShip)}
+            value={loadingFirst || canShip === null ? '—' : number(Math.min(canShip, run))}
             sub={
               canShip === null
                 ? 'Nothing marked Finished'
-                : `of ${number(finishedUnits)} finished`
+                : `of ${number(run)} for sale`
             }
           />
           <Kpi
