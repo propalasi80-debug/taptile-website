@@ -6,7 +6,7 @@ Taptile runs no analytics of any kind — no Google Analytics, Plausible, PostHo
 
 ## What we collect, and why
 
-**If you join the waitlist:** your email address, a tag recording which page you signed up from, and the time you signed up. That's it. It's stored in a database the website itself can't read back — only we can.
+**If you join the waitlist:** your email address, a tag recording where on the site you signed up and, if you arrived from a link that names one, the post or campaign that sent you (for example "tiktok"), and the time you signed up. That's it. It's stored in a database the website itself can't read back — only we can.
 
 **If you create an account:** your email address and a password, which Supabase Auth (our authentication provider) hashes before storing — we never see or store your password in plain text. If you sign in with Google, once that option is enabled, we also receive the email address, display name and profile picture Google provides.
 
@@ -22,8 +22,8 @@ Taptile runs no analytics of any kind — no Google Analytics, Plausible, PostHo
 
 We store a few things in your browser, all of them there to make something you asked for work, not to track you:
 
-- What's in your shopping cart.
-- A marker so the waitlist form doesn't ask you to sign up twice.
+- If you arrived from a link that names a campaign, that name, so it can be attached to your signup. It's cleared when you close the tab.
+- The email address you joined the waitlist with, so the form shows you're already on it instead of asking again. "Use a different email" clears it.
 - Your session token, if you're signed in, so you stay signed in.
 
 None of these require your consent under the law, so we don't show you a cookie banner asking for it. A banner for cookies that don't track you would just be noise.

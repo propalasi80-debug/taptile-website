@@ -176,7 +176,9 @@ export default function Login() {
                 <button
                   type="button"
                   onClick={() => setShowPassword((v) => !v)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-medium
+                  aria-pressed={showPassword}
+                  aria-label={showPassword ? 'Hide password' : 'Show password'}
+                  className="absolute right-2 top-1/2 inline-flex min-h-[28px] min-w-[36px] -translate-y-1/2 items-center justify-center text-xs font-medium
                              text-neutral-400 transition hover:text-neutral-100"
                 >
                   {showPassword ? 'Hide' : 'Show'}
@@ -253,7 +255,7 @@ export default function Login() {
                 <button
                   type="button"
                   onClick={() => switchMode('signup')}
-                  className="font-semibold text-accent hover:text-accent-pink"
+                  className="inline-flex min-h-[24px] items-center font-semibold text-accent hover:text-accent-pink"
                 >
                   Create one
                 </button>
@@ -264,7 +266,7 @@ export default function Login() {
                 <button
                   type="button"
                   onClick={() => switchMode('signin')}
-                  className="font-semibold text-accent hover:text-accent-pink"
+                  className="inline-flex min-h-[24px] items-center font-semibold text-accent hover:text-accent-pink"
                 >
                   Sign in
                 </button>

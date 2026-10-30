@@ -47,7 +47,7 @@ export const NAV: { dashboards: NavItem[]; settings: NavItem[] } = {
     { label: 'Content', to: `${ROOT}/content`, icon: Play, live: true },
   ],
   settings: [
-    { label: 'Messages', to: `${ROOT}/messages`, icon: Chat, badge: 3 },
+    { label: 'Messages', to: `${ROOT}/messages`, icon: Chat },
     { label: 'Settings', to: `${ROOT}/settings`, icon: Gear },
     { label: 'Help', to: `${ROOT}/help`, icon: Help },
   ],

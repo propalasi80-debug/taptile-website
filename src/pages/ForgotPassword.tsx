@@ -90,7 +90,7 @@ export default function ForgotPassword() {
         )}
 
         <p className="mt-7 text-center text-sm text-neutral-400">
-          <Link to="/login" className="font-semibold text-neutral-100 hover:text-white">
+          <Link to="/login" className="inline-flex min-h-[24px] items-center font-semibold text-neutral-100 hover:text-white">
             Back to sign in
           </Link>
         </p>
