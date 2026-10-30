@@ -60,6 +60,7 @@ import {
   REASONS,
   recordMovement,
   saveItem,
+  splitMovement,
   stockState,
   type Category,
   type InventoryItem,
@@ -71,6 +72,7 @@ import {
 const STATE_PILL: Record<StockState, { tone: Tone; label: string }> = {
   out: { tone: 'rose', label: 'Out' },
   low: { tone: 'blue', label: 'Low' },
+  ordered: { tone: 'blue', label: 'On order' },
   ok: { tone: 'grey', label: 'In stock' },
 };
 
@@ -94,7 +96,7 @@ function wholeNumber(value: string): number | undefined {
 interface Flash {
   text: string;
   /** Present when the change can be reversed from the confirmation line. */
-  undo?: { itemId: string; delta: number };
+  undo?: { itemId: string; delta: number; orderDelta: number };
 }
 
 export default function Inventory() {
@@ -124,7 +126,10 @@ export default function Inventory() {
 
   const canBuild = buildable(items);
   const needsAttention = items.filter(
-    (item) => item.category !== 'finished' && item.per_unit > 0 && stockState(item) !== 'ok',
+    (item) =>
+      item.category !== 'finished' &&
+      item.per_unit > 0 &&
+      (stockState(item) === 'out' || stockState(item) === 'low'),
   );
   const costed = items.filter((item) => item.unit_cost !== null);
   const stockValue = costed.reduce((sum, item) => sum + item.on_hand * (item.unit_cost ?? 0), 0);
@@ -139,19 +144,25 @@ export default function Inventory() {
 
   /* ------------------------------------------------------------ actions --- */
 
-  async function move(item: InventoryItem, delta: number, reason: Reason, note = '') {
+  /** `amount` is signed and applies to whichever count the reason targets. */
+  async function move(item: InventoryItem, amount: number, reason: Reason, note = '') {
+    const { delta, orderDelta } = splitMovement(item, amount, reason);
     setBusy(true);
     setActionError(undefined);
-    const result = await recordMovement(item.id, delta, reason, note);
+    const result = await recordMovement(item.id, delta, reason, note, orderDelta);
     setBusy(false);
     if (!result.ok) {
       setActionError(result.error);
       return false;
     }
-    const sign = delta > 0 ? '+' : '−';
+    const signed = (value: number) => `${value > 0 ? '+' : '−'}${number(Math.abs(value))}`;
+    const parts = [
+      delta !== 0 ? `${signed(delta)} on hand, now ${number(item.on_hand + delta)}` : '',
+      orderDelta !== 0 ? `${signed(orderDelta)} on order, now ${number(item.on_order + orderDelta)}` : '',
+    ].filter(Boolean);
     setFlash({
-      text: `${item.name}: ${sign}${number(Math.abs(delta))}, now ${number(item.on_hand + delta)}.`,
-      undo: { itemId: item.id, delta },
+      text: `${item.name}: ${parts.join('; ')}.`,
+      undo: { itemId: item.id, delta, orderDelta },
     });
     inventory.reload();
     return true;
@@ -160,7 +171,13 @@ export default function Inventory() {
   async function undo(target: NonNullable<Flash['undo']>) {
     setBusy(true);
     setActionError(undefined);
-    const result = await recordMovement(target.itemId, -target.delta, 'adjusted', 'Undo');
+    const result = await recordMovement(
+      target.itemId,
+      -target.delta,
+      'adjusted',
+      'Undo',
+      -target.orderDelta,
+    );
     setBusy(false);
     if (!result.ok) {
       setActionError(result.error);
@@ -257,6 +274,7 @@ export default function Inventory() {
           <span className="block truncate text-[10.5px] text-ink-4">
             {[
               `${number(item.on_hand)} on hand`,
+              item.on_order > 0 ? `${number(item.on_order)} on order` : '',
               item.per_unit > 0 ? `${item.per_unit} per unit` : '',
               item.supplier,
             ]
@@ -277,7 +295,14 @@ export default function Inventory() {
       label: 'On hand',
       span: 2,
       align: 'right',
-      render: (item) => <span className="font-bold text-ink-1">{number(item.on_hand)}</span>,
+      render: (item) => (
+        <span className="flex flex-col items-end leading-tight">
+          <span className="font-bold text-ink-1">{number(item.on_hand)}</span>
+          {item.on_order > 0 && (
+            <span className="text-[10.5px] text-ink-4">+{number(item.on_order)} ordered</span>
+          )}
+        </span>
+      ),
     },
     {
       key: 'actions',
@@ -366,7 +391,9 @@ export default function Inventory() {
                     return (
                       <Bar
                         key={item.id}
-                        label={item.name}
+                        label={
+                          item.on_order > 0 ? `${item.name} · ${number(item.on_order)} ordered` : item.name
+                        }
                         value={`${number(item.on_hand)} / ${number(need)}`}
                         pct={(item.on_hand / need) * 100}
                         active={item.on_hand < need}
@@ -381,8 +408,13 @@ export default function Inventory() {
                   <p className="text-[11px] text-ink-4">
                     {kit
                       .filter((item) => item.on_hand < item.per_unit * run)
-                      .map((item) => `${number(item.per_unit * run - item.on_hand)} more ${item.name}`)
-                      .join(', ') || 'Nothing short for the units for sale.'}
+                      .map((item) => {
+                        const toOrder = item.per_unit * run - item.on_hand - item.on_order;
+                        return toOrder > 0
+                          ? `${number(toOrder)} more ${item.name} to order`
+                          : `${item.name}: the rest is on order`;
+                      })
+                      .join('. ') || 'Nothing short for the units for sale.'}
                   </p>
                   <p className="text-[11px] text-ink-4">
                     {`The ${FIGURES.marketing} marketing units need one more of each if they go out boxed.`}
@@ -406,7 +438,12 @@ export default function Inventory() {
                       sub={`${REASONS.find((reason) => reason.value === movement.reason)?.label ?? movement.reason}${
                         movement.note ? ` · ${movement.note}` : ''
                       } · ${relative(movement.created_at)}`}
-                      value={`${movement.delta > 0 ? '+' : '−'}${number(Math.abs(movement.delta))}`}
+                      value={
+                        movement.delta !== 0
+                          ? `${movement.delta > 0 ? '+' : '−'}${number(Math.abs(movement.delta))}`
+                          : `${movement.order_delta > 0 ? '+' : '−'}${number(Math.abs(movement.order_delta))}`
+                      }
+                      valueSub={movement.delta === 0 ? 'on order' : undefined}
                     />
                   ))}
                 </div>
@@ -419,6 +456,7 @@ export default function Inventory() {
                 <li>Counts only change by recording what happened, so each one has a history.</li>
                 <li>"Per unit" is how many go into one Taptile. It drives "Can build".</li>
                 <li>"Ships with" items (cable, box) are counted per shipped unit and drive "Ready to ship".</li>
+                <li>"Ordered" tracks what is bought but not here. Receiving it takes it off the order.</li>
                 <li>"Low" shows at or below the reorder level. Set it to 0 to turn it off.</li>
                 <li>Got it wrong? Use Undo on the confirmation line, or record a recount.</li>
               </ul>
@@ -617,11 +655,19 @@ function AdjustCard({
   const [amount, setAmount] = useState('');
   const [note, setNote] = useState('');
 
-  const sign = REASONS.find((option) => option.value === reason)!.sign;
+  const option = REASONS.find((candidate) => candidate.value === reason)!;
+  const sign = option.sign;
+  const onOrder = option.target === 'order';
+  // Orders move their own count, so the preview and the floor follow it.
+  const base = onOrder ? item.on_order : item.on_hand;
   const parsed = wholeNumber(amount);
   // A recount enters the new total; everything else enters how many moved.
   const delta = parsed === undefined ? undefined : sign === 0 ? parsed - item.on_hand : sign * parsed;
-  const next = delta === undefined ? undefined : item.on_hand + delta;
+  const next = delta === undefined ? undefined : base + delta;
+  const orderAfter =
+    reason === 'received' && delta !== undefined && item.on_order > 0
+      ? Math.max(0, item.on_order - delta)
+      : undefined;
 
   const problem =
     amount.trim() === ''
@@ -633,7 +679,9 @@ function AdjustCard({
             ? 'That is already the count.'
             : 'Enter more than zero.'
           : next! < 0
-            ? `Only ${number(item.on_hand)} on hand.`
+            ? onOrder
+              ? `Only ${number(item.on_order)} on order.`
+              : `Only ${number(item.on_hand)} on hand.`
             : undefined;
 
   const canSave = delta !== undefined && delta !== 0 && next! >= 0 && !busy;
@@ -645,6 +693,7 @@ function AdjustCard({
           <CardTitle>{`Adjust ${item.name}`}</CardTitle>
           <p className="text-[11.5px] text-ink-4">
             {number(item.on_hand)} on hand
+            {item.on_order > 0 ? ` · ${number(item.on_order)} on order` : ''}
             {item.per_unit > 0 ? ` · ${item.per_unit} per Taptile` : ''}
             {item.reorder_at > 0 ? ` · reorder at ${number(item.reorder_at)}` : ''}
           </p>
@@ -653,14 +702,16 @@ function AdjustCard({
       </div>
 
       <div className="mb-[14px] flex flex-wrap gap-[8px]" role="group" aria-label="What happened">
-        {REASONS.map((option) => (
-          <Chip
-            key={option.value}
-            label={option.label}
-            active={reason === option.value}
-            onClick={() => setReason(option.value)}
-          />
-        ))}
+        {REASONS.filter((choice) => choice.value !== 'cancelled' || item.on_order > 0).map(
+          (choice) => (
+            <Chip
+              key={choice.value}
+              label={choice.label}
+              active={reason === choice.value}
+              onClick={() => setReason(choice.value)}
+            />
+          ),
+        )}
       </div>
 
       <div className="grid grid-cols-1 gap-[12px] sm:grid-cols-2">
@@ -672,8 +723,16 @@ function AdjustCard({
           error={problem}
           hint={
             next !== undefined && !problem
-              ? `${number(item.on_hand)} → ${number(next)}`
-              : sign === 0
+              ? onOrder
+                ? `On order ${number(base)} → ${number(next)}`
+                : `On hand ${number(base)} → ${number(next)}${
+                    orderAfter !== undefined
+                      ? ` · on order ${number(item.on_order)} → ${number(orderAfter)}`
+                      : ''
+                  }`
+              : reason === 'ordered'
+                ? 'Bought but not here yet. Record it as Received when it arrives.'
+                : sign === 0
                 ? 'The total you counted, not the difference.'
                 : undefined
           }
