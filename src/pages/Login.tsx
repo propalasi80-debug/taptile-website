@@ -10,10 +10,10 @@ interface LocationState {
 }
 
 export default function Login() {
-  const [searchParams, setSearchParams] = useSearchParams();
-  const [mode, setMode] = useState<Mode>(
-    searchParams.get('mode') === 'signup' ? 'signup' : 'signin',
-  );
+  const [, setSearchParams] = useSearchParams();
+  // Accounts are team-only (teammates are invited from Settings -> Team), so
+  // nothing on the page switches to sign-up any more.
+  const [mode, setMode] = useState<Mode>('signin');
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -28,7 +28,7 @@ export default function Login() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const destination = (location.state as LocationState | null)?.from ?? '/account';
+  const destination = (location.state as LocationState | null)?.from ?? '/admin';
 
   // Already signed in? Skip the form entirely.
   useEffect(() => {
@@ -102,18 +102,26 @@ export default function Login() {
   return (
     <div className="flex items-center justify-center px-5 py-16">
       <Seo
-        title={mode === 'signin' ? 'Sign in' : 'Create your account'}
-        description="Sign in to your Taptile account."
+        title="Team sign in"
+        description="Sign in for the Taptile team."
         path="/login"
       />
         <div className="w-full max-w-sm">
           <h1 className="text-2xl font-heading tracking-heading text-neutral-100">
-            {mode === 'signin' ? 'Sign in' : 'Create your account'}
+            {mode === 'signin' ? 'Team sign in' : 'Create your account'}
           </h1>
           <p className="mt-2 text-sm text-neutral-400">
-            {mode === 'signin'
-              ? 'Pick up wherever you left off.'
-              : 'Free forever. No card needed.'}
+            {mode === 'signin' ? (
+              <>
+                For the Taptile team. Looking for the waitlist?{' '}
+                <Link to="/" className="font-semibold text-neutral-100 hover:text-white">
+                  It&apos;s on the home page
+                </Link>
+                .
+              </>
+            ) : (
+              'Free forever. No card needed.'
+            )}
           </p>
 
           {!configured && (
@@ -125,7 +133,7 @@ export default function Login() {
               <p className="mt-1.5 leading-relaxed text-amber-200/70">
                 Add <code className="text-amber-200">VITE_SUPABASE_URL</code> and{' '}
                 <code className="text-amber-200">VITE_SUPABASE_ANON_KEY</code> to{' '}
-                <code className="text-amber-200">apps/web/.env.local</code>, then restart the
+                <code className="text-amber-200">.env.local</code>, then restart the
                 dev server.
               </p>
             </div>
@@ -176,7 +184,9 @@ export default function Login() {
                 <button
                   type="button"
                   onClick={() => setShowPassword((v) => !v)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-medium
+                  aria-pressed={showPassword}
+                  aria-label={showPassword ? 'Hide password' : 'Show password'}
+                  className="absolute right-2 top-1/2 inline-flex min-h-[28px] min-w-[36px] -translate-y-1/2 items-center justify-center text-xs font-medium
                              text-neutral-400 transition hover:text-neutral-100"
                 >
                   {showPassword ? 'Hide' : 'Show'}
@@ -246,31 +256,6 @@ export default function Login() {
             Continue with Google
           </button>
 
-          <p className="mt-7 text-center text-sm text-neutral-400">
-            {mode === 'signin' ? (
-              <>
-                No account?{' '}
-                <button
-                  type="button"
-                  onClick={() => switchMode('signup')}
-                  className="font-semibold text-accent hover:text-accent-pink"
-                >
-                  Create one
-                </button>
-              </>
-            ) : (
-              <>
-                Already have one?{' '}
-                <button
-                  type="button"
-                  onClick={() => switchMode('signin')}
-                  className="font-semibold text-accent hover:text-accent-pink"
-                >
-                  Sign in
-                </button>
-              </>
-            )}
-          </p>
       </div>
     </div>
   );

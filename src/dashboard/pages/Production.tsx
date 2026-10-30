@@ -24,7 +24,7 @@ export default function Production() {
           <EmptyState
             icon={Chip}
             title="No build data yet"
-            body="Nothing here is tracked in the database yet. When the build pipeline and stock counts are recorded, this page shows the six stages and what is short."
+            body="The six build stages are not tracked yet. Stock counts, what you can build and what is short to ship are on the Inventory page."
           />
         </Card>
       </PageBody>

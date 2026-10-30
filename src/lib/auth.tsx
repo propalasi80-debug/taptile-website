@@ -87,7 +87,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
-      options: { emailRedirectTo: `${window.location.origin}/account` },
+      options: { emailRedirectTo: `${window.location.origin}/admin` },
     });
     if (error) return { ok: false, error: friendlyAuthError(error.message) };
 
@@ -115,7 +115,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (!supabase) return NOT_CONFIGURED;
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
-      options: { redirectTo: `${window.location.origin}/account` },
+      options: { redirectTo: `${window.location.origin}/admin` },
     });
     return error ? { ok: false, error: friendlyAuthError(error.message) } : { ok: true };
   }, []);
@@ -139,7 +139,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const { error } = await supabase.auth.resend({
       type: 'signup',
       email,
-      options: { emailRedirectTo: `${window.location.origin}/account` },
+      options: { emailRedirectTo: `${window.location.origin}/admin` },
     });
     return error ? { ok: false, error: friendlyAuthError(error.message) } : { ok: true };
   }, []);

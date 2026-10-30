@@ -30,8 +30,8 @@ export const COPY_RULES: CopyRule[] = [
   },
   {
     never: '"Made in New Zealand"',
-    instead: '"Designed and assembled in New Zealand"',
-    why: 'Boards are fabricated overseas; the stronger claim does not hold.',
+    instead: '"Designed in New Zealand" or "Final assembly in New Zealand"',
+    why: 'The PCBs are made and assembled by JLCPCB overseas. Design and final assembly are ours; the product as a whole is not "made" here.',
   },
   {
     never: 'A real price',

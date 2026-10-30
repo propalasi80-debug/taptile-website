@@ -115,7 +115,7 @@ export function Footer() {
           <SocialIcons className="foot-social" />
         </div>
         <div className="foot-small">
-          <span>Designed and assembled in New Zealand</span>
+          <span>Designed in New Zealand · Final assembly in New Zealand</span>
           <span>© {new Date().getFullYear()} Taptile</span>
         </div>
       </div>

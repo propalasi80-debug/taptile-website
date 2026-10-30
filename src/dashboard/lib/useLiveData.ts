@@ -1,8 +1,8 @@
 /**
  * The real data behind the dashboard.
  *
- * Two tables exist today: `waitlist` and `updates`. Everything else on the
- * dashboard is the sample set in `mock/`. These hooks are the only place the
+ * Real tables today: `waitlist`, `updates` and the two inventory tables.
+ * Everything else on the dashboard is the reference set in `mock/`. These hooks are the only place the
  * dashboard talks to Supabase, so it stays obvious which pages are real.
  *
  * Both tables are read through the same admin functions the old admin pages
@@ -13,6 +13,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { fetchWaitlist, type WaitlistEntry } from '../../lib/admin';
 import { fetchAllUpdates, type Update } from '../../lib/updates';
+import { fetchInventory, type InventoryItem, type Movement } from '../../lib/inventory';
 
 export interface Loadable<T> {
   data: T;
@@ -99,4 +100,25 @@ export function useUpdates(): Loadable<Update[]> {
   useEffect(reload, [reload]);
 
   return { data, loading, error, reload };
+}
+
+export function useInventory(): Loadable<InventoryItem[]> & { movements: Movement[] } {
+  const [data, setData] = useState<InventoryItem[]>([]);
+  const [movements, setMovements] = useState<Movement[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string>();
+
+  const reload = useCallback(() => {
+    setLoading(true);
+    void fetchInventory().then((result) => {
+      setData(result.items);
+      setMovements(result.movements);
+      setError(result.error);
+      setLoading(false);
+    });
+  }, []);
+
+  useEffect(reload, [reload]);
+
+  return { data, movements, loading, error, reload };
 }

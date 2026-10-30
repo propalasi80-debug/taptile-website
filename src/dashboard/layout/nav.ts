@@ -12,6 +12,7 @@ import {
   Chip,
   Coin,
   Gear,
+  Package,
   Grid,
   Help,
   type Icon,
@@ -39,13 +40,14 @@ export const NAV: { dashboards: NavItem[]; settings: NavItem[] } = {
     { label: 'Revenue', to: `${ROOT}/revenue`, icon: Coin },
     { label: 'Orders', to: `${ROOT}/orders`, icon: Box },
     { label: 'Production', to: `${ROOT}/production`, icon: Chip },
+    { label: 'Inventory', to: `${ROOT}/inventory`, icon: Package, live: true },
     { label: 'Costs', to: `${ROOT}/costs`, icon: Wallet },
     { label: 'Launch', to: `${ROOT}/launch`, icon: Rocket },
     { label: 'Customers', to: `${ROOT}/customers`, icon: Users, live: true },
     { label: 'Content', to: `${ROOT}/content`, icon: Play, live: true },
   ],
   settings: [
-    { label: 'Messages', to: `${ROOT}/messages`, icon: Chat, badge: 3 },
+    { label: 'Messages', to: `${ROOT}/messages`, icon: Chat },
     { label: 'Settings', to: `${ROOT}/settings`, icon: Gear },
     { label: 'Help', to: `${ROOT}/help`, icon: Help },
   ],
@@ -58,7 +60,7 @@ export const PHONE_TABS = [
   NAV.dashboards[0]!,
   NAV.dashboards[1]!,
   NAV.dashboards[2]!,
-  NAV.dashboards[5]!,
+  NAV.dashboards[6]!,
 ];
 
 export const MORE_ROUTE = `${ROOT}/more`;
@@ -67,8 +69,9 @@ export const MORE_ROUTE = `${ROOT}/more`;
 export const MORE_ITEMS: NavItem[] = [
   NAV.dashboards[3]!,
   NAV.dashboards[4]!,
-  NAV.dashboards[6]!,
+  NAV.dashboards[5]!,
   NAV.dashboards[7]!,
+  NAV.dashboards[8]!,
   ...NAV.settings,
 ];
 

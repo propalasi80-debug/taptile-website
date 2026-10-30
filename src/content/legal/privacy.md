@@ -1,4 +1,4 @@
-**In short:** we collect your email address if you join the waitlist or create an account, and nothing more than that. We run no analytics or trackers of any kind. Your keymaps and macros never leave your browser. Waitlist and account data is stored on Supabase's servers in the United Kingdom. You can ask to see or correct what we hold at any time by emailing support@trytaptile.com.
+**In short:** we collect your email address if you join the waitlist or create an account, and nothing more than that. We run no analytics or trackers of any kind. The configurator isn't released yet; it's being built so your keymaps stay on your device. Waitlist and account data is stored on Supabase's servers in the United Kingdom. You can ask to see or correct what we hold at any time by emailing support@trytaptile.com.
 
 ## No analytics, no tracking
 
@@ -6,7 +6,7 @@ Taptile runs no analytics of any kind — no Google Analytics, Plausible, PostHo
 
 ## What we collect, and why
 
-**If you join the waitlist:** your email address, a tag recording which page you signed up from, and the time you signed up. That's it. It's stored in a database the website itself can't read back — only we can.
+**If you join the waitlist:** your email address, a tag recording where on the site you signed up and, if you arrived from a link that names one, the post or campaign that sent you (for example "tiktok"), and the time you signed up. That's it. It's stored in a database the website itself can't read back — only we can.
 
 **If you create an account:** your email address and a password, which Supabase Auth (our authentication provider) hashes before storing — we never see or store your password in plain text. If you sign in with Google, once that option is enabled, we also receive the email address, display name and profile picture Google provides.
 
@@ -15,22 +15,22 @@ Taptile runs no analytics of any kind — no Google Analytics, Plausible, PostHo
 ## What we don't collect
 
 - No payment details. Checkout isn't connected yet — there's no server endpoint and no payment processor set up for this project.
-- No keystroke data. The configurator talks to your device over WebHID entirely inside your browser and makes no network requests at all. Whatever you map your keys to stays on your computer — we never see it, and couldn't if we wanted to.
+- No keystroke data. Nothing on this site reads what you type on a keyboard.
 - No advertising or tracking cookies, from us or from anyone else.
 
 ## Cookies and browser storage
 
 We store a few things in your browser, all of them there to make something you asked for work, not to track you:
 
-- What's in your shopping cart.
-- A marker so the waitlist form doesn't ask you to sign up twice.
+- If you arrived from a link that names a campaign, that name, so it can be attached to your signup. It's cleared when you close the tab.
+- The email address you joined the waitlist with, so the form shows you're already on it instead of asking again. "Use a different email" clears it.
 - Your session token, if you're signed in, so you stay signed in.
 
 None of these require your consent under the law, so we don't show you a cookie banner asking for it. A banner for cookies that don't track you would just be noise.
 
 ## The configurator
 
-If you use the browser-based configurator to remap keys or build macros, none of that leaves your device. It talks to your keyboard directly over WebHID inside the browser tab, and makes no network requests while it does. We built it this way on purpose — we don't want your keymaps, and this is the most direct way to guarantee we never see them.
+The configurator isn't released yet. It's planned as a browser tool and a desktop application, and both are being designed so your keymaps and macros stay on your device — we don't want them. Before either is released, we'll update this policy to say exactly what it does and doesn't send.
 
 ## Who else sees your information
 
@@ -82,4 +82,4 @@ Questions, access requests, corrections, or complaints: **support@trytaptile.com
 
 ---
 
-Last updated: 12 October 2026
+Last updated: 30 October 2026

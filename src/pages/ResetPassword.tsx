@@ -70,7 +70,7 @@ export default function ResetPassword() {
       setError(result.error ?? 'Could not update your password.');
       return;
     }
-    navigate('/account', { replace: true });
+    navigate('/admin', { replace: true });
   }
 
   return (

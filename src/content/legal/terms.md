@@ -1,14 +1,14 @@
-**The short version:** Taptile is pre-launch — nothing has shipped and we're not taking payments yet. Joining the waitlist or creating an account doesn't commit either of us to anything. The configurator is provided as-is and needs a Chromium-based browser. We're two people trading in our own names, not a company, and we're both currently under 18 — which matters legally, so we say so here rather than leaving you to find out later. New Zealand law governs these terms.
+**The short version:** Taptile is pre-launch. Right now this site is only a waitlist and development updates — nothing is for sale, nothing has shipped and we're not taking payments. Joining the waitlist doesn't commit either of us to anything, and you don't need an account. The configurator isn't released yet. We're two people trading in our own names, not a company, and we're both currently under 18 — which matters legally, so we say so here rather than leaving you to find out later. New Zealand law governs these terms.
 
 ## 1. Who you're dealing with
 
-Taptile is operated by two individuals based in Auckland, New Zealand. There is no registered company — we trade in our own names. **Both of us are currently under 18.** This matters: under Part 6 of the Contract and Commercial Law Act 2017, a contract entered into by a minor can be reviewed, and potentially cancelled, by a court or the Disputes Tribunal if it wasn't fair and reasonable when it was made. We're telling you this plainly because you're entitled to know who you're contracting with, not because we expect it to come up.
+Taptile is operated by two individuals based in the Manawatū, New Zealand. There is no registered company — we trade in our own names. **Both of us are currently under 18.** This matters: under Part 6 of the Contract and Commercial Law Act 2017, a contract entered into by a minor can be reviewed, and potentially cancelled, by a court or the Disputes Tribunal if it wasn't fair and reasonable when it was made. We're telling you this plainly because you're entitled to know who you're contracting with, not because we expect it to come up.
 
 Contact us at **support@trytaptile.com**.
 
 ## 2. Where things stand right now
 
-Taptile is **pre-launch**. Nothing has shipped, no orders have been taken, and no payments have been processed — checkout isn't connected. Prices, specifications and availability shown on the site may change before orders open, because the product itself isn't finished yet. The parts of these terms describing shipping, returns or refunds only start to apply once we're actually taking orders — see section 7.
+Taptile is **pre-launch**. Until release, this site is only two things: a **waitlist** and **development updates**. There's no shop, no cart and no checkout. Nothing has shipped, no orders have been taken, and no payments have been processed. There is no release date yet; we won't publish one until we're confident we can meet it. Prices, specifications and availability shown on the site may change before orders open, because the product itself isn't finished yet. The parts of these terms describing shipping, returns or refunds only start to apply once we're actually taking orders — see section 7.
 
 ## 3. The waitlist
 
@@ -16,13 +16,13 @@ Joining the waitlist is not placing an order. It doesn't commit you to anything,
 
 ## 4. Accounts
 
-You can create one account per person. Keep your password to yourself — you're responsible for what happens under your account if you don't. Either you or we can close your account at any time; if we close it, we'll tell you why.
+Accounts on this site are for the Taptile team only, to publish updates. There's nothing to sign up for as a visitor — the waitlist doesn't need an account. Customer accounts may come with the full shop at release, and these terms will be updated before they do.
 
 ## 5. The configurator
 
-The browser-based configurator is provided **as-is**. It connects to your keyboard using WebHID, which only works in Chromium-based browsers — Chrome, Edge, Opera, or Arc. Firefox and Safari don't implement WebHID, so the configurator won't work in them.
+The configurator — the tool for remapping keys and building macros — **isn't released yet**. It's planned in two forms: one that runs in your browser, and a desktop application. The browser version will use WebHID, which only works in Chromium-based browsers (Chrome, Edge, Opera, Arc); Firefox and Safari don't support it. We'll update this section with the details of both before they're released.
 
-Remapping keys, building macros, or flashing custom firmware is done **at your own risk**. A bad keymap can make your device temporarily unusable until it's reset — that's expected behaviour of programmable hardware, not a defect.
+When it is released, it's provided **as-is**, and remapping keys, building macros, or flashing custom firmware is done **at your own risk**. A bad keymap can make your device temporarily unusable until it's reset — that's expected behaviour of programmable hardware, not a defect.
 
 ## 6. Intellectual property
 
@@ -52,4 +52,4 @@ Nothing in these terms excludes or limits our liability for death or personal in
 
 ---
 
-Last updated: 12 October 2026
+Last updated: 30 October 2026
