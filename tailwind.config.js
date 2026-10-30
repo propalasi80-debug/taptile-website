@@ -57,11 +57,11 @@ export default {
          Everything else matches the handoff verbatim. No hex literals
          belong in dashboard components — add them here instead.
       --------------------------------------------------------------- */
-      deck: '#0a0a0a',
-      rail: '#070707',
-      panel: { DEFAULT: '#121212', top: '#161616', bot: '#101010' },
-      tile: { DEFAULT: '#1a1a1a', top: '#1f1f1f', track: '#1d1d1d' },
-      line: { DEFAULT: '#222222', strong: '#2e2e2e', row: '#1b1b1b', rail: '#191919' },
+      deck: '#080808',
+      rail: '#0b0b0b',
+      panel: { DEFAULT: '#101010', top: '#131313', bot: '#0f0f0f' },
+      tile: { DEFAULT: '#161616', top: '#1a1a1a', track: '#1f1f1f' },
+      line: { DEFAULT: '#1f1f1f', strong: '#2c2c2c', row: '#1a1a1a', rail: '#171717' },
 
       /* UI accent: gold. The token keeps its old name ("lime") so every
          component that marks the one accented thing per view picks up the
@@ -109,7 +109,7 @@ export default {
         /* The italic second line of every heading. */
         serif: ['"Instrument Serif"', 'Georgia', 'serif'],
         /* Admin dashboard only. The storefront stays on Archivo. */
-        dash: ['"Plus Jakarta Sans"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        dash: ['Geist', 'ui-sans-serif', 'system-ui', 'sans-serif'],
       },
       fontWeight: {
         heading: '800',
@@ -124,10 +124,10 @@ export default {
         '2xl': '24px',
         full: '9999px',
         /* Dashboard geometry. */
-        chip: '9px',
-        tile: '11px',
-        card: '16px',
-        pill: '20px',
+        chip: '8px',
+        tile: '8px',
+        card: '12px',
+        pill: '6px',
       },
       boxShadow: {
         cap: '0 4px 10px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.05)',
@@ -137,19 +137,19 @@ export default {
         nav: '0 10px 30px rgba(0,0,0,.45)',
         panel: '0 20px 60px rgba(0,0,0,.45)',
         /* Dashboard elevation. */
-        card: 'inset 0 1px 0 rgba(255,255,255,0.04), 0 1px 2px rgba(0,0,0,0.6)',
-        'card-sm': 'inset 0 1px 0 rgba(255,255,255,0.04), 0 1px 2px rgba(0,0,0,0.6)',
-        tile: 'inset 0 1px 0 rgba(255,255,255,0.045)',
+        card: 'inset 0 1px 0 rgba(255,255,255,0.045), 0 1px 0 rgba(0,0,0,0.5), 0 12px 28px -16px rgba(0,0,0,0.9)',
+        'card-sm': 'inset 0 1px 0 rgba(255,255,255,0.045), 0 8px 20px -14px rgba(0,0,0,0.9)',
+        tile: 'inset 0 1px 0 rgba(255,255,255,0.04)',
         track: 'inset 0 1px 2px rgba(0,0,0,0.4)',
-        lime: '0 4px 14px rgba(201,169,110,0.18), inset 0 1px 0 rgba(255,255,255,0.3)',
-        'lime-sm': '0 3px 10px rgba(201,169,110,0.16)',
-        'lime-bar': '0 0 10px rgba(201,169,110,0.18)',
+        lime: 'inset 0 1px 0 rgba(255,255,255,0.28), 0 1px 2px rgba(0,0,0,0.5)',
+        'lime-sm': 'none',
+        'lime-bar': 'none',
       },
       backgroundImage: {
-        'lime-grad': 'linear-gradient(135deg,#e7d3a3 0%,#c9a96e 50%,#b08d4f 100%)',
-        'panel-grad': 'linear-gradient(180deg,#141414 0%,#111111 100%)',
-        'tile-grad': 'linear-gradient(180deg,#1c1c1c 0%,#181818 100%)',
-        'rail-grad': 'linear-gradient(180deg,rgba(201,169,110,0.05) 0%,rgba(0,0,0,0) 30%)',
+        'lime-grad': 'linear-gradient(180deg,#d6b97f 0%,#c4a265 100%)',
+        'panel-grad': 'linear-gradient(180deg,#131313 0%,#0f0f0f 100%)',
+        'tile-grad': 'linear-gradient(180deg,#1a1a1a 0%,#161616 100%)',
+        'rail-grad': 'none',
         'alert-grad': 'linear-gradient(180deg,#1f1414 0%,#170f0f 100%)',
         'alert-btn': 'linear-gradient(135deg,#f0779a 0%,#d63f68 100%)',
       },

@@ -19,8 +19,14 @@ export interface Column<T> {
   /** Grid span out of 12. The spans in a table must total 12. */
   span: number;
   align?: 'left' | 'right' | 'center';
+  /** Hide below 640px, for a column whose value is repeated elsewhere in the row. */
+  hideOnPhone?: boolean;
+  /** Span below 640px, to take up a hidden column's room. */
+  phoneSpan?: 8;
   render: (row: T) => ReactNode;
 }
+
+const PHONE_SPAN: Record<number, string> = { 8: 'max-sm:col-span-8' };
 
 const SPAN: Record<number, string> = {
   1: 'col-span-1',
@@ -67,13 +73,19 @@ export function DataTable<T>({
     <div role="table" className="w-full">
       <div
         role="row"
-        className="grid grid-cols-12 gap-[10px] border-b border-line px-[2px] pb-[9px]"
+        className="grid grid-cols-12 gap-[10px] rounded-[8px] bg-white/[0.025] px-[12px] py-[9px]"
       >
         {columns.map((column) => (
           <div
             key={column.key}
             role="columnheader"
-            className={cn('dash-th flex items-center', SPAN[column.span], alignClass(column.align))}
+            className={cn(
+              'dash-th flex items-center',
+              SPAN[column.span],
+              column.phoneSpan && PHONE_SPAN[column.phoneSpan],
+              alignClass(column.align),
+              column.hideOnPhone && 'max-sm:hidden',
+            )}
           >
             {column.label}
           </div>
@@ -89,7 +101,9 @@ export function DataTable<T>({
             className={cn(
               'flex min-w-0 items-center text-[12.5px] text-ink-2',
               SPAN[column.span],
+              column.phoneSpan && PHONE_SPAN[column.phoneSpan],
               alignClass(column.align),
+              column.hideOnPhone && 'max-sm:hidden',
             )}
           >
             {column.render(row)}
@@ -97,8 +111,7 @@ export function DataTable<T>({
         ));
 
         const shell = cn(
-          'grid w-full grid-cols-12 items-center gap-[10px] rounded-[6px] px-[2px] py-[13px] text-left',
-          index % 2 === 1 && !selected && 'bg-white/[0.014]',
+          'grid w-full grid-cols-12 items-center gap-[10px] px-[12px] py-[12px] text-left transition-colors duration-100 hover:bg-white/[0.02]',
           index < rows.length - 1 && 'border-b border-line-row',
           selected && 'bg-lime/[0.07]',
         );

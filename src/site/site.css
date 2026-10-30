@@ -10,10 +10,6 @@
  */
 
 .tt {
-  /* The one accent. Used sparingly: status dots, the success tick, text
-     selection and the focus ring. Never on body text or large areas. */
-  --gold: #c9a96e;
-  --gold-soft: rgba(201, 169, 110, 0.35);
   --bg: #000000;
   --bg-2: #0b0b0d;
   --ink: #ffffff;
@@ -51,7 +47,7 @@
 }
 .tt p { margin: 0; }
 .tt a { color: inherit; text-decoration: none; }
-.tt ::selection { background: var(--gold-soft); color: #fff; }
+.tt ::selection { background: rgba(255, 255, 255, 0.22); }
 
 .tt .shell { width: var(--shell); margin-inline: auto; }
 .tt .it { color: inherit; }
@@ -72,8 +68,8 @@
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  background: var(--gold);
-  box-shadow: 0 0 10px var(--gold-soft);
+  background: #fff;
+  box-shadow: 0 0 10px #fff;
 }
 .tt .lede { font-size: clamp(16px, 1.25vw, 19px); line-height: 1.6; color: var(--mute); max-width: 34em; }
 
@@ -210,7 +206,7 @@
 .tt .wl-err { margin-top: 10px; font-size: 14px; color: #ff7a6e; }
 .tt .wl-hp { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
 .tt .wl-done { display: flex; gap: 14px; align-items: flex-start; padding: 18px 20px; border-radius: 22px; max-width: 500px; background: var(--glass); box-shadow: inset 0 0 0 1px var(--line-2); }
-.tt .wl-tick { width: 30px; height: 30px; flex-shrink: 0; border-radius: 15px; background: var(--gold); color: #17130b; display: grid; place-items: center; font-weight: 700; box-shadow: 0 0 24px var(--gold-soft); }
+.tt .wl-tick { width: 30px; height: 30px; flex-shrink: 0; border-radius: 15px; background: #fff; color: #050506; display: grid; place-items: center; font-weight: 700; box-shadow: 0 0 24px rgba(255, 255, 255, 0.35); }
 .tt .wl-done h4 { margin: 2px 0 0; font-size: 17px; color: #fff; }
 .tt .wl-done p { margin-top: 4px; font-size: 14px; color: var(--mute); }
 .tt .wl-actions { margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap; }
@@ -391,7 +387,7 @@
 /* ------------------------------------------------------- landing */
 .tt .land { min-height: 100svh; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 84px 20px 40px; background: #000; }
 .tt .land-tag { display: inline-flex; align-items: center; gap: 8px; height: 30px; padding: 0 14px; border-radius: 15px; font-size: 13px; font-weight: 500; color: var(--mute); box-shadow: inset 0 0 0 1px var(--line-2); }
-.tt .land-tag::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--gold); box-shadow: 0 0 10px var(--gold-soft); }
+.tt .land-tag::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: #fff; box-shadow: 0 0 8px #fff; }
 .tt .land h1 { margin-top: 22px; font-size: clamp(44px, 6.4vw, 96px); letter-spacing: -0.045em; line-height: 1; }
 .tt .land .lede { margin: 16px auto 0; font-size: clamp(17px, 1.5vw, 21px); color: var(--mute); }
 .tt .land-img { display: block; width: min(720px, 100%); margin: clamp(8px, 2vh, 24px) auto 0; }

@@ -15,12 +15,21 @@ import { Bar, Card, CardTitle, Kpi, Pill, Skeleton } from '../ui';
 import { Ring, Sparkline } from '../ui/charts';
 import { FIGURES, GATES } from '../mock';
 import { number } from '../lib/format';
-import { useUpdates, useWaitlist } from '../lib/useLiveData';
+import { useInventory, useUpdates, useWaitlist } from '../lib/useLiveData';
+import { readyToShip, shipParts } from '../../lib/inventory';
 import { ArrowRight } from '../icons';
 
 export default function Overview() {
   const waitlist = useWaitlist();
   const updates = useUpdates();
+  const inventory = useInventory();
+  const canShip = readyToShip(inventory.data);
+  // What stops the units for sale going out: anything that ships with them
+  // and is short, net of what is already on order.
+  const waitingOn = shipParts(inventory.data)
+    .filter((item) => item.on_hand < item.per_unit * FIGURES.forSale)
+    .map((item) => item.name)
+    .join(', ');
 
   const signups = waitlist.data.length;
   const target = FIGURES.waitlistTarget;
@@ -157,13 +166,34 @@ export default function Overview() {
         </Card>
 
         <Card pad={18}>
-          <CardTitle>What is not here yet</CardTitle>
-          <p className="text-[11.5px] leading-[1.65] text-ink-3">
-            Revenue, Orders, Costs and Production are empty on purpose. They used to render
-            figures from the design handoff — revenue, a run of orders, an expense ledger — and
-            none of it was real. Nothing has sold, so those pages stay empty until something
-            backs them. Stock is real: it lives on Inventory.
-          </p>
+          <CardTitle
+            action={
+              <Link to="/admin/inventory" className="text-[12px] text-ink-3 hover:text-ink-1">
+                Open inventory
+              </Link>
+            }
+          >
+            Batch 1
+          </CardTitle>
+          {inventory.loading && inventory.data.length === 0 ? (
+            <Skeleton height={60} />
+          ) : (
+            <dl className="grid grid-cols-2 gap-y-[10px] text-[12.5px] sm:grid-cols-4">
+              {[
+                ['Built', number(FIGURES.runSize)],
+                ['For sale', number(FIGURES.forSale)],
+                ['Ready to ship', canShip === null ? '—' : number(Math.min(canShip, FIGURES.forSale))],
+                ['Waiting on', waitingOn || 'Nothing'],
+              ].map(([label, value]) => (
+                <div key={label} className="min-w-0">
+                  <dt className="text-ink-4">{label}</dt>
+                  <dd className="mt-[2px] truncate tabular-nums text-ink-1" title={value}>
+                    {value}
+                  </dd>
+                </div>
+              ))}
+            </dl>
+          )}
         </Card>
       </PageBody>
     </>

@@ -7,19 +7,15 @@
  */
 
 import {
-  Box,
   Chat,
-  Chip,
-  Coin,
   Gear,
-  Package,
   Grid,
   Help,
   type Icon,
+  Package,
   Play,
   Rocket,
   Users,
-  Wallet,
 } from '../icons';
 
 export interface NavItem {
@@ -35,13 +31,11 @@ export interface NavItem {
 export const ROOT = '/admin';
 
 export const NAV: { dashboards: NavItem[]; settings: NavItem[] } = {
+  // Revenue, Orders, Production and Costs are left out until they have data:
+  // a menu of empty pages is four dead ends. Their routes still exist.
   dashboards: [
     { label: 'Overview', to: ROOT, icon: Grid },
-    { label: 'Revenue', to: `${ROOT}/revenue`, icon: Coin },
-    { label: 'Orders', to: `${ROOT}/orders`, icon: Box },
-    { label: 'Production', to: `${ROOT}/production`, icon: Chip },
     { label: 'Inventory', to: `${ROOT}/inventory`, icon: Package, live: true },
-    { label: 'Costs', to: `${ROOT}/costs`, icon: Wallet },
     { label: 'Launch', to: `${ROOT}/launch`, icon: Rocket },
     { label: 'Customers', to: `${ROOT}/customers`, icon: Users, live: true },
     { label: 'Content', to: `${ROOT}/content`, icon: Play, live: true },
@@ -55,25 +49,13 @@ export const NAV: { dashboards: NavItem[]; settings: NavItem[] } = {
 
 export const ALL_NAV: NavItem[] = [...NAV.dashboards, ...NAV.settings];
 
-/** The five that get a phone tab. Everything else lives behind More. */
-export const PHONE_TABS = [
-  NAV.dashboards[0]!,
-  NAV.dashboards[1]!,
-  NAV.dashboards[2]!,
-  NAV.dashboards[6]!,
-];
+/** The four that get a phone tab. Everything else lives behind More. */
+export const PHONE_TABS = NAV.dashboards.slice(0, 4);
 
 export const MORE_ROUTE = `${ROOT}/more`;
 
 /** Pages reachable only through More on a phone. */
-export const MORE_ITEMS: NavItem[] = [
-  NAV.dashboards[3]!,
-  NAV.dashboards[4]!,
-  NAV.dashboards[5]!,
-  NAV.dashboards[7]!,
-  NAV.dashboards[8]!,
-  ...NAV.settings,
-];
+export const MORE_ITEMS: NavItem[] = [...NAV.dashboards.slice(4), ...NAV.settings];
 
 export function titleFor(pathname: string): string {
   if (pathname === MORE_ROUTE) return 'More';

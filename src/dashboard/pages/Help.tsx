@@ -158,7 +158,7 @@ export default function Help() {
         <Card pad={18}>
           <CardTitle
             action={
-              <span className="inline-flex items-center gap-[5px] rounded-pill bg-status-rose/[0.14] px-[9px] py-[3px] text-[9.5px] font-bold uppercase tracking-[1.1px] text-status-rose">
+              <span className="inline-flex items-center gap-[5px] rounded-pill border border-status-rose/30 px-[6px] py-[1px] text-[11px] font-medium text-status-rose">
                 <Warning size={11} />
                 Legal
               </span>

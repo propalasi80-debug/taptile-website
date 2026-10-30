@@ -73,7 +73,7 @@ export function CardTitle({
   action?: ReactNode;
 }) {
   return (
-    <div className="mb-[14px] flex items-center justify-between gap-3">
+    <div className="mb-[12px] flex items-center justify-between gap-3">
       <h2 className="dash-card-title">{children}</h2>
       {action}
     </div>
@@ -102,10 +102,10 @@ export function DeltaChip({
   return (
     <span
       className={cn(
-        'inline-flex items-center gap-[3px] rounded-pill px-[7px] py-[2px] text-[10px] font-bold',
+        'inline-flex items-center gap-[3px] tabular-nums text-[11px]',
         flat && 'text-ink-4',
-        !flat && down && 'bg-status-rose/[0.13] text-status-rose',
-        !flat && !down && 'bg-lime/[0.13] text-lime',
+        !flat && down && 'text-status-rose',
+        !flat && !down && 'text-lime',
       )}
     >
       {!flat && <span aria-hidden="true">{down ? '▼' : '▲'}</span>}
@@ -115,29 +115,22 @@ export function DeltaChip({
 }
 
 const TONE_STYLE: Record<Tone, string> = {
-  lime: 'bg-lime/[0.14] text-lime',
-  blue: 'bg-status-blue/[0.14] text-status-blue',
-  rose: 'bg-status-rose/[0.14] text-status-rose',
-  grey: 'bg-status-grey/[0.14] text-status-grey',
+  lime: 'border-lime/20 bg-lime/[0.08] text-lime',
+  blue: 'border-status-blue/20 bg-status-blue/[0.07] text-status-blue',
+  rose: 'border-status-rose/20 bg-status-rose/[0.08] text-status-rose',
+  grey: 'border-white/[0.08] bg-white/[0.04] text-ink-2',
 };
 
-const TONE_DOT: Record<Tone, string> = {
-  lime: 'bg-lime',
-  blue: 'bg-status-blue',
-  rose: 'bg-status-rose',
-  grey: 'bg-status-grey',
-};
 
 /** Status pill. The tone carries meaning — see §2.6, not a colour choice. */
 export function Pill({ tone, label }: { tone: Tone; label: string }) {
   return (
     <span
       className={cn(
-        'inline-flex items-center gap-[5px] rounded-pill px-[9px] py-[3px] text-[10px] font-bold',
+        'inline-flex items-center whitespace-nowrap rounded-pill border px-[7px] py-[2px] text-[11.5px] font-medium',
         TONE_STYLE[tone],
       )}
     >
-      <span className={cn('h-[5px] w-[5px] rounded-full', TONE_DOT[tone])} aria-hidden="true" />
       {label}
     </span>
   );
@@ -579,18 +572,18 @@ export function Kpi({
           </span>
         )}
       </div>
-      <p className="dash-metric mt-auto truncate" title={value}>
+      <p className="dash-metric mt-[12px] truncate" title={value}>
         {value}
       </p>
       <div className="mt-[7px] flex items-center gap-[7px]">
         {delta && <DeltaChip value={delta} down={deltaDown} />}
-        {sub && <span className="truncate text-[10.5px] text-ink-4">{sub}</span>}
+        {sub && <span className="truncate text-[11.5px] text-ink-4">{sub}</span>}
       </div>
     </>
   );
 
   const shell =
-    'group flex h-[118px] flex-col rounded-card border border-line bg-panel-grad p-4 shadow-card';
+    'group flex flex-col rounded-card border border-line bg-panel-grad px-[18px] py-4 shadow-card';
 
   return to ? (
     <Link to={to} className={cn(shell, 'transition hover:border-line-strong')}>
@@ -684,7 +677,7 @@ export function Row({
   );
 }
 
-/** Horizontal bar. The fill glows so the lead value reads at a glance. */
+/** Horizontal bar: a label, a value and a thin progress rule. */
 export function Bar({
   label,
   value,
@@ -705,17 +698,16 @@ export function Bar({
   const body = (
     <>
       <div className="mb-[6px] flex items-baseline justify-between gap-3">
-        <span className="truncate text-[11.5px] font-semibold text-ink-2">{label}</span>
-        <span className="shrink-0 text-[11.5px] font-bold text-ink-1">{value}</span>
+        <span className="truncate text-[12px] text-ink-2">{label}</span>
+        <span className="shrink-0 tabular-nums text-[12px] text-ink-1">{value}</span>
       </div>
-      <div className="h-[10px] w-full overflow-hidden rounded-[8px] bg-tile-track shadow-track">
+      <div className="h-[3px] w-full overflow-hidden rounded-[2px] bg-tile-track">
         <div
-          className="h-full rounded-[8px] transition-[width] duration-300"
+          className="h-full rounded-[2px] transition-[width] duration-300"
           style={{
             width: `${Math.max(0, Math.min(100, pct))}%`,
-            background: colour ?? 'linear-gradient(90deg,#b08d4f,#c9a96e)',
-            boxShadow: active ? '0 0 12px rgba(201,169,110,0.22)' : undefined,
-            opacity: active ? 1 : 0.28,
+            background: colour ?? '#c9a96e',
+            opacity: active ? 1 : 0.35,
           }}
         />
       </div>
@@ -815,18 +807,16 @@ export function ErrorCard({ message, onRetry }: { message: string; onRetry?: () 
  */
 export function SampleChip() {
   return (
-    <span className="inline-flex items-center rounded-pill bg-status-grey/[0.14] px-[9px] py-[3px] text-[9.5px] font-bold uppercase tracking-[1.1px] text-status-grey">
-      Sample data
-    </span>
+    <span className="text-[12px] text-ink-4">Sample data</span>
   );
 }
 
 /** Marks a page (or card) whose figures come from Supabase, not the mock set. */
 export function LiveChip() {
   return (
-    <span className="inline-flex items-center gap-[5px] rounded-pill bg-lime/[0.14] px-[9px] py-[3px] text-[9.5px] font-bold uppercase tracking-[1.1px] text-lime">
-      <span className="h-[5px] w-[5px] rounded-full bg-lime" aria-hidden="true" />
-      Live data
+    <span className="inline-flex items-center gap-[6px] text-[12px] text-ink-4">
+      <span className="h-[6px] w-[6px] rounded-full bg-lime" aria-hidden="true" />
+      Live
     </span>
   );
 }

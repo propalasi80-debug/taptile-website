@@ -135,8 +135,8 @@ export const HELP_TOPICS = [
     body: 'Writing, saving a draft and publishing a devlog post from Content.',
   },
   {
-    title: 'Why pages are empty',
-    body: 'Nothing has sold yet. Those pages fill in when there is something to show.',
+    title: 'Tracking stock',
+    body: 'Inventory: record what is ordered, received and used. Ready to ship counts the 20 for sale.',
   },
 ];
 
@@ -150,8 +150,8 @@ export const HELP_QUESTIONS = [
     a: 'Not until case printing clears the full run. A date published before then is a promise the build queue cannot keep.',
   },
   {
-    q: 'Why are Revenue, Orders and Costs empty?',
-    a: 'Because nothing has sold and no expense table exists yet. They used to show sample figures from the design handoff; those were removed, because a number that looks real eventually gets quoted as real.',
+    q: 'Where are Revenue, Orders and Costs?',
+    a: 'Hidden from the menu until there is something to show. Nothing has sold and no expense table exists yet, and a page of empty charts is a dead end. They come back when real data does.',
   },
   {
     q: 'How do I add my co-founder?',

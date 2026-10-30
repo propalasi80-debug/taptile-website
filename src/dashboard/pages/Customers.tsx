@@ -339,7 +339,7 @@ export default function Customers() {
           </p>
         </Card>
 
-        <p className="text-[10.5px] text-ink-5">
+        <p className="text-[11.5px] text-ink-4">
           Only accounts on the admin allowlist can load this data. The list is enforced in the
           database, not in this page — editing the page in your browser will not reveal anything.
         </p>

@@ -101,13 +101,11 @@ export function AreaChart({
         >
           <defs>
             <linearGradient id={`fill-${uid}`} x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor={CHART.emeraldMid} stopOpacity="0.55" />
-              <stop offset="52%" stopColor={CHART.emerald} stopOpacity="0.2" />
-              <stop offset="100%" stopColor={CHART.emerald} stopOpacity="0" />
+              <stop offset="0%" stopColor={CHART.lime} stopOpacity="0.18" />
+              <stop offset="100%" stopColor={CHART.lime} stopOpacity="0" />
             </linearGradient>
             <linearGradient id={`stroke-${uid}`} x1="0" y1="0" x2="1" y2="0">
-              <stop offset="0%" stopColor={CHART.emerald} />
-              <stop offset="55%" stopColor={CHART.emeraldMid} />
+              <stop offset="0%" stopColor={CHART.lime} />
               <stop offset="100%" stopColor={CHART.lime} />
             </linearGradient>
           </defs>
@@ -230,8 +228,8 @@ export function Donut({
         <svg width={size} height={size} role="img" aria-label={ariaLabel}>
           <defs>
             <linearGradient id={`lead-${uid}`} x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0%" stopColor={CHART.limeLight} />
-              <stop offset="100%" stopColor={CHART.emeraldMid} />
+              <stop offset="0%" stopColor={CHART.lime} />
+              <stop offset="100%" stopColor={CHART.lime} />
             </linearGradient>
           </defs>
           <g transform={`rotate(-90 ${size / 2} ${size / 2})`}>
@@ -267,12 +265,12 @@ export function Donut({
         </svg>
         <div className="absolute inset-0 flex flex-col items-center justify-center">
           <span
-            className="font-extrabold text-ink-1"
-            style={{ fontSize: size * 0.195, letterSpacing: '-1.4px' }}
+            className="tabular-nums text-ink-1"
+            style={{ fontSize: size * 0.19, letterSpacing: '-0.5px' }}
           >
             {centerValue}
           </span>
-          <span className="mt-[1px] text-[9.5px] font-semibold uppercase tracking-[1.1px] text-ink-4">
+          <span className="mt-[1px] text-[11px] text-ink-4">
             {centerLabel}
           </span>
         </div>
@@ -308,16 +306,13 @@ export function Ring({
   const circumference = 2 * Math.PI * radius;
   const clamped = Math.max(0, Math.min(1, pct));
 
-  // The glow goes on the progress stroke, never on the <svg>. A drop-shadow on
-  // the root halos everything inside it, grey track included, which lights up
-  // the whole circle instead of the arc and reads as glare.
   return (
     <div className="relative shrink-0" style={{ width: size, height: size }}>
       <svg width={size} height={size} role="img" aria-label={ariaLabel}>
         <defs>
           <linearGradient id={`ring-${uid}`} x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stopColor={CHART.limeLight} />
-            <stop offset="100%" stopColor={CHART.emerald} />
+            <stop offset="0%" stopColor={CHART.lime} />
+            <stop offset="100%" stopColor={CHART.lime} />
           </linearGradient>
         </defs>
         <g transform={`rotate(-90 ${size / 2} ${size / 2})`}>
@@ -336,22 +331,21 @@ export function Ring({
             fill="none"
             stroke={`url(#ring-${uid})`}
             strokeWidth={stroke}
-            strokeLinecap="round"
+            strokeLinecap="butt"
             strokeDasharray={`${circumference * clamped} ${circumference}`}
             className="transition-[stroke-dasharray] duration-500"
-            style={{ filter: 'drop-shadow(0 0 10px rgba(201,169,110,0.35))' }}
           />
         </g>
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center">
         <span
-          className="font-extrabold text-ink-1"
-          style={{ fontSize: size * 0.21, letterSpacing: '-1.4px' }}
+          className="tabular-nums text-ink-1"
+          style={{ fontSize: size * 0.2, letterSpacing: '-0.5px' }}
         >
           {label}
         </span>
         {sub && (
-          <span className="mt-[1px] text-[9.5px] font-semibold uppercase tracking-[1.1px] text-ink-4">
+          <span className="mt-[1px] text-[11px] text-ink-4">
             {sub}
           </span>
         )}
@@ -434,17 +428,10 @@ export function ColumnChart({
         {data.map((value, index) => (
           <div key={index} className="flex h-full flex-1 items-end">
             <div
-              className={cn('w-full rounded-t-[7px] rounded-b-[3px] transition-[height] duration-300')}
+              className={cn('w-full rounded-t-[3px] transition-[height] duration-300')}
               style={{
                 height: `${Math.max(2, (value / max) * 100)}%`,
-                background:
-                  index === highlight
-                    ? 'linear-gradient(180deg,#e7d3a3,#b08d4f)'
-                    : CHART.track,
-                filter:
-                  index === highlight
-                    ? 'drop-shadow(0 0 18px rgba(201,169,110,0.28))'
-                    : undefined,
+                background: index === highlight ? CHART.lime : CHART.track,
               }}
             />
           </div>

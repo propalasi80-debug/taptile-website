@@ -1,6 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;800&family=Instrument+Serif:ital@1&display=swap');
-/* Plus Jakarta Sans is the admin dashboard face only. The storefront never uses it. */
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+/* Geist is the admin dashboard face only. Numbers use its tabular figures so
+   columns line up without switching to a monospace. */
+@import url('https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -206,32 +207,16 @@
    ========================================================================== */
 
 @layer components {
-  /* The ground. Black with a soft gold light from above. Applied once on
-     the shell. */
+  /* The ground, applied once on the shell. */
   .dash {
     @apply font-dash text-ink-1;
 
-    /* Black, with one soft gold light from above and a faint white lift at
-       the right edge. Kept quiet on purpose: the cards carry the structure,
-       the ground just stops it reading as a flat void. */
+    /* Near-black with one faint lift at the top, so the page has a light
+       source without any colour wash. */
     background:
-      radial-gradient(1100px 420px at 50% -14%, rgba(201, 169, 110, 0.09), rgba(0, 0, 0, 0) 70%),
-      radial-gradient(700px 640px at 108% 30%, rgba(255, 255, 255, 0.025), rgba(0, 0, 0, 0) 62%),
-      #0a0a0a;
-
-    /* Anchored to the viewport so the light stays at the top of the screen
-       on long pages. Must come after the `background` shorthand, which
-       resets every background-* longhand. */
+      radial-gradient(1200px 520px at 50% -22%, rgba(255, 255, 255, 0.045), rgba(0, 0, 0, 0) 70%),
+      #080808;
     background-attachment: fixed;
-  }
-
-  @media (max-width: 767px) {
-    .dash {
-      background:
-        radial-gradient(520px 260px at 50% -10%, rgba(201, 169, 110, 0.1), rgba(0, 0, 0, 0) 70%),
-        #0a0a0a;
-      background-attachment: fixed;
-    }
   }
 
   /* A removed focus ring on this ground is invisible, not subtle. */
@@ -257,57 +242,46 @@
 
   /* Eyebrow — 9.5px/700 uppercase at +1.3 tracking. Used on every KPI. */
   .dash-eyebrow {
-    @apply text-[9.5px] font-bold uppercase text-ink-4;
-    letter-spacing: 1.3px;
+    @apply text-[12.5px] font-medium text-ink-3;
   }
 
   /* Table header cells share the eyebrow treatment at +1.2. */
   .dash-th {
-    @apply text-[9.5px] font-bold uppercase text-ink-4;
-    letter-spacing: 1.2px;
+    @apply text-[12px] font-medium text-ink-4;
   }
 
-  .dash-metric {
-    @apply text-[29px] font-extrabold text-ink-1;
-    letter-spacing: -1.4px;
-    line-height: 1.05;
-  }
-  .dash-metric-lg {
-    @apply text-[31px] font-extrabold text-ink-1;
-    letter-spacing: -1.6px;
-    line-height: 1.05;
-  }
-  .dash-metric-md {
-    @apply text-[25px] font-extrabold text-ink-1;
-    letter-spacing: -1.3px;
-    line-height: 1.05;
-  }
+  .dash-metric,
+  .dash-metric-lg,
+  .dash-metric-md,
   .dash-metric-sm {
-    @apply text-[23px] font-extrabold text-ink-1;
-    letter-spacing: -1.1px;
+    @apply font-semibold text-ink-1;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.8px;
     line-height: 1.05;
   }
+  .dash-metric { @apply text-[28px]; }
+  .dash-metric-lg { @apply text-[30px]; }
+  .dash-metric-md { @apply text-[24px]; }
+  .dash-metric-sm { @apply text-[21px]; }
   .dash-card-title {
-    @apply text-[14px] font-bold text-ink-1;
-    letter-spacing: -0.25px;
+    @apply text-[14px] font-semibold text-ink-1;
+    letter-spacing: -0.15px;
   }
   .dash-page-title {
-    @apply text-[27px] font-extrabold text-ink-1;
-    letter-spacing: -0.9px;
-    line-height: 1.1;
+    @apply text-[24px] font-semibold text-ink-1;
+    letter-spacing: -0.6px;
+    line-height: 1.15;
   }
 
   /* Phone drops one step. */
   @media (max-width: 767px) {
     .dash-page-title {
-      @apply text-[17px];
-      letter-spacing: -0.6px;
+      @apply text-[18px];
     }
     .dash-metric,
     .dash-metric-lg,
     .dash-metric-md {
-      @apply text-[23px];
-      letter-spacing: -1.1px;
+      @apply text-[22px];
     }
   }
 
