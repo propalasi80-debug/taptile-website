@@ -1,4 +1,4 @@
-repo: palasi12/taptile-website
+repo: propalasi80-debug/taptile-website
 branch: main
 
 ## Last sync
