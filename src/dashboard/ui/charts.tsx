@@ -339,7 +339,7 @@ export function Ring({
             strokeLinecap="round"
             strokeDasharray={`${circumference * clamped} ${circumference}`}
             className="transition-[stroke-dasharray] duration-500"
-            style={{ filter: 'drop-shadow(0 0 10px rgba(182,255,86,0.35))' }}
+            style={{ filter: 'drop-shadow(0 0 10px rgba(201,169,110,0.35))' }}
           />
         </g>
       </svg>
@@ -439,11 +439,11 @@ export function ColumnChart({
                 height: `${Math.max(2, (value / max) * 100)}%`,
                 background:
                   index === highlight
-                    ? 'linear-gradient(180deg,#d3ff8d,#8ade33)'
+                    ? 'linear-gradient(180deg,#e7d3a3,#b08d4f)'
                     : CHART.track,
                 filter:
                   index === highlight
-                    ? 'drop-shadow(0 0 18px rgba(182,255,86,0.28))'
+                    ? 'drop-shadow(0 0 18px rgba(201,169,110,0.28))'
                     : undefined,
               }}
             />

@@ -206,46 +206,30 @@
    ========================================================================== */
 
 @layer components {
-  /* The ambient glow. Five stacked radials over #111214 — this is what makes
-     the UI read as lit rather than flat. Applied once on the shell. */
+  /* The ground. Black with a soft gold light from above. Applied once on
+     the shell. */
   .dash {
     @apply font-dash text-ink-1;
 
-    /* Intensity is dialled back from the handoff, which specified these at
-       0.30 / 0.26 / 0.20 / 0.55 / 0.07. At full strength the wash reads as
-       glare behind the cards on the taller pages. The dark base radial is
-       left alone -- it tints downward and adds depth rather than light.
-       Restore the originals here if it ever looks flat. */
+    /* Black, with one soft gold light from above and a faint white lift at
+       the right edge. Kept quiet on purpose: the cards carry the structure,
+       the ground just stops it reading as a flat void. */
     background:
-      radial-gradient(620px 780px at -6% 46%, rgba(3, 209, 109, 0.15), rgba(0, 0, 0, 0) 62%),
-      radial-gradient(940px 340px at 52% 112%, rgba(3, 209, 109, 0.13), rgba(0, 0, 0, 0) 66%),
-      radial-gradient(560px 720px at 106% 38%, rgba(66, 220, 147, 0.1), rgba(0, 0, 0, 0) 62%),
-      radial-gradient(780px 300px at 46% -12%, rgba(6, 81, 43, 0.55), rgba(0, 0, 0, 0) 68%),
-      radial-gradient(880px 460px at 80% 8%, rgba(182, 255, 86, 0.035), rgba(0, 0, 0, 0) 66%),
-      #111214;
+      radial-gradient(1100px 420px at 50% -14%, rgba(201, 169, 110, 0.09), rgba(0, 0, 0, 0) 70%),
+      radial-gradient(700px 640px at 108% 30%, rgba(255, 255, 255, 0.025), rgba(0, 0, 0, 0) 62%),
+      #0a0a0a;
 
-    /* Anchored to the viewport, not the element. The handoff draws this on a
-       fixed 1440x900 frame, so the radials are absolute pixel blobs at
-       percentage positions; this element grows to the full scroll height, and
-       without `fixed` those percentages push the emerald that should hug the
-       left edge into the middle of a long page.
-
-       This MUST stay after the `background` shorthand above. The shorthand
-       resets every background-* longhand, attachment included, so declaring
-       it first silently does nothing. */
+    /* Anchored to the viewport so the light stays at the top of the screen
+       on long pages. Must come after the `background` shorthand, which
+       resets every background-* longhand. */
     background-attachment: fixed;
   }
 
-  /* Phone uses the same colours at tighter radii. */
   @media (max-width: 767px) {
     .dash {
       background:
-        radial-gradient(420px 520px at -14% 28%, rgba(3, 209, 109, 0.15), rgba(0, 0, 0, 0) 62%),
-        radial-gradient(520px 300px at 58% 108%, rgba(3, 209, 109, 0.13), rgba(0, 0, 0, 0) 66%),
-        radial-gradient(380px 460px at 112% 22%, rgba(66, 220, 147, 0.1), rgba(0, 0, 0, 0) 62%),
-        radial-gradient(420px 220px at 46% -10%, rgba(6, 81, 43, 0.55), rgba(0, 0, 0, 0) 68%),
-        #111214;
-      /* Same rule as above: after the shorthand, never before. */
+        radial-gradient(520px 260px at 50% -10%, rgba(201, 169, 110, 0.1), rgba(0, 0, 0, 0) 70%),
+        #0a0a0a;
       background-attachment: fixed;
     }
   }
@@ -268,7 +252,7 @@
      them look like glowing slabs. `text-lime` links went white the same way.
      The storefront's base `a` rules are scoped away from .dash instead. */
   .dash ::selection {
-    background: rgba(182, 255, 86, 0.28);
+    background: rgba(201, 169, 110, 0.3);
   }
 
   /* Eyebrow — 9.5px/700 uppercase at +1.3 tracking. Used on every KPI. */

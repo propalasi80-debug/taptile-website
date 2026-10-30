@@ -57,51 +57,51 @@ export default {
          Everything else matches the handoff verbatim. No hex literals
          belong in dashboard components — add them here instead.
       --------------------------------------------------------------- */
-      deck: '#111214',
-      rail: '#0f1013',
-      panel: { DEFAULT: '#1e2126', top: '#23272d', bot: '#1c1f24' },
-      tile: { DEFAULT: '#262a30', top: '#2e323a', track: '#282f35' },
-      line: { DEFAULT: '#2a2f35', strong: '#343a43', row: '#252a31', rail: '#22262c' },
+      deck: '#0a0a0a',
+      rail: '#070707',
+      panel: { DEFAULT: '#121212', top: '#161616', bot: '#101010' },
+      tile: { DEFAULT: '#1a1a1a', top: '#1f1f1f', track: '#1d1d1d' },
+      line: { DEFAULT: '#222222', strong: '#2e2e2e', row: '#1b1b1b', rail: '#191919' },
 
-      /* UI accent. Marks exactly one thing per view. */
+      /* UI accent: gold. The token keeps its old name ("lime") so every
+         component that marks the one accented thing per view picks up the
+         new colour without being edited. Marks exactly one thing per view. */
       lime: {
-        DEFAULT: '#b6ff56',
-        light: '#d3ff8d',
-        mid: '#8ade33',
-        deep: '#4f9a00',
-        drop: '#96e63c',
-        ink: '#08120a',
+        DEFAULT: '#c9a96e',
+        light: '#e7d3a3',
+        mid: '#b08d4f',
+        deep: '#7d6232',
+        drop: '#bb9858',
+        ink: '#17130b',
       },
-      /* Ambient glow and chart fills only. Never a UI accent. */
-      emerald: { DEFAULT: '#03d16d', light: '#42dc93', dark: '#06512b', mid: '#4ade80' },
+      /* Ambient light and chart fills only. Neutral now, so gold stays the
+         single accent. Never a UI accent. */
+      emerald: { DEFAULT: '#a8a29e', light: '#d6d3d1', dark: '#1c1917', mid: '#e7e5e4' },
 
       ink: {
-        1: '#e8eaed',
-        2: '#c5cad2',
-        3: '#98a0aa',
-        4: '#858d97',
-        5: '#5a616a',
-        nav: '#aeb5bf',
+        1: '#f5f5f4',
+        2: '#d6d3d1',
+        3: '#a8a29e',
+        4: '#8f8a85',
+        5: '#5c5853',
+        nav: '#b5b0aa',
       },
-      status: { lime: '#b6ff56', blue: '#7dd3fc', rose: '#f0abfc', grey: '#aeb5bf' },
-      /* Off-state of a Toggle. Deliberately outside the ink scale — it is a
-         control surface, not text. */
-      toggle: { track: '#30363d', knob: '#8a919b' },
-      /* Rose border a short stock card wears. */
-      short: '#4a3340',
+      status: { lime: '#c9a96e', blue: '#cbd5e1', rose: '#f4a5a5', grey: '#a8a29e' },
+      toggle: { track: '#2a2a2a', knob: '#8f8a85' },
+      short: '#3d2626',
       alert: {
-        surface: '#2b1f24',
-        bot: '#201619',
-        line: '#45323a',
-        text: '#f0b6c4',
-        muted: '#b8949c',
-        ink: '#2a0b13',
+        surface: '#1f1414',
+        bot: '#170f0f',
+        line: '#3d2626',
+        text: '#f4b4b4',
+        muted: '#b39191',
+        ink: '#1f0909',
       },
       chart: {
-        1: '#b6ff56', 2: '#4ade80', 3: '#16a34a',
-        4: '#d9f99d', 5: '#03d16d', 6: '#86efac',
-        track: '#282f35',
-        grid: 'rgba(255,255,255,0.045)',
+        1: '#c9a96e', 2: '#e7e5e4', 3: '#8a8580',
+        4: '#e7d3a3', 5: '#57534e', 6: '#b08d4f',
+        track: '#1d1d1d',
+        grid: 'rgba(255,255,255,0.05)',
       },
       },
       fontFamily: {
@@ -137,20 +137,20 @@ export default {
         nav: '0 10px 30px rgba(0,0,0,.45)',
         panel: '0 20px 60px rgba(0,0,0,.45)',
         /* Dashboard elevation. */
-        card: 'inset 0 1px 0 rgba(255,255,255,0.055), 0 12px 32px rgba(0,0,0,0.5)',
-        'card-sm': 'inset 0 1px 0 rgba(255,255,255,0.05), 0 8px 20px rgba(0,0,0,0.45)',
+        card: 'inset 0 1px 0 rgba(255,255,255,0.04), 0 1px 2px rgba(0,0,0,0.6)',
+        'card-sm': 'inset 0 1px 0 rgba(255,255,255,0.04), 0 1px 2px rgba(0,0,0,0.6)',
         tile: 'inset 0 1px 0 rgba(255,255,255,0.045)',
         track: 'inset 0 1px 2px rgba(0,0,0,0.4)',
-        lime: '0 6px 20px rgba(182,255,86,0.28), inset 0 1px 0 rgba(255,255,255,0.35)',
-        'lime-sm': '0 5px 14px rgba(182,255,86,0.22)',
-        'lime-bar': '0 0 12px rgba(182,255,86,0.22)',
+        lime: '0 4px 14px rgba(201,169,110,0.18), inset 0 1px 0 rgba(255,255,255,0.3)',
+        'lime-sm': '0 3px 10px rgba(201,169,110,0.16)',
+        'lime-bar': '0 0 10px rgba(201,169,110,0.18)',
       },
       backgroundImage: {
-        'lime-grad': 'linear-gradient(135deg,#d3ff8d 0%,#b6ff56 48%,#96e63c 100%)',
-        'panel-grad': 'linear-gradient(168deg,#23272d 0%,#1e2126 55%,#1c1f24 100%)',
-        'tile-grad': 'linear-gradient(170deg,#2e323a 0%,#262a30 100%)',
-        'rail-grad': 'linear-gradient(180deg,rgba(3,209,109,0.08) 0%,rgba(0,0,0,0) 32%)',
-        'alert-grad': 'linear-gradient(168deg,#2b1f24 0%,#201619 100%)',
+        'lime-grad': 'linear-gradient(135deg,#e7d3a3 0%,#c9a96e 50%,#b08d4f 100%)',
+        'panel-grad': 'linear-gradient(180deg,#141414 0%,#111111 100%)',
+        'tile-grad': 'linear-gradient(180deg,#1c1c1c 0%,#181818 100%)',
+        'rail-grad': 'linear-gradient(180deg,rgba(201,169,110,0.05) 0%,rgba(0,0,0,0) 30%)',
+        'alert-grad': 'linear-gradient(180deg,#1f1414 0%,#170f0f 100%)',
         'alert-btn': 'linear-gradient(135deg,#f0779a 0%,#d63f68 100%)',
       },
       /* The dashboard motion table (§9) uses 120ms and 140ms, neither of

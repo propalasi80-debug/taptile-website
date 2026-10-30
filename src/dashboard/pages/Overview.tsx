@@ -160,9 +160,9 @@ export default function Overview() {
           <CardTitle>What is not here yet</CardTitle>
           <p className="text-[11.5px] leading-[1.65] text-ink-3">
             Revenue, Orders, Costs and Production are empty on purpose. They used to render
-            figures from the design handoff — revenue, a run of orders, an expense ledger, stock
-            counts — and none of it was real. Nothing has sold, so those pages stay empty until
-            something backs them.
+            figures from the design handoff — revenue, a run of orders, an expense ledger — and
+            none of it was real. Nothing has sold, so those pages stay empty until something
+            backs them. Stock is real: it lives on Inventory.
           </p>
         </Card>
       </PageBody>

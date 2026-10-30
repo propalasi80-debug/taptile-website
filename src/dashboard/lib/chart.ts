@@ -7,23 +7,23 @@
  * classes. They mirror `colors.chart` in the config — change both together.
  */
 export const CHART = {
-  series: ['#b6ff56', '#4ade80', '#16a34a', '#d9f99d', '#03d16d', '#86efac'],
+  series: ['#c9a96e', '#e7e5e4', '#8a8580', '#e7d3a3', '#a8a29e', '#b08d4f'],
   track: '#282f35',
   grid: 'rgba(255,255,255,0.045)',
   axis: '#858d97',
-  lime: '#b6ff56',
-  limeLight: '#d3ff8d',
-  limeMid: '#8ade33',
-  emerald: '#03d16d',
-  emeraldMid: '#4ade80',
+  lime: '#c9a96e',
+  limeLight: '#e7d3a3',
+  limeMid: '#b08d4f',
+  emerald: '#a8a29e',
+  emeraldMid: '#e7e5e4',
 } as const;
 
 /** Avatar palette — [background, foreground]. §2.5. */
 export const AVATAR_TONES: readonly (readonly [string, string])[] = [
-  ['#2c3a1c', '#d8f8ae'],
-  ['#343a20', '#e6f7b8'],
-  ['#22343a', '#a8dbe8'],
-  ['#38303c', '#e8c2dd'],
-  ['#2f3320', '#e6f7b8'],
-  ['#233a2a', '#b8f0cc'],
+  ['#2a241a', '#e7d3a3'],
+  ['#232323', '#e7e5e4'],
+  ['#1f1f1f', '#d6d3d1'],
+  ['#2a241a', '#c9a96e'],
+  ['#262626', '#f5f5f4'],
+  ['#1c1c1c', '#c9a96e'],
 ];

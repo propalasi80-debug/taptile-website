@@ -163,13 +163,13 @@ export function Chip({
       className={cn(
         'inline-flex h-[30px] items-center gap-[6px] rounded-chip px-[11px] text-[11.5px] transition-[background,color,box-shadow] duration-120',
         active
-          ? 'on-lime bg-lime-grad font-bold text-lime-ink shadow-lime-sm'
+          ? 'bg-ink-1 font-bold text-deck'
           : 'border border-line-strong bg-tile-grad font-semibold text-ink-2 hover:text-ink-1',
       )}
     >
       {label}
       {count !== undefined && (
-        <span className={cn('text-[10.5px]', active ? 'text-lime-ink/70' : 'text-ink-4')}>
+        <span className={cn('text-[10.5px]', active ? 'text-deck/60' : 'text-ink-4')}>
           {count}
         </span>
       )}
@@ -197,7 +197,7 @@ export function Tab({
       className={cn(
         'inline-flex h-[34px] items-center gap-[7px] rounded-chip px-[13px] text-[12px] transition-[background,color,box-shadow] duration-120',
         active
-          ? 'on-lime bg-lime-grad font-bold text-lime-ink shadow-lime'
+          ? 'bg-ink-1 font-bold text-deck'
           : 'border border-line-strong bg-tile-grad font-semibold text-ink-2 hover:text-ink-1',
       )}
     >
@@ -713,8 +713,8 @@ export function Bar({
           className="h-full rounded-[8px] transition-[width] duration-300"
           style={{
             width: `${Math.max(0, Math.min(100, pct))}%`,
-            background: colour ?? 'linear-gradient(90deg,#8ade33,#b6ff56)',
-            boxShadow: active ? '0 0 12px rgba(182,255,86,0.22)' : undefined,
+            background: colour ?? 'linear-gradient(90deg,#b08d4f,#c9a96e)',
+            boxShadow: active ? '0 0 12px rgba(201,169,110,0.22)' : undefined,
             opacity: active ? 1 : 0.28,
           }}
         />
