@@ -11,58 +11,47 @@ Ordered by risk. "Now" means the site is saying it today.
 
 ---
 
-## 1. The terms and the dashboard disagree about who runs Taptile — NOW
+## 1. Who the seller is — ANSWERED 30 Oct, one loose end
 
-- `src/content/legal/terms.md` §1 says: no registered company, two individuals
-  trading in their own names, **both under 18**.
-- `src/dashboard/mock/index.ts` launch gates 3 and 4 are marked **done**:
-  "Company registered, both founders on the paperwork" and "Business account
-  open, processor approved for pre-orders".
+Confirmed: the sellers are Palasi and Jenil, both under 18, trading in their own
+names, based in the Manawatū. Terms §1 already says this (the town was
+deliberately left out: the region is enough to say who customers deal with, and
+you're both minors).
 
-One of these is wrong. The public terms must describe who customers are
-actually contracting with. If an adult or a company is now involved, the terms
-need rewriting before anything else. If you are both still under 18:
-
-- Payment processors (Stripe included) generally require the account holder to
-  be 18+. An adult (parent or guardian) usually has to hold the account.
+Still open:
+- Launch gates 3 and 4 in `src/dashboard/mock/index.ts` are marked **done**
+  ("Company registered", "processor approved"). That contradicts the above.
+  Decide what they should say.
+- Payment processors (Stripe included) generally require an 18+ account
+  holder. Before pre-orders, an adult (parent or guardian) will probably need to
+  hold the payment account. That changes who the legal seller is, so terms §1
+  would need rewriting at that point.
 - Contracts with minors can be reviewed or cancelled under Part 6 of the
-  Contract and Commercial Law Act 2017. The terms already disclose this, which
-  is good.
+  Contract and Commercial Law Act 2017. The terms disclose this.
 
-**Decide:** who is the legal seller? Then update terms §1 and the gates.
+## 2. Where it's made — FIXED on the branch
 
-## 2. "Designed and assembled in New Zealand" — NOW
+The PCBs are made and assembled by JLCPCB overseas, and final assembly
+happens in New Zealand. Public copy now says "Designed in New Zealand · Final
+assembly in New Zealand" (footer) and "Designed in New Zealand" (search
+description). It never says "Made in New Zealand". The copy rules in
+`src/dashboard/copyRules.ts` were updated to match. Crediting design tools
+(including AI) isn't required.
 
-Shown in the footer on every page and in the home page's search/social
-description (`src/pages/Landing.tsx`, `src/site/chrome.tsx`). Nothing has been
-assembled yet (`docs/HANDOFF.md`: "Nothing has been ordered"). A claim about
-where a product is made is covered by the **Fair Trading Act 1986**, and your
-own launch gate 5 lists "no unearned origin claim".
+## 3. The configurator — FIXED on the branch
 
-"Designed in New Zealand" is true today. "Assembled in New Zealand" becomes
-true once you're actually assembling here.
+Terms and privacy now say the site is a waitlist and development updates only,
+that the configurator isn't released yet, and that it's planned as a browser
+tool and a desktop application. Both documents promise an update before it
+ships. The privacy policy needs a real description of what the desktop app
+sends, if anything, before release.
 
-**Decide:** change to "Designed in New Zealand" until assembly starts? (I can
-make the edit; I haven't, because it changes public copy.)
+## 4. "One email… nothing else" — CHECKED, holds today
 
-## 3. The configurator is in the terms and privacy policy but not on the site — NOW
-
-Terms §5 and the privacy policy describe a browser configurator. There is no
-`/configurator` route in `src/App.tsx`. Describing a feature that isn't there
-isn't dangerous in itself, but it's inaccurate.
-
-**Decide:** is the configurator coming back? If not soon, mark those sections
-"coming later".
-
-## 4. The waitlist promises "one email… nothing else" — NOW
-
-The form says "One email when the first batch is ready. No payment." and "We
-will email you … Nothing else." Under the **Unsolicited Electronic Messages Act
-2007**, consent covers what you told people. Sending devlog updates or marketing
-to the waitlist would break that promise.
-
-**Do:** only send waitlist members what they signed up for, or change the
-wording before collecting more emails.
+No code emails the waitlist about updates or anything else. The only waitlist
+emails are the signup confirmation and the leave confirmation. Keep it that
+way: when the full shop launches, send exactly one "it's ready" email, and ask
+people to opt in to anything more.
 
 ## 5. Privacy policy corrections — fixed on the `inventory-tracker` branch, not published
 
@@ -81,7 +70,8 @@ wording before collecting more emails.
   `[FILL IN]` is a decision.
 - **Pre-order delays** — the Fair Trading Act prohibits accepting payment when
   you have no reasonable grounds to believe you can supply in the time stated.
-  Don't publish a ship window until gate 8 clears. The returns draft gives a
+  There's no public release date, which is right. 25 units are built; cables
+  and boxes are the only gap (tracked in Admin → Inventory). The returns draft gives a
   full refund on any delay; keep that.
 - **GST** — registration is compulsory once turnover passes NZ$60,000 in 12
   months; below that, prices must not say "incl. GST" unless you're registered.
@@ -110,7 +100,15 @@ October 2026:
 
 Draft statement: `docs/policies/accessibility.md`.
 
-## 8. Admin dashboard
+## 8. Supabase
+
+The live database has only `waitlist`, `admins`, `updates` and now the two
+inventory tables. Migration `0001_team_and_messaging.sql` (profiles,
+messaging) was **never applied**, so the admin Messages and Team pages can't
+work yet. Also worth turning on: leaked-password protection in Supabase Auth
+(Authentication → Passwords).
+
+## 9. Admin dashboard
 
 The Messages tab showed "3 unread" permanently. The number was hard-coded. It's
 removed on the `inventory-tracker` branch.

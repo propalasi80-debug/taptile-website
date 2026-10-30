@@ -52,6 +52,9 @@ import { currency, number, relative } from '../lib/format';
 import { Close, Minus, Package, Plus, Refresh } from '../icons';
 import {
   buildable,
+  buildParts,
+  readyToShip,
+  shipParts,
   CATEGORIES,
   deleteItem,
   REASONS,
@@ -120,10 +123,17 @@ export default function Inventory() {
   }, [items, query, category]);
 
   const canBuild = buildable(items);
-  const needsAttention = items.filter((item) => stockState(item) !== 'ok' && item.per_unit > 0);
+  const needsAttention = items.filter(
+    (item) => item.category !== 'finished' && item.per_unit > 0 && stockState(item) !== 'ok',
+  );
   const costed = items.filter((item) => item.unit_cost !== null);
   const stockValue = costed.reduce((sum, item) => sum + item.on_hand * (item.unit_cost ?? 0), 0);
-  const bom = items.filter((item) => item.per_unit > 0);
+  const bom = buildParts(items);
+  const kit = shipParts(items);
+  const finishedUnits = items
+    .filter((item) => item.category === 'finished')
+    .reduce((sum, item) => sum + item.on_hand, 0);
+  const canShip = readyToShip(items);
   const run = FIGURES.runSize;
 
   /* ------------------------------------------------------------ actions --- */
@@ -236,15 +246,21 @@ export default function Inventory() {
     {
       key: 'item',
       label: 'Item',
-      span: 4,
+      span: 5,
       render: (item) => (
         <span className="min-w-0">
           <span className="block truncate font-semibold text-ink-1" title={item.name}>
             {item.name}
           </span>
+          {/* The count is repeated here so it survives a phone-width table. */}
           <span className="block truncate text-[10.5px] text-ink-4">
-            {[item.sku, item.supplier].filter(Boolean).join(' · ') ||
-              `Updated ${relative(item.updated_at)}`}
+            {[
+              `${number(item.on_hand)} on hand`,
+              item.per_unit > 0 ? `${item.per_unit} per unit` : '',
+              item.supplier,
+            ]
+              .filter(Boolean)
+              .join(' · ')}
           </span>
         </span>
       ),
@@ -261,15 +277,6 @@ export default function Inventory() {
       span: 2,
       align: 'right',
       render: (item) => <span className="font-bold text-ink-1">{number(item.on_hand)}</span>,
-    },
-    {
-      key: 'per_unit',
-      label: 'Per unit',
-      span: 1,
-      align: 'right',
-      render: (item) => (
-        <span className="text-ink-3">{item.per_unit > 0 ? `× ${item.per_unit}` : '—'}</span>
-      ),
     },
     {
       key: 'actions',
@@ -339,16 +346,18 @@ export default function Inventory() {
         rail={
           <>
             <Card pad={16}>
-              <CardTitle>{`For the first run of ${run}`}</CardTitle>
+              <CardTitle>{`To ship the first ${run}`}</CardTitle>
               {loadingFirst ? (
                 <Skeleton height={120} />
-              ) : bom.length === 0 ? (
-                <p className="text-[11.5px] text-ink-4">
-                  Give an item a "per unit" figure and it shows here.
-                </p>
               ) : (
                 <div className="flex flex-col gap-[12px]">
-                  {bom.map((item) => {
+                  <Bar
+                    label="Finished units"
+                    value={`${number(finishedUnits)} / ${number(run)}`}
+                    pct={(finishedUnits / run) * 100}
+                    active={finishedUnits < run}
+                  />
+                  {kit.map((item) => {
                     const need = item.per_unit * run;
                     return (
                       <Bar
@@ -360,6 +369,17 @@ export default function Inventory() {
                       />
                     );
                   })}
+                  {kit.length === 0 && (
+                    <p className="text-[11.5px] text-ink-4">
+                      Add the cable and box as "Ships with" items to see what is short.
+                    </p>
+                  )}
+                  <p className="text-[11px] text-ink-4">
+                    {kit
+                      .filter((item) => item.on_hand < item.per_unit * run)
+                      .map((item) => `${number(item.per_unit * run - item.on_hand)} more ${item.name}`)
+                      .join(', ') || 'Nothing short for the run.'}
+                  </p>
                 </div>
               )}
             </Card>
@@ -391,6 +411,7 @@ export default function Inventory() {
               <ul className="flex list-disc flex-col gap-[6px] pl-4 text-[11.5px] text-ink-4">
                 <li>Counts only change by recording what happened, so each one has a history.</li>
                 <li>"Per unit" is how many go into one Taptile. It drives "Can build".</li>
+                <li>"Ships with" items (cable, box) are counted per shipped unit and drive "Ready to ship".</li>
                 <li>"Low" shows at or below the reorder level. Set it to 0 to turn it off.</li>
                 <li>Got it wrong? Use Undo on the confirmation line, or record a recount.</li>
               </ul>
@@ -424,11 +445,11 @@ export default function Inventory() {
           </div>
         )}
 
-        <div className="grid grid-cols-1 gap-[14px] sm:grid-cols-2 xl:grid-cols-4">
+        <div className="grid grid-cols-2 gap-[14px] xl:grid-cols-4">
           <Kpi
             label="Can build"
             value={loadingFirst ? '—' : canBuild === null ? '—' : number(canBuild)}
-            sub={canBuild === null ? 'No build list yet' : `of ${run} in the first run`}
+            sub={canBuild === null ? 'No build list yet' : 'more, from parts on the shelf'}
           />
           <Kpi
             label="Needs attention"
@@ -436,9 +457,13 @@ export default function Inventory() {
             sub={needsAttention.length === 0 ? 'Nothing out or low' : 'parts out or low'}
           />
           <Kpi
-            label="Items tracked"
-            value={loadingFirst ? '—' : number(items.length)}
-            sub={`${number(bom.length)} in the build`}
+            label="Ready to ship"
+            value={loadingFirst || canShip === null ? '—' : number(canShip)}
+            sub={
+              canShip === null
+                ? 'Nothing marked Finished'
+                : `of ${number(finishedUnits)} finished`
+            }
           />
           <Kpi
             label="Stock value"
@@ -820,11 +845,10 @@ function BuildCard({
   const [count, setCount] = useState('1');
   const parsed = wholeNumber(count);
   const problem =
-    parsed === undefined || parsed === 0
-      ? 'Enter 1 or more.'
-      : canBuild !== null && parsed > canBuild
-        ? `Parts on hand make ${number(canBuild)}.`
-        : undefined;
+    parsed === undefined || parsed === 0 ? 'Enter 1 or more.' : undefined;
+  // Not enough parts is a state, not a mistake: say it neutrally and disable
+  // the button, rather than showing a red error before anything was typed.
+  const tooMany = parsed !== undefined && canBuild !== null && parsed > canBuild;
 
   if (canBuild === null) return null;
 
@@ -840,12 +864,13 @@ function BuildCard({
         value={count}
         onChange={setCount}
         error={count.trim() === '' ? undefined : problem}
+        hint={problem ? undefined : `Parts on the shelf make ${number(canBuild)}.`}
       />
       <Button
         className="mt-[10px] w-full"
         size="sm"
         loading={busy}
-        disabled={busy || problem !== undefined}
+        disabled={busy || problem !== undefined || tooMany}
         onClick={() => {
           if (
             parsed &&

@@ -540,7 +540,7 @@ export function SearchField({
         )}
       />
       {kbd && (
-        <kbd className="pointer-events-none absolute right-[8px] rounded-[5px] border border-line-strong bg-tile px-[5px] py-[1px] text-[9.5px] font-semibold text-ink-4">
+        <kbd className="pointer-events-none absolute right-[8px] rounded-[5px] border border-line-strong bg-tile px-[5px] py-[1px] text-[9.5px] font-semibold text-ink-3">
           {kbd}
         </kbd>
       )}

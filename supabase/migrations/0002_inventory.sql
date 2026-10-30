@@ -103,19 +103,33 @@ drop policy if exists inventory_movements_admin_insert on public.inventory_movem
 create policy inventory_movements_admin_insert on public.inventory_movements
   for insert to authenticated with check (public.is_admin());
 
--- Seed the build list from hardware/BOM.md with nothing on hand. Quantities
--- per unit are the design; the counts are left at zero because nobody has
--- counted anything yet. Skipped if the table already has rows.
-insert into public.inventory_items (name, category, per_unit, notes)
-select * from (values
-  ('PCB',                         'part',     1, '2-layer, 70 x 120 mm. JLCPCB minimum order is 5.'),
-  ('Key switch (MX-compatible)',  'part',     9, '5-pin.'),
-  ('Rotary encoder (EC11)',       'part',     2, 'Vertical, 20 mm shaft, with push switch.'),
-  ('Controller module (KB2040)',  'part',     1, 'RP2040, Pro Micro form factor.'),
-  ('Female header 1x12',          'part',     2, '2.54 mm pitch. Socket for the module.'),
-  ('Printed case',                'case',     1, ''),
-  ('Keycap',                      'case',     9, ''),
-  ('Knob',                        'case',     2, ''),
-  ('Taptile Mini, assembled',     'finished', 0, 'Finished units ready to ship.')
-) as seed (name, category, per_unit, notes)
-where not exists (select 1 from public.inventory_items);
+-- Seed the build list from hardware/BOM.md. Quantities per unit are the
+-- design. Part counts start at zero because nobody has counted the shelf yet;
+-- the one number that is known is the 25 finished boards of the first run,
+-- recorded as a movement so it has a history like every other change.
+-- Skipped entirely if the table already has rows.
+do $$
+begin
+  if exists (select 1 from public.inventory_items) then
+    return;
+  end if;
+
+  insert into public.inventory_items (name, category, per_unit, notes) values
+    ('PCB',                         'part',      1, 'Made and assembled by JLCPCB. 2-layer, 70 x 120 mm.'),
+    ('Key switch (MX-compatible)',  'part',      9, '5-pin.'),
+    ('Rotary encoder (EC11)',       'part',      2, 'Vertical, 20 mm shaft, with push switch.'),
+    ('Controller module (KB2040)',  'part',      1, 'RP2040, Pro Micro form factor.'),
+    ('Female header 1x12',          'part',      2, '2.54 mm pitch. Socket for the module.'),
+    ('Printed case',                'case',      1, ''),
+    ('Keycap',                      'case',      9, ''),
+    ('Knob',                        'case',      2, ''),
+    ('USB-C cable',                 'packaging', 1, 'One in every box.'),
+    ('Box',                         'packaging', 1, 'Shipping package.'),
+    ('Taptile Dialect, assembled',  'finished',  0, 'Built, tested and ready to pack.');
+
+  insert into public.inventory_movements (item_id, delta, reason, note)
+  select id, 25, 'received', 'First run, built before tracking started'
+  from public.inventory_items
+  where name = 'Taptile Dialect, assembled';
+end;
+$$;

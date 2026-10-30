@@ -1,4 +1,4 @@
-**In short:** we collect your email address if you join the waitlist or create an account, and nothing more than that. We run no analytics or trackers of any kind. Your keymaps and macros never leave your browser. Waitlist and account data is stored on Supabase's servers in the United Kingdom. You can ask to see or correct what we hold at any time by emailing support@trytaptile.com.
+**In short:** we collect your email address if you join the waitlist or create an account, and nothing more than that. We run no analytics or trackers of any kind. The configurator isn't released yet; it's being built so your keymaps stay on your device. Waitlist and account data is stored on Supabase's servers in the United Kingdom. You can ask to see or correct what we hold at any time by emailing support@trytaptile.com.
 
 ## No analytics, no tracking
 
@@ -15,7 +15,7 @@ Taptile runs no analytics of any kind — no Google Analytics, Plausible, PostHo
 ## What we don't collect
 
 - No payment details. Checkout isn't connected yet — there's no server endpoint and no payment processor set up for this project.
-- No keystroke data. The configurator talks to your device over WebHID entirely inside your browser and makes no network requests at all. Whatever you map your keys to stays on your computer — we never see it, and couldn't if we wanted to.
+- No keystroke data. Nothing on this site reads what you type on a keyboard.
 - No advertising or tracking cookies, from us or from anyone else.
 
 ## Cookies and browser storage
@@ -30,7 +30,7 @@ None of these require your consent under the law, so we don't show you a cookie 
 
 ## The configurator
 
-If you use the browser-based configurator to remap keys or build macros, none of that leaves your device. It talks to your keyboard directly over WebHID inside the browser tab, and makes no network requests while it does. We built it this way on purpose — we don't want your keymaps, and this is the most direct way to guarantee we never see them.
+The configurator isn't released yet. It's planned as a browser tool and a desktop application, and both are being designed so your keymaps and macros stay on your device — we don't want them. Before either is released, we'll update this policy to say exactly what it does and doesn't send.
 
 ## Who else sees your information
 
@@ -82,4 +82,4 @@ Questions, access requests, corrections, or complaints: **support@trytaptile.com
 
 ---
 
-Last updated: 12 October 2026
+Last updated: [FILL IN on publish]

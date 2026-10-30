@@ -19,7 +19,7 @@ export type Reason = 'received' | 'used' | 'adjusted' | 'damaged';
 export const CATEGORIES: { value: Category; label: string }[] = [
   { value: 'part', label: 'Parts' },
   { value: 'case', label: 'Case & caps' },
-  { value: 'packaging', label: 'Packaging' },
+  { value: 'packaging', label: 'Ships with' },
   { value: 'finished', label: 'Finished' },
 ];
 
@@ -142,11 +142,35 @@ export async function recordMovement(
   return { ok: false, error: 'Could not record that. You may not have admin access.' };
 }
 
+/**
+ * Parts that go inside the board. "Ships with" items (cable, box) are per
+ * shipped unit, not per build, so they are counted by readyToShip instead.
+ */
+export function buildParts(items: InventoryItem[]): InventoryItem[] {
+  return items.filter((item) => item.per_unit > 0 && item.category !== 'packaging');
+}
+
+export function shipParts(items: InventoryItem[]): InventoryItem[] {
+  return items.filter((item) => item.per_unit > 0 && item.category === 'packaging');
+}
+
 /** Finished units the parts on hand can make. Null when nothing is in the build. */
 export function buildable(items: InventoryItem[]): number | null {
-  const bom = items.filter((item) => item.per_unit > 0);
+  const bom = buildParts(items);
   if (bom.length === 0) return null;
   return Math.min(...bom.map((item) => Math.floor(item.on_hand / item.per_unit)));
+}
+
+/**
+ * Finished units that can go out the door today: limited by finished stock and
+ * by whatever ships in the box with them. Null when nothing is marked Finished.
+ */
+export function readyToShip(items: InventoryItem[]): number | null {
+  const finished = items.filter((item) => item.category === 'finished');
+  if (finished.length === 0) return null;
+  const units = finished.reduce((sum, item) => sum + item.on_hand, 0);
+  const kit = shipParts(items).map((item) => Math.floor(item.on_hand / item.per_unit));
+  return Math.min(units, ...kit);
 }
 
 export type StockState = 'out' | 'low' | 'ok';

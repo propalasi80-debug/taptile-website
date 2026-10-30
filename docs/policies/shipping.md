@@ -7,7 +7,7 @@
 
 ---
 
-**The short version:** we ship from Auckland to [FILL IN: New Zealand only /
+**The short version:** we ship from the Manawatū to [FILL IN: New Zealand only /
 NZ and Australia / worldwide]. Pre-orders ship in the order they were placed.
 You get a tracking number the day yours leaves.
 

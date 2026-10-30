@@ -106,7 +106,7 @@ export const SPEC = [
   { label: 'Switches', value: 'MX-compatible' },
   { label: 'LEDs', value: '13, underglow (underside)' },
   { label: 'MCU', value: 'RP2040' },
-  { label: 'Assembly', value: 'New Zealand' },
+  { label: 'Assembly', value: 'PCB by JLCPCB, final assembly in New Zealand' },
 ];
 
 export const HELP_TOPICS = [

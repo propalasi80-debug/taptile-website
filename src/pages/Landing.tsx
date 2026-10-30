@@ -6,15 +6,15 @@ import { WaitlistForm } from '../site/Waitlist';
  * past before you can join.
  *
  * Copy rules (checked by scripts/check-copy.sh): the 13 LEDs are underglow
- * only and the keys stay dark; MX-compatible; designed and assembled in New
- * Zealand; no price or ship date.
+ * only and the keys stay dark; MX-compatible; designed in New Zealand,
+ * final assembly in New Zealand (the PCBs are assembled by JLCPCB); no price or ship date.
  */
 export default function Landing() {
   return (
     <>
       <Seo
         title="Taptile Dialect — join the waitlist"
-        description="Taptile Dialect: nine keys, two knobs and underglow. Designed and assembled in New Zealand. Join the waitlist for the first batch."
+        description="Taptile Dialect: nine keys, two knobs and underglow. Designed in New Zealand. Join the waitlist for the first batch."
         path="/"
         image="/og.jpg"
       />
