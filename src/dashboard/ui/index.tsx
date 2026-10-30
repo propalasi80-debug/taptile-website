@@ -263,7 +263,7 @@ function Spinner() {
 export function IconButton({
   icon: IconCmp,
   label,
-  round = true,
+  round = false,
   tone = 'ghost',
   onClick,
   disabled,
@@ -326,7 +326,7 @@ export function Avatar({
       aria-hidden="true"
       className={cn(
         'inline-flex shrink-0 items-center justify-center font-bold',
-        square ? 'rounded-tile' : 'rounded-full',
+        square ? 'rounded-tile' : 'rounded-[3px]',
       )}
       style={{
         width: size,
@@ -533,7 +533,7 @@ export function SearchField({
         )}
       />
       {kbd && (
-        <kbd className="pointer-events-none absolute right-[8px] rounded-[5px] border border-line-strong bg-tile px-[5px] py-[1px] text-[9.5px] font-semibold text-ink-3">
+        <kbd className="pointer-events-none absolute right-[8px] rounded-[3px] border border-line-strong bg-tile px-[5px] py-[1px] text-[9.5px] font-semibold text-ink-3">
           {kbd}
         </kbd>
       )}
@@ -738,7 +738,7 @@ export function StackedBar({
       {segments.map((segment) => (
         <div
           key={segment.label}
-          className="h-full rounded-[6px] transition-[opacity,width] duration-200"
+          className="h-full rounded-[2px] transition-[opacity,width] duration-200"
           style={{
             width: `${segment.pct}%`,
             background: segment.colour,

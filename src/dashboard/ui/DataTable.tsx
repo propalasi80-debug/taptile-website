@@ -73,7 +73,7 @@ export function DataTable<T>({
     <div role="table" className="w-full">
       <div
         role="row"
-        className="grid grid-cols-12 gap-[10px] rounded-[8px] bg-white/[0.025] px-[12px] py-[9px]"
+        className="grid grid-cols-12 gap-[10px] rounded-[3px] bg-white/[0.025] px-[12px] py-[9px]"
       >
         {columns.map((column) => (
           <div

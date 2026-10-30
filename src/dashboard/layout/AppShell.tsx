@@ -104,7 +104,7 @@ function Sidebar({
         className={cn('flex items-center gap-[10px]', collapsed ? 'justify-center' : 'px-[6px]')}
       >
         <span
-          className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-[6px] border border-line-strong text-[13px] font-semibold text-lime"
+          className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-[3px] border border-line-strong text-[13px] font-semibold text-lime"
           aria-hidden="true"
         >
           T

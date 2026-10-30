@@ -210,7 +210,7 @@ export default function Launch() {
                   onClick={() => cycle(index)}
                   aria-label={`${gate.title}. Currently ${STATE_LABEL[state].toLowerCase()}. Activate to cycle.`}
                   className={cn(
-                    'flex items-center gap-[12px] rounded-[8px] px-[10px] py-[13px] text-left transition-colors duration-100',
+                    'flex items-center gap-[12px] rounded-[3px] px-[10px] py-[13px] text-left transition-colors duration-100',
                     index < GATES.length - 1 && 'border-b border-line-row',
                     state === 'done' && 'bg-lime/[0.045]',
                     'hover:bg-white/[0.025]',
@@ -218,7 +218,7 @@ export default function Launch() {
                 >
                   <span
                     className={cn(
-                      'inline-flex h-[22px] w-[22px] shrink-0 items-center justify-center rounded-full text-[10px] font-bold',
+                      'inline-flex h-[22px] w-[22px] shrink-0 items-center justify-center rounded-[3px] text-[10px] font-bold',
                       state === 'done' && 'bg-lime text-lime-ink',
                       state === 'prog' && 'bg-status-blue/[0.18] text-status-blue',
                       state === 'block' && 'bg-status-rose/[0.18] text-status-rose',

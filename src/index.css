@@ -211,12 +211,8 @@
   .dash {
     @apply font-dash text-ink-1;
 
-    /* Near-black with one faint lift at the top, so the page has a light
-       source without any colour wash. */
-    background:
-      radial-gradient(1200px 520px at 50% -22%, rgba(255, 255, 255, 0.045), rgba(0, 0, 0, 0) 70%),
-      #080808;
-    background-attachment: fixed;
+    /* Flat near-black. Cards and hairlines carry the structure. */
+    background: #080808;
   }
 
   /* A removed focus ring on this ground is invisible, not subtle. */
