@@ -1,4 +1,4 @@
-repo: palasi12/Keyboard
+repo: palasi12/taptile-website
 branch: main
 
 ## Last sync

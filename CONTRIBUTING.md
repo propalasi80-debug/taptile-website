@@ -10,13 +10,13 @@ Do this once.
    - [VS Code](https://code.visualstudio.com)
 
 2. **Accept the GitHub invite** — check your email, or go to
-   https://github.com/palasi12/Keyboard and accept the banner.
+   https://github.com/palasi12/taptile-website and accept the banner.
 
 3. **Clone the repo**
 
    ```bash
-   git clone https://github.com/palasi12/Keyboard.git
-   cd Keyboard
+   git clone https://github.com/palasi12/taptile-website.git
+   cd taptile-website
    ```
 
 4. **Tell git who you are** (inside this folder, no `--global`)
