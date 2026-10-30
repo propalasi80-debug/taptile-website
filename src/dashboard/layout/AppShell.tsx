@@ -25,7 +25,7 @@ import {
   titleFor,
 } from './nav';
 import { Avatar, IconButton, SampleChip, LiveChip, SearchField } from '../ui';
-import { ChevronDown, Close, Dots, Download, Grid, Refresh, Bell } from '../icons';
+import { ChevronDown, Close, Dots, Grid, Refresh } from '../icons';
 
 /* -------------------------------------------------------------- sidebar --- */
 
@@ -186,7 +186,7 @@ function Sidebar({
             <>
               <span className="min-w-0 flex-1">
                 <span className="block truncate text-[11.5px] font-bold text-ink-1">{email}</span>
-                <span className="block text-[9.5px] text-ink-4">Owner · 2 seats</span>
+                <span className="block text-[9.5px] text-ink-4">Admin</span>
               </span>
               <span className="text-ink-4">
                 <ChevronDown size={13} />
@@ -274,8 +274,6 @@ function Topbar({ onOpenNav }: { onOpenNav: () => void }) {
 
       <div className="flex shrink-0 items-center gap-[7px]">
         <IconButton icon={Refresh} label="Refresh data" onClick={() => window.location.reload()} />
-        <IconButton icon={Bell} label="Notifications" />
-        <IconButton icon={Download} label="Export" />
       </div>
     </header>
   );

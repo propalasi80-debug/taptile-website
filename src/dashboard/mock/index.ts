@@ -84,7 +84,7 @@ export const GATES: Gate[] = [
   },
   {
     title: 'Ship window set',
-    detail: 'Blocked on case printing. Do not publish a date until 25 of 25 are printed.',
+    detail: '25 built. Waiting on 25 USB-C cables and 25 boxes (see Inventory). No public date until they are in.',
     owner: 'Owner',
     state: 'block',
   },
@@ -103,7 +103,7 @@ export const GATES: Gate[] = [
 export const SPEC = [
   { label: 'Keys', value: '9' },
   { label: 'Encoders', value: '2 dials' },
-  { label: 'Switches', value: 'MX-compatible' },
+  { label: 'Switches', value: 'MX-compatible, hot-swap' },
   { label: 'LEDs', value: '13, underglow (underside)' },
   { label: 'MCU', value: 'RP2040' },
   { label: 'Assembly', value: 'PCB by JLCPCB, final assembly in New Zealand' },

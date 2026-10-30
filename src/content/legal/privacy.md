@@ -82,4 +82,4 @@ Questions, access requests, corrections, or complaints: **support@trytaptile.com
 
 ---
 
-Last updated: [FILL IN on publish]
+Last updated: 30 October 2026

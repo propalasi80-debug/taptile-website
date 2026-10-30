@@ -1,4 +1,4 @@
-**The short version:** Taptile is pre-launch. Right now this site is only a waitlist and development updates — nothing is for sale, nothing has shipped and we're not taking payments. Joining the waitlist doesn't commit either of us to anything. The configurator isn't released yet. We're two people trading in our own names, not a company, and we're both currently under 18 — which matters legally, so we say so here rather than leaving you to find out later. New Zealand law governs these terms.
+**The short version:** Taptile is pre-launch. Right now this site is only a waitlist and development updates — nothing is for sale, nothing has shipped and we're not taking payments. Joining the waitlist doesn't commit either of us to anything, and you don't need an account. The configurator isn't released yet. We're two people trading in our own names, not a company, and we're both currently under 18 — which matters legally, so we say so here rather than leaving you to find out later. New Zealand law governs these terms.
 
 ## 1. Who you're dealing with
 
@@ -16,7 +16,7 @@ Joining the waitlist is not placing an order. It doesn't commit you to anything,
 
 ## 4. Accounts
 
-You can create one account per person. Keep your password to yourself — you're responsible for what happens under your account if you don't. Either you or we can close your account at any time; if we close it, we'll tell you why.
+Accounts on this site are for the Taptile team only, to publish updates. There's nothing to sign up for as a visitor — the waitlist doesn't need an account. Customer accounts may come with the full shop at release, and these terms will be updated before they do.
 
 ## 5. The configurator
 
@@ -52,4 +52,4 @@ Nothing in these terms excludes or limits our liability for death or personal in
 
 ---
 
-Last updated: [FILL IN on publish]
+Last updated: 30 October 2026

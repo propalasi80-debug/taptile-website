@@ -120,10 +120,9 @@ You solder those to the module; it then plugs into the female sockets on the PCB
 module can be pulled out and reused if the first board revision is wrong. Costs
 about 4mm of height. On a first prototype this is worth it.
 
-**Switches are direct-solder, not hot-swap.** Decided 15 Aug on cost grounds
-(Kailh sockets add ~NZ$4-6). This means the switches are permanent. Changing
-switch type later means a new board — about NZ$8 for five from JLCPCB, so not a
-disaster, but worth knowing.
+**Switches are hot-swap.** The 15 Aug plan was direct-solder to save the Kailh
+sockets (~NZ$4-6 a board); the first run of 25 was built hot-swap instead
+(confirmed 30 Oct). Add the sockets to this BOM with their real cost.
 
 **Buy spares of the cheap things.** Encoders and modules are the two parts most
 likely to die from static, heat or a wiring mistake. At NZ$2 and NZ$10 each, a

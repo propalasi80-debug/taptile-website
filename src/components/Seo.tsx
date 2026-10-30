@@ -45,8 +45,11 @@ export default function Seo({ title, description, path, image }: SeoProps) {
     setMeta('meta[name="twitter:description"]', 'name', 'twitter:description', description);
 
     const origin = window.location.origin;
-    if (image) {
-      const absolute = image.startsWith('http') ? image : `${origin}${image}`;
+    // Fall back to the site image so a page without one doesn't inherit the
+    // previous page's cover.
+    {
+      const source = image || '/og.jpg';
+      const absolute = source.startsWith('http') ? source : `${origin}${source}`;
       setMeta('meta[property="og:image"]', 'property', 'og:image', absolute);
       setMeta('meta[name="twitter:image"]', 'name', 'twitter:image', absolute);
     }
@@ -62,6 +65,10 @@ export default function Seo({ title, description, path, image }: SeoProps) {
         document.head.appendChild(canonical);
       }
       canonical.href = url;
+    } else {
+      // Without a path, a canonical left over from the previous page is wrong.
+      document.head.querySelector('link[rel="canonical"]')?.remove();
+      document.head.querySelector('meta[property="og:url"]')?.remove();
     }
   }, [title, description, path, image]);
 

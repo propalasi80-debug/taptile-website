@@ -25,6 +25,7 @@ export default function Update() {
   const { slug } = useParams<{ slug: string }>();
   const [update, setUpdate] = useState<UpdatePost>();
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string>();
 
   useEffect(() => {
     if (!slug) {
@@ -36,6 +37,7 @@ export default function Update() {
     void fetchUpdateBySlug(slug).then((result) => {
       if (cancelled) return;
       setUpdate(result.update);
+      setError(result.error);
       setLoading(false);
     });
     return () => {
@@ -50,6 +52,25 @@ export default function Update() {
           <p className="empty" role="status">
             Loading…
           </p>
+        </div>
+      </section>
+    );
+  }
+
+  if (!update && error) {
+    return (
+      <section className="page">
+        <Seo title="Updates" description="Development updates from Taptile." />
+        <div className="shell">
+          <h1>
+            Couldn&apos;t <span className="it">load that.</span>
+          </h1>
+          <p className="lede" style={{ marginTop: 22 }}>
+            {error} Check your connection and try again.
+          </p>
+          <button type="button" className="btn btn-white" style={{ marginTop: 30 }} onClick={() => window.location.reload()}>
+            Try again
+          </button>
         </div>
       </section>
     );
