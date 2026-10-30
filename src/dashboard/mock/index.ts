@@ -27,8 +27,12 @@ export interface Gate {
 
 /** Decisions, not estimates. */
 export const FIGURES = {
-  /** First production run. */
+  /** First production run: batch 1, all 25 built. */
   runSize: 25,
+  /** Of batch 1: sold, kept by the two founders, and used for marketing. */
+  forSale: 20,
+  keptByFounders: 2,
+  marketing: 3,
   /** The floor for opening pre-orders. */
   waitlistTarget: 50,
 } as const;
@@ -72,7 +76,7 @@ export const GATES: Gate[] = [
   },
   {
     title: '50 on the waitlist',
-    detail: 'The floor for opening pre-orders on a 25-unit run.',
+    detail: 'The floor for opening pre-orders on the 20 units of batch 1 that are for sale.',
     owner: 'Owner',
     state: 'prog',
   },
@@ -84,7 +88,7 @@ export const GATES: Gate[] = [
   },
   {
     title: 'Ship window set',
-    detail: '25 built. Waiting on 25 USB-C cables and 25 boxes (see Inventory). No public date until they are in.',
+    detail: 'Batch 1 is built (25; 20 for sale). Waiting on USB-C cables and boxes (see Inventory). No public date until they are in.',
     owner: 'Owner',
     state: 'block',
   },
@@ -131,8 +135,8 @@ export const HELP_TOPICS = [
     body: 'Writing, saving a draft and publishing a devlog post from Content.',
   },
   {
-    title: 'Why pages are empty',
-    body: 'Nothing has sold yet. Those pages fill in when there is something to show.',
+    title: 'Tracking stock',
+    body: 'Inventory: record what is ordered, received and used. Ready to ship counts the 20 for sale.',
   },
 ];
 
@@ -146,8 +150,8 @@ export const HELP_QUESTIONS = [
     a: 'Not until case printing clears the full run. A date published before then is a promise the build queue cannot keep.',
   },
   {
-    q: 'Why are Revenue, Orders and Costs empty?',
-    a: 'Because nothing has sold and no expense table exists yet. They used to show sample figures from the design handoff; those were removed, because a number that looks real eventually gets quoted as real.',
+    q: 'Where are Revenue, Orders and Costs?',
+    a: 'Hidden from the menu until there is something to show. Nothing has sold and no expense table exists yet, and a page of empty charts is a dead end. They come back when real data does.',
   },
   {
     q: 'How do I add my co-founder?',

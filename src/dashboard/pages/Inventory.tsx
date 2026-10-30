@@ -19,11 +19,10 @@
  *      new count, refuses to save one below zero, and deleting asks first.
  *   6. The adjust form shows the current count and per-unit figure, so
  *      nothing has to be remembered from the table.
- *   7. Quick +1 / −1 on each row beside Adjust, and "Record builds" takes every part down
- *      at once for experienced use.
+ *   7. "Record builds" takes every part down at once, for experienced use.
  *   8. Columns are the ones that drive a decision; the rest is in Edit.
  *   9. Failures say what happened and what to do, in a sentence.
- *  10. A short "How this works" card in the rail.
+ *  10. Hints sit on the fields they explain, not in a separate help box.
  */
 
 import { useMemo, useState } from 'react';
@@ -47,9 +46,10 @@ import {
 } from '../ui';
 import { DataTable, type Column } from '../ui/DataTable';
 import { useInventory } from '../lib/useLiveData';
+import { cn } from '../lib/cn';
 import { FIGURES } from '../mock';
 import { currency, number, relative } from '../lib/format';
-import { Close, Minus, Package, Plus, Refresh } from '../icons';
+import { Close, Package, Plus, Refresh } from '../icons';
 import {
   buildable,
   buildParts,
@@ -60,6 +60,7 @@ import {
   REASONS,
   recordMovement,
   saveItem,
+  splitMovement,
   stockState,
   type Category,
   type InventoryItem,
@@ -71,6 +72,7 @@ import {
 const STATE_PILL: Record<StockState, { tone: Tone; label: string }> = {
   out: { tone: 'rose', label: 'Out' },
   low: { tone: 'blue', label: 'Low' },
+  ordered: { tone: 'blue', label: 'On order' },
   ok: { tone: 'grey', label: 'In stock' },
 };
 
@@ -94,7 +96,7 @@ function wholeNumber(value: string): number | undefined {
 interface Flash {
   text: string;
   /** Present when the change can be reversed from the confirmation line. */
-  undo?: { itemId: string; delta: number };
+  undo?: { itemId: string; delta: number; orderDelta: number };
 }
 
 export default function Inventory() {
@@ -103,6 +105,7 @@ export default function Inventory() {
   const [category, setCategory] = useState<Category | 'all'>('all');
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [editing, setEditing] = useState<ItemDraft | null>(null);
+  const [building, setBuilding] = useState(false);
   const [busy, setBusy] = useState(false);
   const [actionError, setActionError] = useState<string>();
   const [flash, setFlash] = useState<Flash>();
@@ -124,7 +127,10 @@ export default function Inventory() {
 
   const canBuild = buildable(items);
   const needsAttention = items.filter(
-    (item) => item.category !== 'finished' && item.per_unit > 0 && stockState(item) !== 'ok',
+    (item) =>
+      item.category !== 'finished' &&
+      item.per_unit > 0 &&
+      (stockState(item) === 'out' || stockState(item) === 'low'),
   );
   const costed = items.filter((item) => item.unit_cost !== null);
   const stockValue = costed.reduce((sum, item) => sum + item.on_hand * (item.unit_cost ?? 0), 0);
@@ -134,23 +140,30 @@ export default function Inventory() {
     .filter((item) => item.category === 'finished')
     .reduce((sum, item) => sum + item.on_hand, 0);
   const canShip = readyToShip(items);
-  const run = FIGURES.runSize;
+  // Batch 1: 25 built, of which 20 are for sale. Shipping targets the 20.
+  const run = FIGURES.forSale;
 
   /* ------------------------------------------------------------ actions --- */
 
-  async function move(item: InventoryItem, delta: number, reason: Reason, note = '') {
+  /** `amount` is signed and applies to whichever count the reason targets. */
+  async function move(item: InventoryItem, amount: number, reason: Reason, note = '') {
+    const { delta, orderDelta } = splitMovement(item, amount, reason);
     setBusy(true);
     setActionError(undefined);
-    const result = await recordMovement(item.id, delta, reason, note);
+    const result = await recordMovement(item.id, delta, reason, note, orderDelta);
     setBusy(false);
     if (!result.ok) {
       setActionError(result.error);
       return false;
     }
-    const sign = delta > 0 ? '+' : '−';
+    const signed = (value: number) => `${value > 0 ? '+' : '−'}${number(Math.abs(value))}`;
+    const parts = [
+      delta !== 0 ? `${signed(delta)} on hand, now ${number(item.on_hand + delta)}` : '',
+      orderDelta !== 0 ? `${signed(orderDelta)} on order, now ${number(item.on_order + orderDelta)}` : '',
+    ].filter(Boolean);
     setFlash({
-      text: `${item.name}: ${sign}${number(Math.abs(delta))}, now ${number(item.on_hand + delta)}.`,
-      undo: { itemId: item.id, delta },
+      text: `${item.name}: ${parts.join('; ')}.`,
+      undo: { itemId: item.id, delta, orderDelta },
     });
     inventory.reload();
     return true;
@@ -159,7 +172,13 @@ export default function Inventory() {
   async function undo(target: NonNullable<Flash['undo']>) {
     setBusy(true);
     setActionError(undefined);
-    const result = await recordMovement(target.itemId, -target.delta, 'adjusted', 'Undo');
+    const result = await recordMovement(
+      target.itemId,
+      -target.delta,
+      'adjusted',
+      'Undo',
+      -target.orderDelta,
+    );
     setBusy(false);
     if (!result.ok) {
       setActionError(result.error);
@@ -246,7 +265,9 @@ export default function Inventory() {
     {
       key: 'item',
       label: 'Item',
-      span: 5,
+      span: 6,
+      // On a phone the On hand column is hidden, so the item takes its room.
+      phoneSpan: 8,
       render: (item) => (
         <span className="min-w-0">
           <span className="block truncate font-semibold text-ink-1" title={item.name}>
@@ -256,6 +277,7 @@ export default function Inventory() {
           <span className="block truncate text-[10.5px] text-ink-4">
             {[
               `${number(item.on_hand)} on hand`,
+              item.on_order > 0 ? `${number(item.on_order)} on order` : '',
               item.per_unit > 0 ? `${item.per_unit} per unit` : '',
               item.supplier,
             ]
@@ -275,13 +297,21 @@ export default function Inventory() {
       key: 'on_hand',
       label: 'On hand',
       span: 2,
+      hideOnPhone: true,
       align: 'right',
-      render: (item) => <span className="font-bold text-ink-1">{number(item.on_hand)}</span>,
+      render: (item) => (
+        <span className="flex flex-col items-end leading-tight">
+          <span className="tabular-nums text-ink-1">{number(item.on_hand)}</span>
+          {item.on_order > 0 && (
+            <span className="text-[10.5px] text-ink-4">+{number(item.on_order)} ordered</span>
+          )}
+        </span>
+      ),
     },
     {
       key: 'actions',
-      label: 'Actions',
-      span: 3,
+      label: '',
+      span: 2,
       align: 'right',
       render: (item) => (
         <span className="flex items-center gap-[6px]">
@@ -296,20 +326,6 @@ export default function Inventory() {
           >
             Adjust
           </Button>
-          <IconButton
-            icon={Minus}
-            label={`Use one ${item.name}`}
-            size={26}
-            disabled={busy || item.on_hand === 0}
-            onClick={() => void move(item, -1, 'used')}
-          />
-          <IconButton
-            icon={Plus}
-            label={`Receive one ${item.name}`}
-            size={26}
-            disabled={busy}
-            onClick={() => void move(item, 1, 'received')}
-          />
         </span>
       ),
     },
@@ -322,12 +338,24 @@ export default function Inventory() {
       <PageHeader
         title="Inventory"
         live
-        description="Every part in the build, what is on the shelf, and how many units that makes."
+        description="Stock, orders, and what is ready to ship."
         actions={
           <>
             <Button icon={Refresh} onClick={inventory.reload}>
               Refresh
             </Button>
+            {canBuild !== null && (
+              <Button
+                aria-pressed={building}
+                onClick={() => {
+                  setEditing(null);
+                  setSelectedId(null);
+                  setBuilding((open) => !open);
+                }}
+              >
+                Record builds
+              </Button>
+            )}
             <Button
               icon={Plus}
               variant="primary"
@@ -346,14 +374,17 @@ export default function Inventory() {
         rail={
           <>
             <Card pad={16}>
-              <CardTitle>{`To ship the first ${run}`}</CardTitle>
+              <CardTitle>{`To ship batch 1 (${run} for sale)`}</CardTitle>
+              <p className="-mt-[4px] mb-[12px] text-[11px] text-ink-4">
+                {`${FIGURES.runSize} built: ${FIGURES.forSale} for sale · ${FIGURES.keptByFounders} kept · ${FIGURES.marketing} marketing`}
+              </p>
               {loadingFirst ? (
                 <Skeleton height={120} />
               ) : (
                 <div className="flex flex-col gap-[12px]">
                   <Bar
                     label="Finished units"
-                    value={`${number(finishedUnits)} / ${number(run)}`}
+                    value={`${number(Math.min(finishedUnits, run))} / ${number(run)}`}
                     pct={(finishedUnits / run) * 100}
                     active={finishedUnits < run}
                   />
@@ -362,7 +393,9 @@ export default function Inventory() {
                     return (
                       <Bar
                         key={item.id}
-                        label={item.name}
+                        label={
+                          item.on_order > 0 ? `${item.name} · ${number(item.on_order)} ordered` : item.name
+                        }
                         value={`${number(item.on_hand)} / ${number(need)}`}
                         pct={(item.on_hand / need) * 100}
                         active={item.on_hand < need}
@@ -377,14 +410,21 @@ export default function Inventory() {
                   <p className="text-[11px] text-ink-4">
                     {kit
                       .filter((item) => item.on_hand < item.per_unit * run)
-                      .map((item) => `${number(item.per_unit * run - item.on_hand)} more ${item.name}`)
-                      .join(', ') || 'Nothing short for the run.'}
+                      .map((item) => {
+                        const toOrder = item.per_unit * run - item.on_hand - item.on_order;
+                        return toOrder > 0
+                          ? `${number(toOrder)} more ${item.name} to order`
+                          : `${item.name}: the rest is on order`;
+                      })
+                      .join('. ') || 'Nothing short for the units for sale.'}
+                  </p>
+                  <p className="text-[11px] text-ink-4">
+                    {`The ${FIGURES.marketing} marketing units need one more of each if they go out boxed.`}
                   </p>
                 </div>
               )}
             </Card>
 
-            <BuildCard canBuild={canBuild} busy={busy} onRecord={recordBuilds} />
 
             <Card pad={16}>
               <CardTitle>Recent changes</CardTitle>
@@ -399,23 +439,18 @@ export default function Inventory() {
                       sub={`${REASONS.find((reason) => reason.value === movement.reason)?.label ?? movement.reason}${
                         movement.note ? ` · ${movement.note}` : ''
                       } · ${relative(movement.created_at)}`}
-                      value={`${movement.delta > 0 ? '+' : '−'}${number(Math.abs(movement.delta))}`}
+                      value={
+                        movement.delta !== 0
+                          ? `${movement.delta > 0 ? '+' : '−'}${number(Math.abs(movement.delta))}`
+                          : `${movement.order_delta > 0 ? '+' : '−'}${number(Math.abs(movement.order_delta))}`
+                      }
+                      valueSub={movement.delta === 0 ? 'on order' : undefined}
                     />
                   ))}
                 </div>
               )}
             </Card>
 
-            <Card pad={16}>
-              <CardTitle>How this works</CardTitle>
-              <ul className="flex list-disc flex-col gap-[6px] pl-4 text-[11.5px] text-ink-4">
-                <li>Counts only change by recording what happened, so each one has a history.</li>
-                <li>"Per unit" is how many go into one Taptile. It drives "Can build".</li>
-                <li>"Ships with" items (cable, box) are counted per shipped unit and drive "Ready to ship".</li>
-                <li>"Low" shows at or below the reorder level. Set it to 0 to turn it off.</li>
-                <li>Got it wrong? Use Undo on the confirmation line, or record a recount.</li>
-              </ul>
-            </Card>
           </>
         }
       >
@@ -445,7 +480,12 @@ export default function Inventory() {
           </div>
         )}
 
-        <div className="grid grid-cols-2 gap-[14px] xl:grid-cols-4">
+        <div
+          className={cn(
+            'grid grid-cols-2 gap-[14px]',
+            costed.length > 0 ? 'xl:grid-cols-4' : 'xl:grid-cols-3',
+          )}
+        >
           <Kpi
             label="Can build"
             value={loadingFirst ? '—' : canBuild === null ? '—' : number(canBuild)}
@@ -456,25 +496,38 @@ export default function Inventory() {
             value={loadingFirst ? '—' : number(needsAttention.length)}
             sub={needsAttention.length === 0 ? 'Nothing out or low' : 'parts out or low'}
           />
+          {/* Full width on a phone when it would otherwise sit alone. */}
+          <div className={costed.length > 0 ? undefined : 'max-xl:col-span-2'}>
           <Kpi
             label="Ready to ship"
-            value={loadingFirst || canShip === null ? '—' : number(canShip)}
+            value={loadingFirst || canShip === null ? '—' : number(Math.min(canShip, run))}
             sub={
               canShip === null
                 ? 'Nothing marked Finished'
-                : `of ${number(finishedUnits)} finished`
+                : `of ${number(run)} for sale`
             }
           />
-          <Kpi
-            label="Stock value"
-            value={costed.length === 0 ? '—' : currency(stockValue)}
-            sub={
-              costed.length === 0
-                ? 'Add unit costs to see this'
-                : `${costed.length} of ${items.length} items costed`
-            }
-          />
+          </div>
+          {costed.length > 0 && (
+            <Kpi
+              label="Stock value"
+              value={currency(stockValue)}
+              sub={`${costed.length} of ${items.length} items costed`}
+            />
+          )}
         </div>
+
+        {building && (
+          <BuildCard
+            canBuild={canBuild}
+            busy={busy}
+            onClose={() => setBuilding(false)}
+            onRecord={(count) => {
+              setBuilding(false);
+              void recordBuilds(count);
+            }}
+          />
+        )}
 
         {editing && (
           <ItemForm
@@ -610,11 +663,19 @@ function AdjustCard({
   const [amount, setAmount] = useState('');
   const [note, setNote] = useState('');
 
-  const sign = REASONS.find((option) => option.value === reason)!.sign;
+  const option = REASONS.find((candidate) => candidate.value === reason)!;
+  const sign = option.sign;
+  const onOrder = option.target === 'order';
+  // Orders move their own count, so the preview and the floor follow it.
+  const base = onOrder ? item.on_order : item.on_hand;
   const parsed = wholeNumber(amount);
   // A recount enters the new total; everything else enters how many moved.
   const delta = parsed === undefined ? undefined : sign === 0 ? parsed - item.on_hand : sign * parsed;
-  const next = delta === undefined ? undefined : item.on_hand + delta;
+  const next = delta === undefined ? undefined : base + delta;
+  const orderAfter =
+    reason === 'received' && delta !== undefined && item.on_order > 0
+      ? Math.max(0, item.on_order - delta)
+      : undefined;
 
   const problem =
     amount.trim() === ''
@@ -626,7 +687,9 @@ function AdjustCard({
             ? 'That is already the count.'
             : 'Enter more than zero.'
           : next! < 0
-            ? `Only ${number(item.on_hand)} on hand.`
+            ? onOrder
+              ? `Only ${number(item.on_order)} on order.`
+              : `Only ${number(item.on_hand)} on hand.`
             : undefined;
 
   const canSave = delta !== undefined && delta !== 0 && next! >= 0 && !busy;
@@ -638,6 +701,7 @@ function AdjustCard({
           <CardTitle>{`Adjust ${item.name}`}</CardTitle>
           <p className="text-[11.5px] text-ink-4">
             {number(item.on_hand)} on hand
+            {item.on_order > 0 ? ` · ${number(item.on_order)} on order` : ''}
             {item.per_unit > 0 ? ` · ${item.per_unit} per Taptile` : ''}
             {item.reorder_at > 0 ? ` · reorder at ${number(item.reorder_at)}` : ''}
           </p>
@@ -646,14 +710,16 @@ function AdjustCard({
       </div>
 
       <div className="mb-[14px] flex flex-wrap gap-[8px]" role="group" aria-label="What happened">
-        {REASONS.map((option) => (
-          <Chip
-            key={option.value}
-            label={option.label}
-            active={reason === option.value}
-            onClick={() => setReason(option.value)}
-          />
-        ))}
+        {REASONS.filter((choice) => choice.value !== 'cancelled' || item.on_order > 0).map(
+          (choice) => (
+            <Chip
+              key={choice.value}
+              label={choice.label}
+              active={reason === choice.value}
+              onClick={() => setReason(choice.value)}
+            />
+          ),
+        )}
       </div>
 
       <div className="grid grid-cols-1 gap-[12px] sm:grid-cols-2">
@@ -665,8 +731,16 @@ function AdjustCard({
           error={problem}
           hint={
             next !== undefined && !problem
-              ? `${number(item.on_hand)} → ${number(next)}`
-              : sign === 0
+              ? onOrder
+                ? `On order ${number(base)} → ${number(next)}`
+                : `On hand ${number(base)} → ${number(next)}${
+                    orderAfter !== undefined
+                      ? ` · on order ${number(item.on_order)} → ${number(orderAfter)}`
+                      : ''
+                  }`
+              : reason === 'ordered'
+                ? 'Bought but not here yet. Record it as Received when it arrives.'
+                : sign === 0
                 ? 'The total you counted, not the difference.'
                 : undefined
           }
@@ -836,10 +910,12 @@ function ItemForm({
 function BuildCard({
   canBuild,
   busy,
+  onClose,
   onRecord,
 }: {
   canBuild: number | null;
   busy: boolean;
+  onClose: () => void;
   onRecord: (count: number) => void;
 }) {
   const [count, setCount] = useState('1');
@@ -853,34 +929,41 @@ function BuildCard({
   if (canBuild === null) return null;
 
   return (
-    <Card pad={16}>
-      <CardTitle>Record builds</CardTitle>
-      <p className="mb-[10px] text-[11.5px] text-ink-4">
-        Takes every part in the build down by its per-unit figure, and adds the units to Finished.
-      </p>
-      <Field
-        label="Units built"
-        type="number"
-        value={count}
-        onChange={setCount}
-        error={count.trim() === '' ? undefined : problem}
-        hint={problem ? undefined : `Parts on the shelf make ${number(canBuild)}.`}
-      />
-      <Button
-        className="mt-[10px] w-full"
-        size="sm"
-        loading={busy}
-        disabled={busy || problem !== undefined || tooMany}
-        onClick={() => {
-          if (
-            parsed &&
-            window.confirm(`Record ${parsed} build${parsed === 1 ? '' : 's'}? Every part is taken down.`)
-          )
-            onRecord(parsed);
-        }}
-      >
-        Record {parsed && parsed > 0 ? parsed : ''} build{parsed === 1 ? '' : 's'}
-      </Button>
+    <Card pad={18}>
+      <div className="mb-[12px] flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <CardTitle>Record builds</CardTitle>
+          <p className="-mt-[6px] text-[12px] text-ink-4">
+            Takes each part down by its per-unit figure and adds the units to Finished.
+          </p>
+        </div>
+        <IconButton icon={Close} label="Close" tone="bare" size={26} onClick={onClose} />
+      </div>
+      <div className="grid grid-cols-1 items-end gap-[12px] sm:grid-cols-[1fr_auto]">
+        <Field
+          label="Units built"
+          type="number"
+          value={count}
+          onChange={setCount}
+          error={count.trim() === '' ? undefined : problem}
+          hint={problem ? undefined : `Parts on the shelf make ${number(canBuild)}.`}
+        />
+        <Button
+          className="sm:mb-[22px]"
+          variant="primary"
+          loading={busy}
+          disabled={busy || problem !== undefined || tooMany}
+          onClick={() => {
+            if (
+              parsed &&
+              window.confirm(`Record ${parsed} build${parsed === 1 ? '' : 's'}? Every part is taken down.`)
+            )
+              onRecord(parsed);
+          }}
+        >
+          Record {parsed && parsed > 0 ? parsed : ''} build{parsed === 1 ? '' : 's'}
+        </Button>
+      </div>
     </Card>
   );
 }

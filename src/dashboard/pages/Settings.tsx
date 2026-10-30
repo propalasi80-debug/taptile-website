@@ -213,7 +213,7 @@ export default function Settings() {
               <dl className="flex flex-col">
                 {[
                   ['Product', 'Taptile Dialect'],
-                  ['First run', `${FIGURES.runSize} units`],
+                  ['Batch 1', `${FIGURES.runSize} built · ${FIGURES.forSale} for sale`],
                   ['Unit price', FILL_IN],
                   ['Accounts', loading ? '—' : String(profiles.length)],
                 ].map(([label, value]) => (
@@ -374,7 +374,7 @@ export default function Settings() {
               />
             </Card>
 
-            <p className="text-[10.5px] text-ink-5">
+            <p className="text-[11.5px] text-ink-4">
               These preferences are stored in this browser. Nothing sends them yet — the delivery
               job is not built, so treat them as a record of what you want rather than a switch
               that does something today.

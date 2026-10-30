@@ -48,22 +48,24 @@ function NavRow({
           'flex h-9 items-center gap-[11px] rounded-chip text-[12.5px]',
           collapsed ? 'justify-center px-0' : 'px-[10px]',
           isActive
-            ? 'on-lime bg-lime-grad font-bold text-lime-ink shadow-lime'
-            : 'font-medium text-ink-nav transition-colors duration-120 hover:bg-white/[0.04] hover:text-ink-1',
+            ? "relative bg-white/[0.06] font-medium text-ink-1 before:absolute before:left-0 before:top-[9px] before:h-[18px] before:w-[2px] before:rounded-r-full before:bg-lime before:content-['']"
+            : 'font-medium text-ink-nav transition-colors duration-120 hover:bg-white/[0.035] hover:text-ink-1',
         )
       }
       title={collapsed ? item.label : undefined}
     >
       {({ isActive }) => (
         <>
-          <item.icon size={16} />
+          <span className={isActive ? 'text-lime' : undefined}>
+            <item.icon size={16} />
+          </span>
           {!collapsed && <span className="flex-1 truncate">{item.label}</span>}
           {!collapsed && item.badge !== undefined && (
             <span
               aria-label={`${item.badge} unread messages`}
               className={cn(
                 'rounded-pill px-[6px] py-[1px] text-[9.5px] font-bold',
-                isActive ? 'bg-lime-ink/15 text-lime-ink' : 'bg-lime/[0.16] text-lime',
+                'bg-lime/[0.16] text-lime',
               )}
             >
               {item.badge > 9 ? '9+' : item.badge}
@@ -93,7 +95,7 @@ function Sidebar({
     <nav
       aria-label="Primary"
       className={cn(
-        'flex h-full shrink-0 flex-col border-r border-line-rail bg-rail bg-rail-grad',
+        'flex h-full shrink-0 flex-col border-r border-line-rail bg-rail',
         collapsed ? 'w-[72px] px-[10px] py-5' : 'w-[232px] px-[14px] py-5',
       )}
     >
@@ -102,19 +104,15 @@ function Sidebar({
         className={cn('flex items-center gap-[10px]', collapsed ? 'justify-center' : 'px-[6px]')}
       >
         <span
-          className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-[8px] bg-lime-grad text-[13px] font-extrabold text-lime-ink"
+          className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-[3px] border border-line-strong text-[13px] font-semibold text-lime"
           aria-hidden="true"
         >
           T
         </span>
         {!collapsed && (
           <span className="min-w-0">
-            <span className="block text-[12.5px] font-extrabold tracking-[-0.2px] text-ink-1">
-              TAPTILE
-            </span>
-            <span className="block truncate text-[9.5px] font-semibold text-ink-4">
-              Dialect · first run
-            </span>
+            <span className="block text-[13px] font-semibold text-ink-1">Taptile</span>
+            <span className="block truncate text-[11px] text-ink-4">Admin</span>
           </span>
         )}
       </Link>
@@ -221,7 +219,7 @@ function BottomTabs() {
               <span
                 className={cn(
                   'inline-flex h-[30px] w-[42px] items-center justify-center rounded-pill transition',
-                  isActive ? 'bg-lime-grad text-lime-ink shadow-lime' : 'text-ink-nav',
+                  isActive ? 'bg-white/[0.08] text-lime' : 'text-ink-nav',
                 )}
               >
                 <tab.icon size={17} />
@@ -229,7 +227,7 @@ function BottomTabs() {
               <span
                 className={cn(
                   'text-[9.5px]',
-                  isActive ? 'font-bold text-lime' : 'font-semibold text-ink-4',
+                  isActive ? 'font-bold text-ink-1' : 'font-semibold text-ink-4',
                 )}
               >
                 {tab.label}
@@ -260,8 +258,8 @@ function Topbar({ onOpenNav }: { onOpenNav: () => void }) {
           <Grid size={15} />
         </button>
         <nav aria-label="Breadcrumb" className="min-w-0">
-          <ol className="flex items-center gap-[7px] text-[11px] font-semibold text-ink-4">
-            <li>TAPTILE</li>
+          <ol className="flex items-center gap-[7px] text-[12px] text-ink-4">
+            <li>Taptile</li>
             <li aria-hidden="true">/</li>
             <li className="hidden sm:block">Dashboards</li>
             <li aria-hidden="true" className="hidden sm:block">

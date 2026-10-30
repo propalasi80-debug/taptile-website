@@ -530,7 +530,7 @@ export default function Messages() {
                       return (
                         <div key={message.id}>
                           {showDay && (
-                            <p className="py-[6px] text-center text-[9.5px] font-bold uppercase tracking-[1.2px] text-ink-5">
+                            <p className="py-[6px] text-center text-[11px] text-ink-4">
                               {dayLabel(message.created_at)}
                             </p>
                           )}
@@ -587,7 +587,7 @@ export default function Messages() {
                         className="inline-flex items-center gap-[6px] rounded-chip border border-line-strong bg-tile-grad px-[9px] py-[5px] text-[10.5px] text-ink-2"
                       >
                         <span className="max-w-[160px] truncate">{file.name}</span>
-                        <span className="text-ink-5">{fileSize(file.size)}</span>
+                        <span className="text-ink-4">{fileSize(file.size)}</span>
                         <button
                           type="button"
                           aria-label={`Remove ${file.name}`}
