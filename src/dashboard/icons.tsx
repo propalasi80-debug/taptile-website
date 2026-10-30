@@ -205,6 +205,8 @@ export const Plus = make(
   2,
 );
 
+export const Minus = make(<line x1="5" y1="12" x2="19" y2="12" />, 2);
+
 export const Close = make(
   <>
     <line x1="6" y1="6" x2="18" y2="18" />

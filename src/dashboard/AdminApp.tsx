@@ -19,6 +19,7 @@ import Overview from './pages/Overview';
 import Revenue from './pages/Revenue';
 import Orders from './pages/Orders';
 import Production from './pages/Production';
+import Inventory from './pages/Inventory';
 import Costs from './pages/Costs';
 import Launch from './pages/Launch';
 import Customers from './pages/Customers';
@@ -85,6 +86,7 @@ export default function AdminApp() {
         <Route path="revenue" element={<Revenue />} />
         <Route path="orders" element={<Orders />} />
         <Route path="production" element={<Production />} />
+        <Route path="inventory" element={<Inventory />} />
         <Route path="costs" element={<Costs />} />
         <Route path="launch" element={<Launch />} />
         <Route path="customers" element={<Customers />} />
