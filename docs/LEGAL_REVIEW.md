@@ -125,3 +125,17 @@ LEDs and the USB supply are safe at continuously. Keep the clause narrow:
 flashing firmware alone must not void anything (QMK is GPL, and a broad
 "void if tampered" claim is the kind the Commerce Commission treats as
 misleading).
+
+## 11. Warranty — decided and still open (1 November 2026)
+
+Terms §7 is now a full warranty: 12 months from delivery, transferable to a
+new owner, replies within 5 working days, and clear lists of what does and
+doesn't affect it.
+
+Still open, deliberately left out of the public terms until decided:
+- **Who pays return postage for a faulty unit.** Under the Consumer Guarantees
+  Act, the cost of returning a genuinely faulty product generally falls on the
+  seller; deciding "we pay" matches that.
+- **Whether keycaps, knobs and the USB-C cable get the same 12 months as the
+  board.** Until decided, the terms say "your Taptile" and consumer law covers
+  the accessories either way.

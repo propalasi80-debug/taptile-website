@@ -63,7 +63,7 @@ If you pre-order and we're late:
 ## How to start a return
 
 Email **support@trytaptile.com** with your order number and what's wrong (a
-photo or short video helps). We'll reply within [FILL IN: e.g. 2] working days.
+photo or short video helps). We'll reply within 5 working days.
 
 ## Where to go if we can't agree
 
