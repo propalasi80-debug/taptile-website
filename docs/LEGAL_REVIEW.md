@@ -112,3 +112,30 @@ work yet. Also worth turning on: leaked-password protection in Supabase Auth
 
 The Messages tab showed "3 unread" permanently. The number was hard-coded. It's
 removed on the `inventory-tracker` branch.
+
+## 10. LED limit in the firmware — before units ship
+
+Terms §7 (added 1 November 2026) says the shipped firmware limits LED
+brightness and power, and that burning the LEDs out by going past that limit
+isn't covered. **The firmware in `firmware/taptile/mini/` doesn't set a limit
+yet.** Add one before any unit ships, or the clause describes something that
+isn't there. In QMK that's `RGBLIGHT_LIMIT_VAL` (RGB Light) or
+`RGB_MATRIX_MAXIMUM_BRIGHTNESS` (RGB Matrix) in `config.h`, set to a value the
+LEDs and the USB supply are safe at continuously. Keep the clause narrow:
+flashing firmware alone must not void anything (QMK is GPL, and a broad
+"void if tampered" claim is the kind the Commerce Commission treats as
+misleading).
+
+## 11. Warranty — decided and still open (1 November 2026)
+
+Terms §7 is now a full warranty: 12 months from delivery, transferable to a
+new owner, replies within 5 working days, and clear lists of what does and
+doesn't affect it.
+
+Still open, deliberately left out of the public terms until decided:
+- **Who pays return postage for a faulty unit.** Under the Consumer Guarantees
+  Act, the cost of returning a genuinely faulty product generally falls on the
+  seller; deciding "we pay" matches that.
+- **Whether keycaps, knobs and the USB-C cable get the same 12 months as the
+  board.** Until decided, the terms say "your Taptile" and consumer law covers
+  the accessories either way.
