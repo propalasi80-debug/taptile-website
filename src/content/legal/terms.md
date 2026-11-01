@@ -34,6 +34,8 @@ The following only applies from the date we start taking orders. It does not app
 
 Consumer guarantees under the **Consumer Guarantees Act 1993** apply to consumer sales in New Zealand, and the **Australian Consumer Law** applies to consumer sales in Australia. Nothing in these terms limits or excludes those guarantees. An attempt to contract out of them would itself be a breach of the Fair Trading Act 1986.
 
+**Custom firmware and the LEDs.** You're free to flash your own firmware — Taptile runs on QMK, and changing it is part of the point. Doing that doesn't void anything on its own. But the firmware we ship limits how bright the underglow LEDs can go and how much power they draw. If you change the firmware to push them past that limit and the LEDs or the board burn out, that's damage caused by how the board was used, not a fault in it, so we won't repair, replace or refund it. Anything that goes wrong for a reason unrelated to the change you made is covered as normal, and your rights under the Consumer Guarantees Act aren't affected.
+
 Specific shipping timescales, a returns process, and a refund policy will be published here once orders open. We haven't written them yet because writing rules for a process that doesn't exist would be exactly the kind of misleading claim these terms are supposed to avoid.
 
 ## 8. If we change these terms
@@ -52,4 +54,4 @@ Nothing in these terms excludes or limits our liability for death or personal in
 
 ---
 
-Last updated: 30 October 2026
+Last updated: 1 November 2026

@@ -35,6 +35,9 @@ What isn't a fault:
 - A keymap or macro you set that stops a key doing what you expect. Resetting
   the board fixes that — see [FILL IN: link to reset instructions].
 - Damage from opening the case, re-soldering or physical misuse.
+- LEDs or the board burnt out by custom firmware that runs the LEDs brighter,
+  or at more power, than the limit in the firmware we ship. Flashing your own
+  firmware is fine and doesn't affect anything else.
 - Normal wear on keycaps and knobs.
 
 ## If you've changed your mind

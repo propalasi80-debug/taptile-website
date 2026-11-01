@@ -112,3 +112,16 @@ work yet. Also worth turning on: leaked-password protection in Supabase Auth
 
 The Messages tab showed "3 unread" permanently. The number was hard-coded. It's
 removed on the `inventory-tracker` branch.
+
+## 10. LED limit in the firmware — before units ship
+
+Terms §7 (added 1 November 2026) says the shipped firmware limits LED
+brightness and power, and that burning the LEDs out by going past that limit
+isn't covered. **The firmware in `firmware/taptile/mini/` doesn't set a limit
+yet.** Add one before any unit ships, or the clause describes something that
+isn't there. In QMK that's `RGBLIGHT_LIMIT_VAL` (RGB Light) or
+`RGB_MATRIX_MAXIMUM_BRIGHTNESS` (RGB Matrix) in `config.h`, set to a value the
+LEDs and the USB supply are safe at continuously. Keep the clause narrow:
+flashing firmware alone must not void anything (QMK is GPL, and a broad
+"void if tampered" claim is the kind the Commerce Commission treats as
+misleading).
