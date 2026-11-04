@@ -1,6 +1,7 @@
 import { useState, type ReactNode } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import Seo from '../components/Seo';
+import { SUPPORT_EMAIL } from '../site/launch';
 
 /**
  * "Leave the list" — where the link at the bottom of every waitlist email lands.
@@ -15,7 +16,7 @@ import Seo from '../components/Seo';
  * waitlist-leave Edge Function, which then deletes the row.
  */
 
-const SUPPORT = 'support@trytaptile.com';
+const SUPPORT = SUPPORT_EMAIL;
 const STORE_KEY = 'taptile-waitlist-v1'; // the "you're already on the list" marker in Waitlist.tsx
 
 type State = 'ready' | 'busy' | 'done' | 'gone' | 'bad' | 'error';

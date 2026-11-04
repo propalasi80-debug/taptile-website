@@ -24,7 +24,7 @@ export default function Orders() {
           <EmptyState
             icon={Box}
             title="No orders yet"
-            body="Pre-orders cannot open until the price is locked and the ship window is set — launch gates 7 and 8. Orders will appear here once they do."
+            body="Orders are in Stripe → Payments, with each buyer's address and phone. Nothing writes them here yet: that needs a webhook, which the Payment Link setup deliberately skips."
           />
         </Card>
       </PageBody>

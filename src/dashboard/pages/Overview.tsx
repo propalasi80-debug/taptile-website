@@ -72,7 +72,7 @@ export default function Overview() {
                 />
                 <p className="mt-[12px] text-center text-[11.5px] text-ink-4">
                   {blocked > 0
-                    ? 'Every blocker traces back to one decision: the price.'
+                    ? 'Some gates are blocked. See Launch.'
                     : 'Nothing blocked — finish what is in progress.'}
                 </p>
                 <Link

@@ -66,8 +66,9 @@ people to opt in to anything more.
 
 ## 6. Before pre-orders open
 
-- **Returns and shipping policies** — drafts in `docs/policies/`. Every
-  `[FILL IN]` is a decision.
+- **Returns and shipping policies** — now live pages at `/returns` and
+  `/shipping`, text in `src/content/legal/`. Every `[FILL IN]` is a decision,
+  and `npm run build` counts the ones left. Zero before the live link goes on.
 - **Pre-order delays** — the Fair Trading Act prohibits accepting payment when
   you have no reasonable grounds to believe you can supply in the time stated.
   There's no public release date, which is right. 25 units are built; cables

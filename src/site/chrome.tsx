@@ -2,6 +2,8 @@ import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../lib/auth';
 import { SocialIcons } from './socials';
+import { BuyButton } from './Buy';
+import { SALE_STATE } from './launch';
 
 export function Brand() {
   return (
@@ -54,11 +56,7 @@ export function Nav() {
           ))}
         </nav>
         <span className="spacer" />
-        {location.pathname !== '/' && (
-          <Link to="/#waitlist" className="btn btn-white">
-            Join the waitlist
-          </Link>
-        )}
+        {location.pathname !== '/' && <NavCta />}
         <button
           type="button"
           className="menu-btn"
@@ -78,13 +76,21 @@ export function Nav() {
               {link.label}
             </Link>
           ))}
-          <Link to="/#waitlist" className="btn btn-white">
-            Join the waitlist
-          </Link>
+          <NavCta />
           <SocialIcons />
         </div>
       )}
     </>
+  );
+}
+
+/** Pre-order / Buy while the sale is open; otherwise the waitlist, as before. */
+function NavCta() {
+  if (SALE_STATE === 'open') return <BuyButton />;
+  return (
+    <Link to="/#waitlist" className="btn btn-white">
+      Join the waitlist
+    </Link>
   );
 }
 
@@ -96,11 +102,13 @@ export function Footer() {
         <div className="foot-row">
           <Brand />
           <div className="foot-links">
-            <Link to="/#waitlist">Waitlist</Link>
+            {SALE_STATE === 'open' ? <Link to="/#buy">Buy</Link> : <Link to="/#waitlist">Waitlist</Link>}
             <Link to="/updates">Updates</Link>
-            <Link to="/privacy">Privacy</Link>
+            <Link to="/shipping">Shipping</Link>
+            <Link to="/returns">Returns</Link>
             <Link to="/terms">Terms</Link>
-            <a href="mailto:support@trytaptile.com">Support</a>
+            <Link to="/privacy">Privacy</Link>
+            <Link to="/contact">Contact</Link>
             {user ? (
               <>
                 <Link to="/admin">Admin</Link>

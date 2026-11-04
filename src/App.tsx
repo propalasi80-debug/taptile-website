@@ -14,6 +14,10 @@ import Update from './pages/Update';
 import Privacy from './pages/Privacy';
 import Terms from './pages/Terms';
 import Leave from './pages/Leave';
+import Thanks from './pages/Thanks';
+import Contact from './pages/Contact';
+import Shipping from './pages/Shipping';
+import Returns from './pages/Returns';
 
 /** Jump to the top on navigation, or to the #anchor when there is one. */
 function ScrollBehaviour() {
@@ -42,9 +46,10 @@ function AuthFrame({ children }: { children: ReactNode }) {
 }
 
 /**
- * There is no shop. One board exists, it is not orderable yet, and every route
- * here ends at the waitlist or the devlog. Sign-in is kept because /admin is
- * how updates get published — not because visitors have accounts.
+ * One board, sold through a Stripe Payment Link (src/site/launch.ts). There is
+ * no cart or checkout route: Stripe hosts the checkout and sends buyers back to
+ * /thanks. Sign-in is kept because /admin is how updates get published, not
+ * because visitors have accounts.
  */
 const siteRoutes = (
   <Routes>
@@ -53,6 +58,10 @@ const siteRoutes = (
     <Route path="/updates/:slug" element={<Update />} />
     <Route path="/privacy" element={<Privacy />} />
     <Route path="/terms" element={<Terms />} />
+    <Route path="/shipping" element={<Shipping />} />
+    <Route path="/returns" element={<Returns />} />
+    <Route path="/contact" element={<Contact />} />
+    <Route path="/thanks" element={<Thanks />} />
     <Route path="/login" element={<AuthFrame><Login /></AuthFrame>} />
     <Route path="/forgot-password" element={<AuthFrame><ForgotPassword /></AuthFrame>} />
     <Route path="/reset-password" element={<AuthFrame><ResetPassword /></AuthFrame>} />

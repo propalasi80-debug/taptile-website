@@ -1,108 +1,98 @@
-# Connecting Stripe checkout
+# Checkout: Stripe Payment Link
 
-The storefront is finished. Payments are not, and cannot be done from the
-browser alone. This is what is left.
+Checkout is a **Stripe Payment Link**, a page Stripe hosts on `buy.stripe.com`.
+There is no server, no API key and no webhook. The site only links to it.
 
-## Why there is no Stripe code in the front end
+Every switch lives in `src/site/launch.ts`:
 
-Two reasons, both non-negotiable:
+| Setting | Where | What it does |
+|---|---|---|
+| `VITE_BUY_URL` | Vercel env var | The Payment Link. Blank = the site stays a waitlist. |
+| `VITE_PRICE_NZD` | Vercel env var | Price shown on the site. Defaults to `99.99`. Must match the link. |
+| `SALE_MODE` | `launch.ts` | `'preorder'` (default) or `'buy'`. Changes the button label and the four pre-order lines under it. |
+| `SOLD_OUT` | `launch.ts` | `true` = button reads "Sold out", disabled, no link. |
 
-1. **Secret keys cannot live in this repo.** Everything in `src/` is compiled
-   into the JavaScript bundle every visitor downloads. A `sk_live_…` key placed
-   here is a published key. Only the publishable `pk_…` key is safe client-side.
+**Never add an `sk_` or `rk_` key anywhere.** None is needed. `vite.config.ts`
+fails the build if one turns up in a `VITE_` variable, if `VITE_BUY_URL` isn't a
+`https://buy.stripe.com/` link, or if Production points at a test link.
 
-2. **The browser must not decide the price.** If the client sent the amount,
-   anyone could open devtools and buy a £54 keyboard for 1p. The server looks up
-   prices from its own copy of the catalogue.
+## Environments
 
-So `src/lib/checkout.ts` sends only product slugs and quantities to an endpoint
-you control. That endpoint does the rest.
+Vercel builds previews **and** production in Vite's production mode, so the
+committed `.env.development` only affects `npm run dev`. Set the link in
+Vercel → Project → Settings → Environment Variables:
 
-## What you need to build
+| Variable | Preview | Production |
+|---|---|---|
+| `VITE_BUY_URL` | `https://buy.stripe.com/test_…` | `https://buy.stripe.com/…` (live) |
+| `VITE_PRICE_NZD` | `99.99` | `99.99` |
 
-A single HTTPS endpoint that accepts:
+Env vars are baked in at build time, so **redeploy** after changing one.
 
-```json
-{
-  "items": [{ "slug": "taptile-six", "quantity": 2 }],
-  "email": "customer@example.com",
-  "successUrl": "https://www.trytaptile.com/order/success",
-  "cancelUrl": "https://www.trytaptile.com/cart"
-}
-```
+## Stripe setup (dashboard, test mode first)
 
-…and returns:
+1. **Product:** `Taptile Dialect`, one-off price NZ$99.99 NZD.
+2. **Shipping rate:** `NZ Post — tracked`, flat amount, no delivery estimate.
+3. **Payment Link** for the product:
+   - quantity fixed at 1, customer can't adjust
+   - **limit the number of payments: 20** (batch 1 is 25 built, 20 for sale)
+   - collect shipping address, New Zealand only, with the shipping rate
+   - require phone number
+   - require terms acceptance (needs the Terms URL in Settings → Business → Public details: `https://www.trytaptile.com/terms`)
+   - after payment: don't show confirmation page, redirect to
+     `https://www.trytaptile.com/thanks?session_id={CHECKOUT_SESSION_ID}`
+4. **Settings → Business → Public details:** support email `taptile.admin@gmail.com`,
+   website, Terms URL `/terms`, Privacy URL `/privacy`.
+5. **Settings → Customer emails:** turn on successful payments and refunds.
 
-```json
-{ "url": "https://checkout.stripe.com/c/pay/cs_test_..." }
-```
+## Test gate (before the live link)
 
-### Reference implementation
+1. `npm run build` passes (typecheck, copy check, Vite build).
+2. On the Vercel preview with the **test** link, pay with card `4242 4242 4242 4242`,
+   any future expiry, any CVC. The page shows a yellow "Test checkout" note.
+   - lands on `/thanks`
+   - the test receipt email arrives
+   - the shipping address and phone are on the payment in Stripe
+3. Zero `[FILL IN]` on public pages. `npm run check:copy` prints how many are left.
 
-Deploy as a Vercel or Netlify function, or a Supabase Edge Function.
+## Going live
 
-```ts
-import Stripe from 'stripe';
+Only after Stripe shows the account as **verified** and Jenil says go:
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+1. Rebuild the product, shipping rate and Payment Link in **live** mode (test
+   objects don't carry over).
+2. Set the live link as `VITE_BUY_URL` for **Production** only. Redeploy.
+3. Open the live site and click through to Stripe (don't pay).
 
-// The server's own price list. Never trust prices from the client.
-const PRICES: Record<string, { name: string; amount: number }> = {
-  'taptile-three': { name: 'Taptile Three', amount: 2400 },
-  'taptile-six': { name: 'Taptile Six', amount: 3900 },
-  'taptile-mini': { name: 'Taptile Mini', amount: 5400 },
-};
+## Selling out
 
-export async function POST(request: Request) {
-  const { items, email, successUrl, cancelUrl } = await request.json();
+Stripe deactivates the link by itself after 20 payments. Then set
+`SOLD_OUT = true` in `launch.ts` and deploy, so nobody lands on Stripe's "no
+longer available" page. Never show how many are left.
 
-  const lineItems = items.map((item: { slug: string; quantity: number }) => {
-    const price = PRICES[item.slug];
-    if (!price) throw new Error(`Unknown product: ${item.slug}`);
-    return {
-      quantity: Math.min(10, Math.max(1, Math.trunc(item.quantity))),
-      price_data: {
-        currency: 'gbp',
-        unit_amount: price.amount,
-        product_data: { name: price.name },
-      },
-    };
-  });
+## Lowering the price
 
-  const session = await stripe.checkout.sessions.create({
-    mode: 'payment',
-    line_items: lineItems,
-    customer_email: email,
-    success_url: successUrl,
-    cancel_url: cancelUrl,
-    shipping_address_collection: { allowed_countries: ['GB', 'IE'] },
-    automatic_tax: { enabled: true },
-  });
+Stripe can't change the price on an existing Payment Link. Make a new one:
 
-  return Response.json({ url: session.url });
-}
-```
+1. Stripe → Product catalogue → Taptile Dialect → **Add another price** (e.g. NZ$89.99).
+2. Payment Links → **New** with that price and the same settings as above.
+   Set the payment limit to **20 minus what's already sold**, or you will oversell.
+3. Vercel: change `VITE_BUY_URL` to the new link and `VITE_PRICE_NZD` to the new
+   price, together, then redeploy.
+4. Once the new deploy is live, **deactivate the old link** in Stripe.
 
-Then set in `.env.local` (and in your host's environment variables):
+People who paid the higher price aren't owed the difference by law. Refunding
+it from Stripe → Payments → Refund (partial) is cheap goodwill. Don't show a
+"was / now" price unless the old price was genuinely charged for a fair time
+(Fair Trading Act).
 
-```
-VITE_CHECKOUT_ENDPOINT=https://your-site.com/api/create-checkout-session
-```
+## After an order
 
-`STRIPE_SECRET_KEY` goes in the **server's** environment only. Never in
-`.env.local`, never in this repo.
+Stripe → Payments → open the order → copy the address and phone into NZ Post
+eShip → print the label → drop it at a PostShop. eShip emails the tracking.
 
-## Before you take a single real payment
+## Later, if it's ever needed
 
-Not optional, and not things a developer can decide for you:
-
-- [ ] Stripe account verified, out of test mode
-- [ ] A **webhook** on `checkout.session.completed` that records the order —
-      without it you will have money and no idea what to ship
-- [ ] Returns policy (legally required in the UK and EU — 14-day cooling off)
-- [ ] Terms of sale, privacy policy, and delivery timescales published
-- [ ] VAT position confirmed with an accountant, and `automatic_tax` configured
-- [ ] Vendor confirmed they can actually fulfil at the volume and lead time you
-      advertise
-
-Test with Stripe's test card `4242 4242 4242 4242` before going live.
+A webhook on `checkout.session.completed` (to write orders into Supabase for the
+admin Orders page) needs a server endpoint with the secret key in the
+**server's** environment only. It's not needed to take payments.

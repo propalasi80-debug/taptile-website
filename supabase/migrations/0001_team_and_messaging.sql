@@ -1,3 +1,8 @@
+-- NOT APPLIED to the live project as of 4 Nov 2026 (docs/LEGAL_REVIEW.md §8).
+-- Hardened 4 Nov before anyone does: policies gate on is_admin(), not merely
+-- "signed in", because public sign-up lets anyone become signed in. Before
+-- applying, turn off Supabase Auth → "Allow new users to sign up"
+-- (team-invite still creates accounts). See docs/SECURITY.md.
 -- Team profiles, messaging and file attachments.
 --
 -- Everything here is gated by row-level security, not by the UI. The client
@@ -22,18 +27,24 @@ create table if not exists public.profiles (
 
 alter table public.profiles enable row level security;
 
--- Everyone signed in can see who is on the team. There are two of you; hiding
--- colleagues from each other would only break the message list.
+-- Team members (admins) see the team; everyone else sees only themselves.
+-- "authenticated" is not "team": public sign-up creates an auth user for
+-- anyone, and handle_new_user() gives them a profile row.
 drop policy if exists profiles_select on public.profiles;
 create policy profiles_select on public.profiles
-  for select to authenticated using (true);
+  for select to authenticated using (public.is_admin() or id = auth.uid());
 
--- You may edit your own name. Nobody may change their own role.
+-- You may edit your own name. Nobody may change their own role or email
+-- (a rewritten email would let one account pose as another in the UI).
 drop policy if exists profiles_update_self on public.profiles;
 create policy profiles_update_self on public.profiles
   for update to authenticated
   using (id = auth.uid())
-  with check (id = auth.uid() and role = (select role from public.profiles p where p.id = auth.uid()));
+  with check (
+    id = auth.uid()
+    and role = (select role from public.profiles p where p.id = auth.uid())
+    and email = (select email from public.profiles p where p.id = auth.uid())
+  );
 
 -- Admins may add and remove profiles.
 drop policy if exists profiles_admin_write on public.profiles;
@@ -137,14 +148,17 @@ alter table public.thread_members enable row level security;
 alter table public.messages       enable row level security;
 alter table public.attachments    enable row level security;
 
--- Threads: members read, any signed-in user may start one.
+-- Threads: members and the creator read; only team members (admins) start
+-- one. Both founders are admins already: /admin itself needs is_admin().
+-- The creator clause also lets the insert().select() in messages.ts return
+-- the new row before the membership rows exist.
 drop policy if exists threads_select on public.threads;
 create policy threads_select on public.threads
-  for select to authenticated using (public.is_thread_member(id));
+  for select to authenticated using (public.is_thread_member(id) or created_by = auth.uid());
 
 drop policy if exists threads_insert on public.threads;
 create policy threads_insert on public.threads
-  for insert to authenticated with check (created_by = auth.uid());
+  for insert to authenticated with check (public.is_admin() and created_by = auth.uid());
 
 drop policy if exists threads_update on public.threads;
 create policy threads_update on public.threads
@@ -152,8 +166,9 @@ create policy threads_update on public.threads
   using (public.is_thread_member(id))
   with check (public.is_thread_member(id));
 
--- Membership rows: you see the ones for threads you are in, and the creator
--- adds the participants when the thread is made.
+-- Membership rows: you see the ones for threads you are in, and only the
+-- creator adds participants. Nobody adds themselves: with a self-join clause,
+-- anyone who learned a thread's UUID could read it and its attachments.
 drop policy if exists thread_members_select on public.thread_members;
 create policy thread_members_select on public.thread_members
   for select to authenticated using (public.is_thread_member(thread_id));
@@ -162,8 +177,7 @@ drop policy if exists thread_members_insert on public.thread_members;
 create policy thread_members_insert on public.thread_members
   for insert to authenticated
   with check (
-    user_id = auth.uid()
-    or exists (
+    exists (
       select 1 from public.threads t
       where t.id = thread_id and t.created_by = auth.uid()
     )

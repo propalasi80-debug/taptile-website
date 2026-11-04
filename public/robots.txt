@@ -6,5 +6,6 @@ Disallow: /account
 Disallow: /admin
 Disallow: /cart
 Disallow: /order/
+Disallow: /thanks
 
 Sitemap: https://www.trytaptile.com/sitemap.xml

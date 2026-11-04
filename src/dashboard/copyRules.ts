@@ -34,9 +34,9 @@ export const COPY_RULES: CopyRule[] = [
     why: 'The PCBs are made and assembled by JLCPCB overseas. Design and final assembly are ours; the product as a whole is not "made" here.',
   },
   {
-    never: 'A real price',
-    instead: '[FILL IN]',
-    why: 'Not locked. Launch gate 7.',
+    never: 'A price that differs from the Stripe Payment Link',
+    instead: 'PRICE_LABEL from src/site/launch.ts (NZ$99.99, locked 4 Nov)',
+    why: 'Stripe charges the price on the link, not the one on the page. Showing one and charging another breaches the Fair Trading Act. Change both together: docs/CHECKOUT.md.',
   },
   {
     never: 'A real ship date or window',

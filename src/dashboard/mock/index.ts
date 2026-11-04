@@ -82,9 +82,9 @@ export const GATES: Gate[] = [
   },
   {
     title: 'Price locked',
-    detail: 'Unit cost is known. The price is not set, so nothing downstream can be.',
+    detail: 'NZ$99.99, locked 4 Nov. Set by VITE_PRICE_NZD next to the Payment Link.',
     owner: 'Co-founder',
-    state: 'block',
+    state: 'done',
   },
   {
     title: 'Ship window set',
@@ -94,7 +94,7 @@ export const GATES: Gate[] = [
   },
   {
     title: 'Pre-order live',
-    detail: 'The last gate. Needs the price and the window before it can open.',
+    detail: 'The last gate. The Payment Link is ready to wire; it goes live when Stripe verifies the account.',
     owner: 'Owner',
     state: 'block',
   },
@@ -142,8 +142,8 @@ export const HELP_TOPICS = [
 
 export const HELP_QUESTIONS = [
   {
-    q: 'Why does the price show [FILL IN] everywhere?',
-    a: 'Because it is not locked. Launch gate 7 is blocked on it, and gates 8 and 9 are blocked behind that. Rendering a placeholder rather than a number means no screenshot of this dashboard can be mistaken for a decision that has not been made.',
+    q: 'Where does the price come from?',
+    a: 'VITE_PRICE_NZD, set in Vercel next to VITE_BUY_URL (the Stripe Payment Link). NZ$99.99 since 4 Nov. Stripe cannot change the price on an existing link, so lowering it means a new link and both values changed together. Steps in docs/CHECKOUT.md.',
   },
   {
     q: 'When can we publish a ship date?',

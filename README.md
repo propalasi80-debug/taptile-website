@@ -2,11 +2,10 @@
 
 Storefront for Taptile — programmable mini keyboards.
 
-> **Status: pre-launch.** The site sells one real board — the Taptile Dialect,
-> NZ$70 — but checkout is not connected, so the product page offers the waitlist
-> instead of a basket. Read [docs/CHECKOUT.md](docs/CHECKOUT.md) before that
-> changes. Some specs are still unconfirmed; see the OPEN note at the top of
-> `src/lib/catalog.ts`.
+> **Status: pre-launch.** One board, the Taptile Dialect, NZ$99.99. Checkout is a
+> Stripe Payment Link switched by `VITE_BUY_URL`; while that's blank the site is a
+> waitlist. Read [docs/CHECKOUT.md](docs/CHECKOUT.md) before changing anything in
+> `src/site/launch.ts`.
 
 ## Running it
 
@@ -32,13 +31,12 @@ can check the mobile layout on your phone.
 
 ## What does not
 
-- **Checkout.** Needs a server endpoint. See [docs/CHECKOUT.md](docs/CHECKOUT.md).
 - **A measured case.** The footprint on the product page is derived from the
   board plus 3 mm walls, not measured off a printed shell. Correct it once one
   exists. Case height is absent because nothing about it is known yet.
 - **The turntable frames.** The component is wired but `public/render/dialect/`
   is empty, so the section hides itself. See [docs/RENDER.md](docs/RENDER.md).
-- **Order history.** Arrives once Stripe webhooks write orders to a database.
+- **Orders in /admin.** Orders live in Stripe → Payments. Writing them here needs a webhook, which the Payment Link setup skips.
 - **Configurator against real hardware.** Written to spec, never tested on a
   board. See [docs/CONFIGURATOR.md](docs/CONFIGURATOR.md) for the checklist.
 
@@ -49,10 +47,11 @@ cp .env.example .env.local
 ```
 
 Then fill in your Supabase URL and anon key. Until you do, the sign-in page
-shows a setup notice rather than pretending to work.
+shows a setup notice rather than pretending to work. For checkout, paste the
+**test** Payment Link into `.env.development` (see the file).
 
-Never put a Stripe secret key in `.env.local` — everything there is compiled
-into the public JavaScript bundle.
+Never put a Stripe secret key in any env file — everything there is compiled
+into the public JavaScript bundle, and the build fails if one appears.
 
 ## Design system
 
@@ -77,9 +76,9 @@ from there rather than hard-coding values.
 
 ```
 src/
-  lib/catalog.ts     Product data — one board, the Taptile Dialect
-  lib/cart.tsx       Basket state, persisted to localStorage
-  lib/checkout.ts    Talks to your Stripe endpoint
+  site/launch.ts     Payment Link, price, Buy/Pre-order, sold out
+  site/Buy.tsx       The one Buy button and the pre-order lines
+  content/legal/     Terms, privacy, shipping, returns (markdown)
   lib/auth.tsx       Supabase auth
   pages/             One file per route
   components/        Nav, footer, cart drawer, product art

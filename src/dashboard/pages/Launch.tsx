@@ -70,7 +70,7 @@ export default function Launch() {
     cleared === states.length
       ? 'All nine cleared. Pre-orders can open.'
       : blocked > 0
-        ? 'Every blocker traces back to one decision: the price.'
+        ? 'Start with the first blocked gate below.'
         : 'Nothing blocked — finish what is in progress.';
 
   const blockers = GATES.map((gate, index) => ({ gate, index })).filter(

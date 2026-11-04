@@ -27,6 +27,7 @@ import {
   updateOwnName,
 } from '../../lib/team';
 import { FIGURES, FILL_IN } from '../mock';
+import { PRICE_LABEL } from '../../site/launch';
 import { longDate } from '../lib/format';
 import { Shield, Users } from '../icons';
 
@@ -214,7 +215,7 @@ export default function Settings() {
                 {[
                   ['Product', 'Taptile Dialect'],
                   ['Batch 1', `${FIGURES.runSize} built · ${FIGURES.forSale} for sale`],
-                  ['Unit price', FILL_IN],
+                  ['Unit price', PRICE_LABEL],
                   ['Accounts', loading ? '—' : String(profiles.length)],
                 ].map(([label, value]) => (
                   <div

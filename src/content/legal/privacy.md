@@ -1,4 +1,4 @@
-**In short:** we collect your email address if you join the waitlist or create an account, and nothing more than that. We run no analytics or trackers of any kind. The configurator isn't released yet; it's being built so your keymaps stay on your device. Waitlist and account data is stored on Supabase's servers in the United Kingdom. You can ask to see or correct what we hold at any time by emailing support@trytaptile.com.
+**In short:** we collect your email address if you join the waitlist or create an account. If you buy a Dialect, Stripe takes your payment and we get your name, email, shipping address and phone number, which we use only to ship your order and help with it afterwards. We never see your card details. We run no analytics or trackers of any kind. The configurator isn't released yet; it's being built so your keymaps stay on your device. Waitlist and account data is stored on Supabase's servers in the United Kingdom. You can ask to see or correct what we hold at any time by emailing taptile.admin@gmail.com.
 
 ## No analytics, no tracking
 
@@ -8,13 +8,15 @@ Taptile runs no analytics of any kind — no Google Analytics, Plausible, PostHo
 
 **If you join the waitlist:** your email address, a tag recording where on the site you signed up and, if you arrived from a link that names one, the post or campaign that sent you (for example "tiktok"), and the time you signed up. That's it. It's stored in a database the website itself can't read back — only we can.
 
+**If you buy something:** Stripe collects your payment and sends us your name, email address, shipping address and phone number, plus what you bought and how much you paid. We use these only to ship your order, send it with tracking, and help if something goes wrong. The phone number is there because the courier may need it to deliver.
+
 **If you create an account:** your email address and a password, which Supabase Auth (our authentication provider) hashes before storing — we never see or store your password in plain text. If you sign in with Google, once that option is enabled, we also receive the email address, display name and profile picture Google provides.
 
 **Server logs:** like any website, our hosting provider, Vercel, records IP addresses and basic request information as a normal part of serving pages. We don't use this for anything beyond keeping the site running.
 
 ## What we don't collect
 
-- No payment details. Checkout isn't connected yet — there's no server endpoint and no payment processor set up for this project.
+- No card details. Payment happens on Stripe's checkout page, and your card number never reaches us.
 - No keystroke data. Nothing on this site reads what you type on a keyboard.
 - No advertising or tracking cookies, from us or from anyone else.
 
@@ -38,7 +40,9 @@ We use a small number of service providers to run the site. Each only sees what 
 
 - **Supabase** stores our database and handles account sign-in. The project is hosted in the **eu-west-2** region — London, United Kingdom.
 - **Resend** sends our email — account emails like sign-in links and password resets, and waitlist emails. Everything is sent from support@trytaptile.com through Resend's servers in Ireland. Resend sees the address it's sending to and the content of the email.
-- **Google Workspace** runs our support inbox. If you email support@trytaptile.com or reply to one of our emails, your message and email address are stored in Google's systems.
+- **Stripe** processes payments and holds the order record: your name, email, shipping address, phone and payment details. Stripe's own privacy policy covers what it does with them.
+- **NZ Post** delivers your order. We give it your name, shipping address, phone number and email so it can deliver the parcel and send you tracking.
+- **Gmail** (Google) runs our support inbox. If you email taptile.admin@gmail.com, your message and email address are stored in Google's systems.
 - **Vercel** hosts the website and serves it to your browser. It sees your IP address in its server logs, as any host does.
 - **Google**, only if you choose "Continue with Google" to sign in. Google returns your email, name and profile picture to us; what Google itself does with that information is covered by Google's own privacy policy, not this one.
 
@@ -46,17 +50,18 @@ We don't sell personal information to anyone, and we don't share it beyond the p
 
 ## Your information leaving New Zealand
 
-Because Supabase stores our database in the United Kingdom, your personal information is held overseas. Under the Privacy Act 2020, specifically Information Privacy Principle 12, we're required to tell you this plainly — so here it is: if you join the waitlist or create an account, your information is stored on servers in the UK, not New Zealand. The emails we send you go out through Resend's servers in Ireland, and if you write to us, your message is kept in Google Workspace, whose servers may also be outside New Zealand.
+Because Supabase stores our database in the United Kingdom, your personal information is held overseas. Under the Privacy Act 2020, specifically Information Privacy Principle 12, we're required to tell you this plainly — so here it is: if you join the waitlist or create an account, your information is stored on servers in the UK, not New Zealand. The emails we send you go out through Resend's servers in Ireland, and if you write to us, your message is kept in Gmail, whose servers may also be outside New Zealand. If you buy, your order and payment details are held by Stripe, whose servers are outside New Zealand (mainly in the United States).
 
 ## How long we keep information
 
 - **Waitlist entries** are kept until you leave the list (there's a one-click link at the bottom of every waitlist email, and leaving deletes your address), ask us to remove you, or the waitlist closes — whichever comes first.
+- **Order records** (name, address, what you bought and what you paid) are kept for seven years, because New Zealand tax law requires business records to be kept that long. We don't use them for anything else.
 - **Account information** is kept until you delete your account.
 - **Server logs** are retained by Vercel for its normal operational period; we don't separately archive them.
 
 ## Your rights
 
-Under the Privacy Act 2020, you can ask us what personal information we hold about you, and ask us to correct it if it's wrong. To do either, email **support@trytaptile.com**. We'll respond as quickly as we reasonably can.
+Under the Privacy Act 2020, you can ask us what personal information we hold about you, and ask us to correct it if it's wrong. To do either, email **taptile.admin@gmail.com**. We'll respond as quickly as we reasonably can.
 
 If you're not satisfied with how we've handled a request or complaint, you can take it to the **Office of the Privacy Commissioner** at privacy.org.nz.
 
@@ -66,7 +71,7 @@ We treat information from Australian visitors and customers in line with the **A
 
 ## Children
 
-We don't currently verify anyone's age when they join the waitlist or create an account. If we become aware that we've collected personal information from a child without appropriate consent, we'll delete it and, where we can identify a parent or guardian, let them know. If you believe a child has given us their information, email support@trytaptile.com and we'll act on it.
+We don't currently verify anyone's age when they join the waitlist or create an account. If we become aware that we've collected personal information from a child without appropriate consent, we'll delete it and, where we can identify a parent or guardian, let them know. If you believe a child has given us their information, email taptile.admin@gmail.com and we'll act on it.
 
 ## If something goes wrong
 
@@ -78,8 +83,8 @@ We'll update this policy whenever what the site actually does changes. The curre
 
 ## Contact
 
-Questions, access requests, corrections, or complaints: **support@trytaptile.com**.
+Questions, access requests, corrections, or complaints: **taptile.admin@gmail.com**.
 
 ---
 
-Last updated: 30 October 2026
+Last updated: [FILL IN on publish]

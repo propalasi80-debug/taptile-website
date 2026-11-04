@@ -28,7 +28,10 @@ export default function Login() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const destination = (location.state as LocationState | null)?.from ?? '/admin';
+  // Only ever send people back into the dashboard. Anything else (another
+  // site, a //host or /\host path) falls back to /admin.
+  const from = (location.state as LocationState | null)?.from;
+  const destination = typeof from === 'string' && /^\/admin(\/[\w/-]*)?$/.test(from) ? from : '/admin';
 
   // Already signed in? Skip the form entirely.
   useEffect(() => {
