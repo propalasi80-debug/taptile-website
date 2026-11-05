@@ -7,6 +7,7 @@
  */
 
 import {
+  Box,
   Chat,
   Gear,
   Grid,
@@ -31,10 +32,12 @@ export interface NavItem {
 export const ROOT = '/admin';
 
 export const NAV: { dashboards: NavItem[]; settings: NavItem[] } = {
-  // Revenue, Orders, Production and Costs are left out until they have data:
-  // a menu of empty pages is four dead ends. Their routes still exist.
+  // Revenue, Production and Costs are left out until they have data: a menu
+  // of empty pages is three dead ends. Their routes still exist. Orders is in
+  // because the Stripe webhook fills it.
   dashboards: [
     { label: 'Overview', to: ROOT, icon: Grid },
+    { label: 'Orders', to: `${ROOT}/orders`, icon: Box, live: true },
     { label: 'Inventory', to: `${ROOT}/inventory`, icon: Package, live: true },
     { label: 'Launch', to: `${ROOT}/launch`, icon: Rocket },
     { label: 'Customers', to: `${ROOT}/customers`, icon: Users, live: true },

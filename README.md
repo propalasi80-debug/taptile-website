@@ -26,7 +26,8 @@ can check the mobile layout on your phone.
 - Basket with quantities, persists across refreshes
 - Sign in and sign up (needs Supabase keys — see below)
 - Account page
-- Admin waitlist dashboard at `/admin` (allowlisted accounts only)
+- Admin dashboard at `/admin` (allowlisted accounts only): waitlist, inventory,
+  and orders fed by the Stripe webhook, with mark-shipped that emails tracking
 - Keyboard configurator at `/configurator` — see [docs/CONFIGURATOR.md](docs/CONFIGURATOR.md)
 
 ## What does not
@@ -36,7 +37,6 @@ can check the mobile layout on your phone.
   exists. Case height is absent because nothing about it is known yet.
 - **The turntable frames.** The component is wired but `public/render/dialect/`
   is empty, so the section hides itself. See [docs/RENDER.md](docs/RENDER.md).
-- **Orders in /admin.** Orders live in Stripe → Payments. Writing them here needs a webhook, which the Payment Link setup skips.
 - **Configurator against real hardware.** Written to spec, never tested on a
   board. See [docs/CONFIGURATOR.md](docs/CONFIGURATOR.md) for the checklist.
 
@@ -78,6 +78,7 @@ from there rather than hard-coding values.
 src/
   site/launch.ts     Payment Link, price, Buy/Pre-order, sold out
   site/Buy.tsx       The one Buy button and the pre-order lines
+  lib/orders.ts      Orders (read-only from the browser; shipping via a function)
   content/legal/     Terms, privacy, shipping, returns (markdown)
   lib/auth.tsx       Supabase auth
   pages/             One file per route

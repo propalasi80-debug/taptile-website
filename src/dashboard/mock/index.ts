@@ -146,6 +146,10 @@ export const HELP_QUESTIONS = [
     a: 'VITE_PRICE_NZD, set in Vercel next to VITE_BUY_URL (the Stripe Payment Link). NZ$99.99 since 4 Nov. Stripe cannot change the price on an existing link, so lowering it means a new link and both values changed together. Steps in docs/CHECKOUT.md.',
   },
   {
+    q: 'How do I ship an order?',
+    a: 'Orders arrive on the Orders page by themselves: Stripe calls our webhook the moment a checkout is paid. Open the order, copy the address into NZ Post eShip (or export the to-ship CSV and import it there), print the label, then enter the tracking number and press "Mark shipped". That one press changes the status and emails the customer their tracking link.',
+  },
+  {
     q: 'When can we publish a ship date?',
     a: 'Not until case printing clears the full run. A date published before then is a promise the build queue cannot keep.',
   },

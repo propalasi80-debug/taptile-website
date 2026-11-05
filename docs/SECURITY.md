@@ -25,6 +25,13 @@ is Row Level Security in Supabase plus the settings below. **Not a pen test.**
   link is a 144-bit HMAC with constant-time compare and a fixed redirect.
   Every value in the email templates is escaped.
 - Every `SECURITY DEFINER` function in the repo sets `search_path`.
+- Orders (`0004_orders.sql`): written only by the service role from the
+  `stripe-webhook` function, which verifies Stripe's signature (HMAC, constant
+  time, 5-minute tolerance) and dedupes by event id. Browser gets select plus
+  one column (`note`), admins only. "Shipped" goes through `order-shipped`,
+  which re-checks `is_admin()` before using the service role.
+- `scripts/stripe-setup.mjs` reads the Stripe key from the shell only. Use a
+  restricted key, never the full secret.
 - `npm audit`: Vite upgraded to 6.4.5 (patched). The one remaining advisory
   (React Router open redirect) needs an untested major upgrade and isn't
   reachable here: the only dynamic navigation target is validated.

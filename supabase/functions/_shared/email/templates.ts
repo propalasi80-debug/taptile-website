@@ -361,3 +361,69 @@ export function orderShippedTemplate(): Email {
     footer: { kind: 'order' },
   });
 }
+
+/* --------------------------------------------- orders (sent with real values) -- */
+/*
+ * Unlike the Resend-stored templates above, these are rendered at send time
+ * by the stripe-webhook and order-shipped functions, with values that came
+ * from a customer's checkout. Every value goes through esc(), here or in the
+ * renderer: treat all of it as hostile.
+ */
+export interface OrderEmailFacts {
+  orderNumber: string;
+  item: string;
+  quantity: number;
+  total: string;
+  shipTo: string;
+}
+
+/** To the team, the moment Stripe reports a paid session. */
+export function orderReceivedForTeam(o: OrderEmailFacts & { email: string; phone: string; adminUrl: string }): Email {
+  return render({
+    subject: `New order ${o.orderNumber} — ${o.total}`,
+    preheader: `${o.item} × ${o.quantity}, ships to ${o.shipTo}`,
+    label: 'New order',
+    heading: `Order ${o.orderNumber} just came in.`,
+    blocks: [
+      { kind: 'p', html: `Someone just paid for a ${strong(o.item)}. Stripe has the payment, and their receipt is on its way from Stripe.` },
+      {
+        kind: 'facts',
+        rows: [
+          ['Order', o.orderNumber],
+          ['Board', o.item],
+          ['Qty', String(o.quantity)],
+          ['Total', o.total],
+          ['Ships to', o.shipTo || '—'],
+          ['Phone', o.phone || '—'],
+          ['Email', o.email],
+        ],
+      },
+      { kind: 'button', label: 'Open in admin', url: o.adminUrl },
+      { kind: 'note', html: 'Print the label in eShip and mark it shipped in admin; that sends the tracking email.' },
+    ],
+    footer: { kind: 'order' },
+  });
+}
+
+/** To the customer, when the order is marked shipped in admin. Same words as orderShippedTemplate(). */
+export function orderShipped(o: { orderNumber: string; carrier: string; trackingNumber: string; trackingUrl: string }): Email {
+  const trackingUrl = /^https?:\/\//i.test(o.trackingUrl.trim()) ? o.trackingUrl.trim() : '';
+  const blocks: Message['blocks'] = [
+    { kind: 'p', html: `Your Taptile (order ${strong(o.orderNumber)}) just left us. Tracking can take a few hours to wake up, so don't worry if it's quiet at first.` },
+    { kind: 'facts', rows: [['Carrier', o.carrier || 'NZ Post'], ['Tracking', o.trackingNumber || 'Coming by email']] },
+  ];
+  if (trackingUrl) blocks.push({ kind: 'button', label: 'Track it', url: trackingUrl });
+  else blocks.push({ kind: 'note', html: "We'll email the tracking link as soon as the courier gives us one." });
+  blocks.push(
+    { kind: 'note', html: 'We\'d love to see it on your desk when it lands &mdash; tag us on Instagram <a href="https://www.instagram.com/trytaptile/" style="color:#b4b4ba;text-decoration:underline;">@trytaptile</a>.' },
+    { kind: 'signoff' },
+  );
+  return render({
+    subject: 'Your Taptile is on its way',
+    preheader: `Order ${o.orderNumber} just left us.`,
+    label: 'Shipped',
+    heading: "It's on its way.",
+    blocks,
+    footer: { kind: 'order' },
+  });
+}

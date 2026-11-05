@@ -1,7 +1,9 @@
 # Checkout: Stripe Payment Link
 
 Checkout is a **Stripe Payment Link**, a page Stripe hosts on `buy.stripe.com`.
-There is no server, no API key and no webhook. The site only links to it.
+The site only links to it: no server and no API key in the site. One webhook
+(an Edge Function) copies each paid order into Supabase so the admin Orders
+page can ship it.
 
 Every switch lives in `src/site/launch.ts`:
 
@@ -29,21 +31,74 @@ Vercel → Project → Settings → Environment Variables:
 
 Env vars are baked in at build time, so **redeploy** after changing one.
 
-## Stripe setup (dashboard, test mode first)
+## Stripe setup: one command
 
-1. **Product:** `Taptile Dialect`, one-off price NZ$99.99 NZD.
-2. **Shipping rate:** `NZ Post — tracked`, flat amount, no delivery estimate.
-3. **Payment Link** for the product:
-   - quantity fixed at 1, customer can't adjust
-   - **limit the number of payments: 20** (batch 1 is 25 built, 20 for sale)
-   - collect shipping address, New Zealand only, with the shipping rate
-   - require phone number
-   - require terms acceptance (needs the Terms URL in Settings → Business → Public details: `https://www.trytaptile.com/terms`)
-   - after payment: don't show confirmation page, redirect to
-     `https://www.trytaptile.com/thanks?session_id={CHECKOUT_SESSION_ID}`
-4. **Settings → Business → Public details:** support email `taptile.admin@gmail.com`,
+`scripts/stripe-setup.mjs` creates the product, the NZ$ price, the NZ Post
+shipping rate, the Payment Link with every setting below, and (with
+`--webhook`) the webhook that feeds orders into Supabase. Re-running is safe:
+it reuses what exists. The key lives in your shell for that one command and
+nowhere else. Test mode first, then live once Stripe has verified the account.
+
+```bash
+STRIPE_SECRET_KEY=sk_test_... node scripts/stripe-setup.mjs --shipping 7.50 \
+  --webhook https://jjndhbyawnbohobjwzue.supabase.co/functions/v1/stripe-webhook
+```
+
+`--shipping` is the flat NZ Post rate in NZ$ and has no default: nobody has
+confirmed it. Add `--dry-run` to see every request first. It prints the
+Payment Link, the two Vercel variables, the webhook secret (once), and the
+settings only the dashboard can change.
+
+Live: the same command with the live key and `--live`. Where to get the key:
+Stripe → Developers → API keys → **Create restricted key** with write access
+to Products, Prices, Shipping rates, Payment Links, Checkout Sessions and
+Webhook endpoints. Never the full secret key, and never paste it anywhere but
+that one command line.
+
+What the link gets, if you'd rather check it in the dashboard:
+- quantity fixed at 1, customer can't adjust; promotion codes off
+- **limit the number of payments: 20** (batch 1 is 25 built, 20 for sale)
+- shipping address, New Zealand only, with the shipping rate; phone required
+- terms acceptance required (needs the Terms URL in Settings → Business →
+  Public details: `https://www.trytaptile.com/terms`; the script warns and
+  skips this if the URL isn't set yet)
+- after payment: redirect to
+  `https://www.trytaptile.com/thanks?session_id={CHECKOUT_SESSION_ID}`
+
+Dashboard-only, after the script:
+1. **Settings → Business → Public details:** support email `taptile.admin@gmail.com`,
    website, Terms URL `/terms`, Privacy URL `/privacy`.
-5. **Settings → Customer emails:** turn on successful payments and refunds.
+2. **Settings → Customer emails:** turn on successful payments and refunds.
+3. **Settings → Branding:** logo, icon, colours.
+
+## Orders pipeline (Supabase)
+
+Stripe → `stripe-webhook` function → `orders` table → admin Orders page →
+`order-shipped` function → customer's tracking email. Set up once:
+
+```bash
+supabase link --project-ref jjndhbyawnbohobjwzue
+```
+```bash
+supabase db push
+```
+```bash
+supabase secrets set STRIPE_WEBHOOK_SECRET=whsec_... ORDER_NOTIFY_EMAIL=taptile.admin@gmail.com SITE_URL=https://www.trytaptile.com
+```
+```bash
+supabase functions deploy stripe-webhook --no-verify-jwt
+```
+```bash
+supabase functions deploy order-shipped
+```
+
+`STRIPE_WEBHOOK_SECRET` is what `stripe-setup.mjs --webhook` printed. Test
+and live mode have separate webhooks with separate secrets: the function
+holds one at a time, so set the live one when you go live. The team gets an
+email for every new order at `ORDER_NOTIFY_EMAIL`.
+
+Nothing in the browser can write an order. The webhook checks Stripe's
+signature, writes with the service role, and `orders` has no insert policy.
 
 ## Test gate (before the live link)
 
@@ -72,14 +127,16 @@ longer available" page. Never show how many are left.
 
 ## Lowering the price
 
-Stripe can't change the price on an existing Payment Link. Make a new one:
+Stripe can't change the price on an existing Payment Link, so it's a new one:
 
-1. Stripe → Product catalogue → Taptile Dialect → **Add another price** (e.g. NZ$89.99).
-2. Payment Links → **New** with that price and the same settings as above.
-   Set the payment limit to **20 minus what's already sold**, or you will oversell.
-3. Vercel: change `VITE_BUY_URL` to the new link and `VITE_PRICE_NZD` to the new
-   price, together, then redeploy.
-4. Once the new deploy is live, **deactivate the old link** in Stripe.
+```bash
+STRIPE_SECRET_KEY=sk_live_... node scripts/stripe-setup.mjs --shipping 7.50 --price 89.99 --live
+```
+
+That adds the new price, counts what the old link already sold, creates a new
+link capped at **20 minus that**, and deactivates the old link. Then in
+Vercel change `VITE_BUY_URL` to the new link and `VITE_PRICE_NZD` to `89.99`,
+together, and redeploy.
 
 People who paid the higher price aren't owed the difference by law. Refunding
 it from Stripe → Payments → Refund (partial) is cheap goodwill. Don't show a
@@ -88,11 +145,14 @@ it from Stripe → Payments → Refund (partial) is cheap goodwill. Don't show a
 
 ## After an order
 
-Stripe → Payments → open the order → copy the address and phone into NZ Post
-eShip → print the label → drop it at a PostShop. eShip emails the tracking.
+1. The team email arrives, and the order is on **/admin/orders** with the
+   address and phone.
+2. Open it → **Copy address** → paste into NZ Post eShip → print the label.
+   For a batch, **Export to-ship CSV** and import it in eShip (Settings → CSV
+   File; it maps columns on import, weight is in kg).
+3. Back on the order, enter the tracking number → **Mark shipped**. That
+   changes the status and emails the customer their tracking link.
+4. Drop the parcel at a PostShop.
 
-## Later, if it's ever needed
-
-A webhook on `checkout.session.completed` (to write orders into Supabase for the
-admin Orders page) needs a server endpoint with the secret key in the
-**server's** environment only. It's not needed to take payments.
+Refunds: issue them in Stripe → Payments. The webhook marks the order
+refunded by itself.

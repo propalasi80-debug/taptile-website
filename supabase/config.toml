@@ -1,0 +1,19 @@
+# Supabase CLI config. The project itself was created in the dashboard
+# (ref jjndhbyawnbohobjwzue); this only carries what deploys need.
+project_id = "jjndhbyawnbohobjwzue"
+
+# Functions that outside services call without a Supabase session. Each one
+# verifies its caller another way (see the header comment in each index.ts).
+# Everything not listed keeps the default: a signed-in user's JWT is required.
+
+[functions.stripe-webhook]
+verify_jwt = false   # Stripe signs every delivery; the function checks the signature
+
+[functions.auth-email]
+verify_jwt = false   # Supabase signs the Send Email hook call
+
+[functions.waitlist-confirmation]
+verify_jwt = false   # called from the public site after join_waitlist
+
+[functions.waitlist-leave]
+verify_jwt = false   # the link in an email; an HMAC token in the URL is the check

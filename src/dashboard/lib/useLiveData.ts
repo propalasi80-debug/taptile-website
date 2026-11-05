@@ -14,6 +14,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { fetchWaitlist, type WaitlistEntry } from '../../lib/admin';
 import { fetchAllUpdates, type Update } from '../../lib/updates';
 import { fetchInventory, type InventoryItem, type Movement } from '../../lib/inventory';
+import { fetchOrders, type Order } from '../../lib/orders';
 
 export interface Loadable<T> {
   data: T;
@@ -100,6 +101,32 @@ export function useUpdates(): Loadable<Update[]> {
   useEffect(reload, [reload]);
 
   return { data, loading, error, reload };
+}
+
+export function useOrders(): Loadable<Order[]> & {
+  /** Replace one row after a local action, without a round trip. */
+  patch: (order: Order) => void;
+} {
+  const [data, setData] = useState<Order[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string>();
+
+  const reload = useCallback(() => {
+    setLoading(true);
+    void fetchOrders().then((result) => {
+      setData(result.orders);
+      setError(result.error);
+      setLoading(false);
+    });
+  }, []);
+
+  useEffect(reload, [reload]);
+
+  const patch = useCallback((order: Order) => {
+    setData((rows) => rows.map((row) => (row.id === order.id ? order : row)));
+  }, []);
+
+  return { data, loading, error, reload, patch };
 }
 
 export function useInventory(): Loadable<InventoryItem[]> & { movements: Movement[] } {
