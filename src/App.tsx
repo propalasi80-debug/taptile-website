@@ -4,7 +4,7 @@ import './site/site.css';
 import { Footer, Nav } from './site/chrome';
 import { WaitlistProvider } from './site/Waitlist';
 import ProtectedRoute from './components/ProtectedRoute';
-import Landing from './pages/Landing';
+// The old waitlist landing (pages/Landing.tsx) is kept in the repo but no longer routed.
 import Login from './pages/Login';
 import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
@@ -14,6 +14,7 @@ import Update from './pages/Update';
 import Privacy from './pages/Privacy';
 import Terms from './pages/Terms';
 import Leave from './pages/Leave';
+import ComingSoon from './pages/ComingSoon';
 
 /** Jump to the top on navigation, or to the #anchor when there is one. */
 function ScrollBehaviour() {
@@ -48,7 +49,7 @@ function AuthFrame({ children }: { children: ReactNode }) {
  */
 const siteRoutes = (
   <Routes>
-    <Route path="/" element={<Landing />} />
+    <Route path="/" element={<ComingSoon />} />
     <Route path="/updates" element={<Updates />} />
     <Route path="/updates/:slug" element={<Update />} />
     <Route path="/privacy" element={<Privacy />} />
@@ -66,6 +67,17 @@ const siteRoutes = (
  * owns the whole viewport and its own design, so /admin never sees `.tt`.
  */
 function Site() {
+  const { pathname } = useLocation();
+  // the front page is the white coming-soon page with its own bar and footer (r25)
+  if (pathname === '/') {
+    return (
+      <WaitlistProvider>
+        <div className="tt tt-light">
+          <main id="main">{siteRoutes}</main>
+        </div>
+      </WaitlistProvider>
+    );
+  }
   return (
     <WaitlistProvider>
       <div className="tt">
