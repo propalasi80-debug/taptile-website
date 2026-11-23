@@ -1,0 +1,66 @@
+/* Shared pieces added in the legal pass: sale-mode switching, waitlist, pre-order facts, footer, app names. */
+html[data-sale="soon"] [data-mode]:not([data-mode~="soon"]),
+html[data-sale="preorder"] [data-mode]:not([data-mode~="preorder"]),
+html[data-sale="instock"] [data-mode]:not([data-mode~="instock"]){display:none!important}
+
+/* small print under prices and buy buttons */
+.fine{margin-top:12px;font-size:13px;line-height:19px;color:#6E6E73;max-width:34em}
+.fine a{color:inherit;text-decoration:underline;text-underline-offset:3px}
+.rnote{margin-top:14px;font-size:12px;line-height:18px;color:#6E6E73}
+
+/* the four pre-order lines (only shown in 'preorder') */
+.pofacts{margin:16px 0 0;padding:0;list-style:none;font-size:14px;line-height:21px;color:#1d1d1f;max-width:34em;text-align:left}
+.pofacts li{padding:7px 0;border-top:1px solid rgba(0,0,0,.1)}
+.pofacts li:first-child{border-top:0}
+.pofacts b{font-weight:600}
+
+/* app names instead of third-party logos */
+.a4names{margin-top:26px;max-width:440px;font-size:17px;line-height:30px;font-weight:600;letter-spacing:-.02em;color:#1d1d1f;opacity:0;translate:0 12px;transition:opacity .6s,translate .6s cubic-bezier(.22,1,.36,1)}
+.a4names span{color:#8E8E93;font-weight:400;padding:0 2px}
+.ap4.on .a4names{opacity:1;translate:0 0}
+.tmline{margin-top:12px;font-size:12px;line-height:18px;color:#6E6E73;max-width:440px}
+
+/* waitlist */
+.wl{margin:26px auto 0;display:flex;gap:10px;justify-content:center;flex-wrap:wrap;max-width:520px}
+.wl input{flex:1 1 240px;min-width:0;font:500 16px Inter,system-ui,sans-serif;padding:13px 20px;border-radius:99px;border:1px solid rgba(0,0,0,.18);background:#fff;color:#0B0B0C}
+.wl input:focus-visible,.wl button:focus-visible,a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #0B0B0C;outline-offset:3px}
+.fin2 .wl input:focus-visible,.fin2 .wl button:focus-visible,.fin2 a:focus-visible,.ft a:focus-visible{outline-color:#fff}
+.wl button{font:600 15px Inter,system-ui,sans-serif;padding:13px 22px;border-radius:99px;border:0;background:#0B0B0C;color:#fff;cursor:pointer}
+.wl button[disabled]{opacity:.6;cursor:default}
+.wlmsg{flex:1 1 100%;min-height:22px;font-size:14px;line-height:22px;color:#fff;text-align:center}
+.wlmsg[data-ok="0"]{color:#FFD9D4}
+.wlnote{margin:10px auto 0;font-size:13px!important;line-height:19px;color:rgba(255,255,255,.82)!important;max-width:36em}
+.wlnote a{color:#fff;text-decoration:underline;text-underline-offset:3px}
+
+/* closing section + footer on the front page (same pattern as the packs page) */
+.fin2{position:relative;overflow:hidden;text-align:center;color:#fff;padding:180px 24px 200px;background:linear-gradient(180deg,#fff 0,#BDBDC1 22%,#6f6f73 60%,#2c2c2e 100%);z-index:7}
+.fin2 .sky2{position:absolute;inset:0;pointer-events:none}
+.fin2 .sky2 img{position:absolute;opacity:.9}
+.fin2 .in{position:relative}
+.fin2 h2{font-size:clamp(44px,5.4vw,84px);font-weight:700;letter-spacing:-.05em;line-height:1.02;text-shadow:0 2px 30px rgba(0,0,0,.25)}
+.fin2 h2 em{font-family:'Instrument Serif',serif;font-style:italic;font-weight:400;font-size:1.15em;letter-spacing:-.01em}
+.fin2 p{margin-top:16px;font-size:19px;color:rgba(255,255,255,.9)}
+.fin2 .ctas{margin-top:28px;display:flex;gap:22px;justify-content:center;align-items:center;flex-wrap:wrap}
+.bk.w{background:#fff;color:#0B0B0C}
+.ghost{color:#fff;text-decoration:none;font-size:16px;font-weight:500}
+.fin2 .pofacts{margin:22px auto 0;color:#fff}
+.fin2 .pofacts li{border-color:rgba(255,255,255,.28)}
+.fin2 .fine{margin:14px auto 0;color:rgba(255,255,255,.82)}
+.ft{position:relative;z-index:7;background:#1d1d1f;color:#A1A1A6;padding:64px 24px 40px;font-size:14px}
+.ft .in{max-width:1200px;margin:0 auto}
+.ftop{display:flex;justify-content:space-between;align-items:center;gap:24px;flex-wrap:wrap;padding-bottom:40px;border-bottom:1px solid rgba(255,255,255,.1)}
+.ftop p{font-size:17px;color:#fff;font-weight:500}
+.ft .lg{display:flex;align-items:center;gap:10px;font-weight:800;font-size:22px;letter-spacing:-.05em;color:#fff}.ft .lg img{height:26px;width:auto}
+.fcols{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;padding:36px 0}
+.fcols b{display:block;color:#fff;font-weight:600;margin-bottom:12px}
+.fcols a{display:block;color:#A1A1A6;text-decoration:none;margin:8px 0}.fcols a:hover,.fbot a:hover{color:#fff}
+.fbot{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;padding-top:24px;border-top:1px solid rgba(255,255,255,.1)}
+.fbot a{color:#A1A1A6;text-decoration:none;margin-left:20px}
+.flegal{margin-top:18px;font-size:12px;line-height:18px;color:#8E8E93;max-width:70em}
+.navcta{font-size:14px;font-weight:600;padding:9px 16px;border-radius:99px;background:#fff;color:#0B0B0C!important;text-shadow:none!important;text-decoration:none}
+nav.solid .navcta{background:#0B0B0C;color:#fff!important}
+.skip{position:absolute;left:-9999px;top:8px;z-index:100;background:#fff;color:#0B0B0C;padding:10px 16px;border-radius:99px;font-weight:600;text-decoration:none}
+.skip:focus{left:12px}
+@media (max-width:640px){.fcols{grid-template-columns:1fr 1fr}.fin2{padding:120px 20px 140px}.fbot a{margin:0 16px 0 0}}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}.a4names{opacity:1;translate:0 0}}
+main#main{overflow-x:clip}

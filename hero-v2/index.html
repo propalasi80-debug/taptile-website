@@ -3,7 +3,21 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Taptile Dialect</title>
+<title>Taptile Dialect: nine keys and two dials for your whole workflow</title>
+<meta name="description" content="Taptile Dialect is a nine-key macro pad with two aluminium dials, hot-swap MX-compatible switches and underglow. Built for creators, studios and businesses. Designed in New Zealand. NZ$99.99.">
+<link rel="canonical" href="https://trytaptile.com/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Taptile">
+<meta property="og:title" content="Taptile Dialect. One hand. Your whole workflow.">
+<meta property="og:description" content="Nine keys and two dials beside your mouse. Built for creators, studios and businesses. Designed in New Zealand.">
+<meta property="og:url" content="https://trytaptile.com/">
+<meta property="og:image" content="https://trytaptile.com/og.jpg">
+<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="3D render of the Taptile Dialect macro pad in white, seen from above.">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="theme-color" content="#232323">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'" href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&family=Instrument+Serif:ital@1&display=swap">
@@ -560,14 +574,18 @@
   .a4l{display:inline-block;margin-top:24px;font-size:16px;font-weight:500;color:#1d1d1f;text-decoration:underline;text-underline-offset:4px;text-decoration-color:rgba(0,0,0,.25)}
   @media (max-width:900px){.a4{grid-template-columns:1fr}}
 </style>
+<link rel="stylesheet" href="site.css">
+<script src="site.js"></script>
 </head>
 <body>
+<a class="skip" href="#main">Skip to content</a>
 <nav id="nav"><div class="nb">
-  <a class="logo" href="#"><img src="logo.png" alt="">Taptile</a>
-  <div class="links"><a class="on" href="index.html">Dialect</a><a href="packs.html">Packs</a><a href="#software">Software</a><a href="#faq">Support</a></div>
-  <div class="act"><a href="#">Sign in</a><a class="bag" href="#">Bag <i>0</i></a></div>
+  <a class="logo" href="index.html" aria-label="Taptile home"><img src="logo.png" alt="" width="96" height="96">Taptile</a>
+  <div class="links"><a class="on" href="index.html">Dialect</a><a href="packs.html">Packs</a><a href="support.html#software">Software</a><a href="support.html">Support</a></div>
+  <div class="act"><a class="navcta" data-buy data-soon="Join the waitlist" data-preorder="Pre-order" data-instock="Buy" href="#waitlist">Join the waitlist</a></div>
 </div></nav>
 
+<main id="main">
 <div class="hold">
 <section class="hero" id="hero">
   <div class="sky" id="sky"></div>
@@ -576,10 +594,10 @@
 
   <div class="copy">
     <h1 class="reveal">One hand. <em>Your whole workflow.</em></h1>
-    <p class="sub reveal d2">Business and Commercial app available now.</p>
+    <p class="sub reveal d2"><span data-mode="soon">Coming soon. </span><span data-mode="preorder">Pre-order now. </span>Built for creators, studios and businesses.</p>
   </div>
   <div class="side">
-    <div class="pill reveal d3"><b>Dialect <span>$99.99</span></b><a href="#">Configure →</a></div>
+    <div class="pill reveal d3"><b>Dialect <span>NZ$99.99</span></b><a data-buy data-soon="Join the waitlist" data-preorder="Pre-order" data-instock="Buy" href="#waitlist">Join the waitlist</a></div>
   </div>
 
   <div class="stage" id="stage">
@@ -615,7 +633,14 @@
         <li><b>Streamers</b><span>Go live, switch scenes, mute. One press each.</span></li>
         <li><b>Studios</b><span>Set each pad up once. The layout lives on the board.</span></li>
       </ul>
-      <div class="buyl fx d3"><a class="bk dk2" href="packs.html">Get Dialect, $99.99</a><a class="xl2" href="packs.html#p10">Buying for a team? ›</a></div>
+      <div class="buyl fx d3"><a class="bk dk2" data-buy data-waitlist="#waitlist" data-soon="Join the waitlist" data-preorder="Pre-order Dialect, NZ$99.99" data-instock="Get Dialect, NZ$99.99" href="#waitlist">Join the waitlist</a><a class="xl2" href="packs.html#p10">Buying for a team? ›</a></div>
+      <p class="fine">NZ$99.99. Prices in New Zealand dollars (NZD). No GST is charged: Taptile is not GST-registered, so we cannot issue a GST invoice.</p>
+      <ul class="pofacts" data-mode="preorder">
+        <li><b>This is a pre-order.</b> Your Dialect is not yet in production.</li>
+        <li><b>Estimated dispatch:</b> <span data-ship-window></span>, because <span data-ship-reason></span>.</li>
+        <li><b>Full refund</b> any time before dispatch, no conditions. Email support@trytaptile.com.</li>
+        <li>Your rights under the <b>Consumer Guarantees Act</b> apply.</li>
+      </ul>
     </div>
     <div class="pa seen" id="pa">
       <div class="puff p1" aria-hidden="true"><img loading="lazy" decoding="async" src="cl_a.webp" alt=""></div>
@@ -646,7 +671,8 @@
 
   <div class="sfoot fx">
     <p>The shortcut you keep forgetting, <em>one key away.</em></p>
-    <div class="sl-cta"><a class="bk" href="packs.html">Get Dialect, $99.99</a><a class="sl-ghost" href="packs.html#p10">Kitting out a team? ›</a></div>
+    <div class="sl-cta"><a class="bk" data-buy data-waitlist="#waitlist" data-soon="Join the waitlist" data-preorder="Pre-order Dialect, NZ$99.99" data-instock="Get Dialect, NZ$99.99" href="#waitlist">Join the waitlist</a><a class="sl-ghost" href="packs.html#p10">Kitting out a team? ›</a></div>
+    <p class="rnote">Images are 3D renders of the Dialect. Photos of finished units replace them at launch.</p>
   </div>
 </section>
 
@@ -677,12 +703,49 @@
       <h2 class="a4n" id="a4n">122</h2>
       <p class="a4h">preset packs.<br><span>Ready before you are.</span></p>
       <p class="a4s">Open Premiere and the keys become Razor, Mark in and Export. Switch apps and Dialect switches with you.</p>
-      <div class="a4i"><img loading="lazy" decoding="async" src="brands/pr.svg" alt="Premiere Pro" title="Premiere Pro"><img loading="lazy" decoding="async" src="brands/ae.svg" alt="After Effects" title="After Effects"><img loading="lazy" decoding="async" src="brands/ps.svg" alt="Photoshop" title="Photoshop"><img loading="lazy" decoding="async" src="brands/ai.svg" alt="Illustrator" title="Illustrator"><img loading="lazy" decoding="async" src="brands/fig.svg" alt="Figma" title="Figma"><img loading="lazy" decoding="async" src="brands/bl.svg" alt="Blender" title="Blender"><img loading="lazy" decoding="async" src="brands/lr.svg" alt="Lightroom" title="Lightroom"><img loading="lazy" decoding="async" src="brands/slk.svg" alt="Slack" title="Slack"><img loading="lazy" decoding="async" src="brands/nt.svg" alt="Notion" title="Notion"><img loading="lazy" decoding="async" src="brands/sp.svg" alt="Spotify" title="Spotify"><img loading="lazy" decoding="async" src="brands/obd.svg" alt="Obsidian" title="Obsidian"><img loading="lazy" decoding="async" src="brands/gh.svg" alt="GitHub" title="GitHub"></div>
-      <a class="a4l" href="#">See all 122 packs ›</a>
+      <p class="a4names">Premiere Pro <span aria-hidden="true">·</span> After Effects <span aria-hidden="true">·</span> Photoshop <span aria-hidden="true">·</span> Illustrator <span aria-hidden="true">·</span> Figma <span aria-hidden="true">·</span> Blender <span aria-hidden="true">·</span> Lightroom <span aria-hidden="true">·</span> Slack <span aria-hidden="true">·</span> Notion <span aria-hidden="true">·</span> Spotify <span aria-hidden="true">·</span> Obsidian <span aria-hidden="true">·</span> GitHub</p>
+      <p class="tmline">Product names are trademarks of their owners. Taptile is not affiliated with or endorsed by them.</p>
+      <a class="a4l" href="support.html#software">How presets work ›</a>
     </div>
   </div>
 </section>
 
+<section class="fin2" id="waitlist" aria-labelledby="fin-h">
+  <div class="sky2" aria-hidden="true"><img loading="lazy" decoding="async" src="cl_c.webp" alt="" style="left:30%;top:14%;width:40vw;opacity:.34"><img loading="lazy" decoding="async" src="cloud.webp" alt="" style="right:-8%;top:54%;width:44vw;transform:scaleX(-1)"><img loading="lazy" decoding="async" src="cloud2.webp" alt="" style="left:-10%;top:60%;width:46vw"></div>
+  <div class="in">
+    <h2 id="fin-h">One hand. <em>Your whole workflow.</em></h2>
+    <p data-mode="soon">Dialect is not on sale yet. Leave your email and we will tell you the day it is.</p>
+    <p data-mode="preorder instock">Dialect, NZ$99.99. Ships within New Zealand.</p>
+    <form class="wl" data-mode="soon" data-waitlist-form novalidate>
+      <label class="sr" for="wl-email" style="position:absolute;left:-9999px">Email address</label>
+      <input id="wl-email" type="email" name="email" autocomplete="email" inputmode="email" placeholder="you@example.com" required>
+      <button type="submit">Join the waitlist</button>
+      <span class="wlmsg" data-wl-msg role="status" aria-live="polite"></span>
+    </form>
+    <p class="wlnote" data-mode="soon">One email when Dialect goes on sale, from Taptile at support@trytaptile.com. Unsubscribe with one click in that email. Joining is not an order and holds no unit or price. See our <a href="privacy.html">privacy policy</a>.</p>
+    <div class="ctas" data-mode="preorder instock"><a class="bk w" data-buy data-preorder="Pre-order Dialect, NZ$99.99" data-instock="Get Dialect, NZ$99.99" href="#waitlist">Get Dialect</a><a class="ghost" href="packs.html">See the packs ›</a></div>
+    <ul class="pofacts" data-mode="preorder">
+        <li><b>This is a pre-order.</b> Your Dialect is not yet in production.</li>
+        <li><b>Estimated dispatch:</b> <span data-ship-window></span>, because <span data-ship-reason></span>.</li>
+        <li><b>Full refund</b> any time before dispatch, no conditions. Email support@trytaptile.com.</li>
+        <li>Your rights under the <b>Consumer Guarantees Act</b> apply.</li>
+      </ul>
+    <p class="fine" data-mode="preorder instock">Prices in New Zealand dollars (NZD). No GST is charged: Taptile is not GST-registered, so we cannot issue a GST invoice. <a href="shipping.html">Shipping</a>, <a href="returns.html">returns and warranty</a>, <a href="terms.html">terms</a>.</p>
+  </div>
+</section>
+</main>
+<footer class="ft">
+  <div class="in">
+    <div class="ftop"><span class="lg"><img src="logo.png" alt="" width="96" height="96">Taptile</span><p>One hand. Your whole workflow.</p></div>
+    <div class="fcols" role="navigation" aria-label="Footer">
+      <div><b>Shop</b><a href="index.html">Dialect</a><a href="packs.html">Packs</a></div>
+      <div><b>Software</b><a href="support.html#software">Setting up</a><a href="index.html#apps">Preset packs</a><a href="support.html#firmware">Firmware and source</a></div>
+      <div><b>Support</b><a href="support.html">Quick start</a><a href="contact.html">Contact</a><a href="shipping.html">Shipping</a><a href="returns.html">Returns and warranty</a></div>
+    </div>
+    <div class="fbot"><span>Designed in New Zealand. Finished by hand in New Zealand. © 2026 Taptile</span><span><a href="terms.html">Terms</a><a href="privacy.html">Privacy</a></span></div>
+    <p class="flegal">Product images on this site are 3D renders of the Dialect until photos of finished units replace them. Prices in New Zealand dollars (NZD). No GST is charged: Taptile is not GST-registered, so we cannot issue a GST invoice. App and product names are trademarks of their owners; Taptile is not affiliated with or endorsed by them.</p>
+  </div>
+</footer>
 <script>
   (()=>{const q=[],ae=window.addEventListener.bind(window);let t=0;const run=()=>{t=0;for(const f of q)try{f()}catch(e){}};
     window.addEventListener=function(ty,f,o){if((ty==='scroll'||ty==='resize')&&!(o&&o.once)&&f!==run){q.push(f);return}return ae(ty,f,o)};

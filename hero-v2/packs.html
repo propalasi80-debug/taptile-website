@@ -3,7 +3,17 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Packs · Taptile Dialect</title>
+<title>Packs: one Dialect, two, or ten for the team · Taptile</title>
+<meta name="description" content="Taptile Dialect comes in packs of 1, 2 or 10. One Dialect is NZ$99.99. Built for creators, studios and businesses. Ships within New Zealand.">
+<link rel="canonical" href="https://trytaptile.com/packs">
+<meta property="og:type" content="website"><meta property="og:site_name" content="Taptile">
+<meta property="og:title" content="Taptile Dialect packs: one for you, ten for the team.">
+<meta property="og:description" content="Packs of 1, 2 or 10. Every Dialect is set up the same way.">
+<meta property="og:url" content="https://trytaptile.com/packs">
+<meta property="og:image" content="https://trytaptile.com/og.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" type="image/png" href="favicon.png">
+<meta name="theme-color" content="#232323">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&family=Instrument+Serif:ital@1&display=swap" rel="stylesheet">
 <style>
@@ -419,14 +429,18 @@
   .fcols a,.fbot a{color:#6E6E73!important}.fcols a:hover,.fbot a:hover{color:#1d1d1f!important}
   .pv .stg{background:#F5F5F7}.pv .stg::after{display:none}
 </style>
+<link rel="stylesheet" href="site.css">
+<script src="site.js"></script>
 </head>
 <body>
+<a class="skip" href="#main">Skip to content</a>
 <nav id="nav"><div class="nb">
-  <a class="logo" href="#"><img src="logo.png" alt="">Taptile</a>
-  <div class="links"><a href="index.html">Dialect</a><a class="on" href="packs.html">Packs</a><a href="index.html#software">Software</a><a href="#pfaq">Support</a></div>
-  <div class="act"><a href="#">Sign in</a><a class="bag" href="#">Bag <i>0</i></a></div>
+  <a class="logo" href="index.html" aria-label="Taptile home"><img src="logo.png" alt="" width="96" height="96">Taptile</a>
+  <div class="links"><a href="index.html">Dialect</a><a class="on" href="packs.html">Packs</a><a href="support.html#software">Software</a><a href="support.html">Support</a></div>
+  <div class="act"><a class="navcta" data-buy data-soon="Join the waitlist" data-preorder="Pre-order" data-instock="Buy" href="#waitlist">Join the waitlist</a></div>
 </div></nav>
 
+<main id="main">
 <section class="phero">
   <div class="sky2" aria-hidden="true"><img src="cloud2.webp" alt="" style="left:-8%;bottom:-6%;width:46vw"><img src="cloud.webp" alt="" style="right:-10%;bottom:-4%;width:48vw;transform:scaleX(-1)"><img src="cl_a.webp" alt="" style="left:32%;bottom:-16%;width:36vw"><img src="cl_c.webp" alt="" style="left:20%;top:6%;width:40vw;opacity:.35"></div>
   <div class="in">
@@ -441,10 +455,10 @@
     <div class="pv"><div class="stg one" id="pv"><img src="r/g_white.webp" alt="Dialect"></div></div>
     <div class="po">
       <h2>Choose your pack.</h2>
-      <p class="lead2">For business and commercial use. Taptile for Business is included with every Dialect.</p>
+      <p class="lead2">Built for creators, studios and businesses. Taptile for Business is included with every Dialect.</p>
       <div class="grp"><b>How many?</b>
         <div class="opts2" id="qty">
-          <button class="op on" data-n="1" id="p1"><span><b>1 Dialect</b><small>For your own desk.</small></span><span class="pr">$99.99</span></button>
+          <button class="op on" data-n="1" id="p1"><span><b>1 Dialect</b><small>For your own desk.</small></span><span class="pr">NZ$99.99</span></button>
           <button class="op" data-n="2" id="p2"><span><b>2-pack</b><small>For you and a colleague, or two desks.</small></span><span class="pr">[FILL IN]</span></button>
           <button class="op" data-n="10" id="p10"><span><b>10-pack<span class="tag2">For teams</span></b><small>Kit out the whole studio.</small></span><span class="pr">[FILL IN]</span></button>
         </div>
@@ -458,13 +472,21 @@
         </div>
         <p class="note2">Want a mix in a 10-pack? Pick a colourway here and tell us the split at checkout.</p>
       </div>
-      <div class="sum"><div class="t">Total<b id="tot">$99.99</b></div><button class="add">Add to bag</button></div>
-      <p class="note2">Ships from New Zealand. Price in [FILL IN currency].</p>
+      <div class="sum"><div class="t">Total<b id="tot">NZ$99.99</b></div><a class="add" role="button" data-buy data-waitlist="#waitlist" data-soon="Join the waitlist" data-preorder="Pre-order" data-instock="Buy now" href="#waitlist" style="text-decoration:none;text-align:center">Join the waitlist</a></div>
+      <ul class="pofacts" data-mode="preorder">
+        <li><b>This is a pre-order.</b> Your Dialect is not yet in production.</li>
+        <li><b>Estimated dispatch:</b> <span data-ship-window></span>, because <span data-ship-reason></span>.</li>
+        <li><b>Full refund</b> any time before dispatch, no conditions. Email support@trytaptile.com.</li>
+        <li>Your rights under the <b>Consumer Guarantees Act</b> apply.</li>
+      </ul>
+      <p class="note2">Ships from New Zealand, to New Zealand addresses only. Prices in New Zealand dollars (NZD). No GST is charged: Taptile is not GST-registered, so we cannot issue a GST invoice.</p>
+      <p class="note2" data-mode="soon">Dialect is not on sale yet. Join the waitlist and we will email you once, the day it is.</p>
+      <p class="rnote">Images are 3D renders of the Dialect. Photos of finished units replace them at launch.</p>
     </div>
   </div>
 </section>
 
-<div class="mq" aria-hidden="true"><div class="mqt"><span>One hand</span><i></i><span>Your whole workflow</span><i></i><span>Made for business</span><i></i><span>Designed &amp; assembled in New Zealand</span><i></i><span>One hand</span><i></i><span>Your whole workflow</span><i></i><span>Made for business</span><i></i><span>Designed &amp; assembled in New Zealand</span><i></i><span>One hand</span><i></i><span>Your whole workflow</span><i></i><span>Made for business</span><i></i><span>Designed &amp; assembled in New Zealand</span><i></i><span>One hand</span><i></i><span>Your whole workflow</span><i></i><span>Made for business</span><i></i><span>Designed &amp; assembled in New Zealand</span><i></i></div></div>
+<div class="mq" aria-hidden="true"><div class="mqt"><span>One hand</span><i></i><span>Your whole workflow</span><i></i><span>Built for creators, studios and businesses</span><i></i><span>Designed in New Zealand</span><i></i><span>Finished by hand in New Zealand</span><i></i><span>One hand</span><i></i><span>Your whole workflow</span><i></i><span>Built for creators, studios and businesses</span><i></i><span>Designed in New Zealand</span><i></i><span>Finished by hand in New Zealand</span><i></i><span>One hand</span><i></i><span>Your whole workflow</span><i></i><span>Built for creators, studios and businesses</span><i></i><span>Designed in New Zealand</span><i></i><span>Finished by hand in New Zealand</span><i></i><span>One hand</span><i></i><span>Your whole workflow</span><i></i><span>Built for creators, studios and businesses</span><i></i><span>Designed in New Zealand</span><i></i><span>Finished by hand in New Zealand</span><i></i></div></div>
 
 <section class="S cen">
   <div class="in">
@@ -486,8 +508,8 @@
     <table class="cmp">
       <thead><tr><th></th><th>1 Dialect</th><th>2-pack</th><th>10-pack</th></tr></thead>
       <tbody>
-        <tr><td>Price</td><td>$99.99</td><td>[FILL IN]</td><td>[FILL IN]</td></tr>
-        <tr><td>Per Dialect</td><td>$99.99</td><td>[FILL IN]</td><td>[FILL IN]</td></tr>
+        <tr><td>Price</td><td>NZ$99.99</td><td>[FILL IN]</td><td>[FILL IN]</td></tr>
+        <tr><td>Per Dialect</td><td>NZ$99.99</td><td>[FILL IN]</td><td>[FILL IN]</td></tr>
         <tr><td>Dialects</td><td>1</td><td>2</td><td>10</td></tr>
         <tr><td>USB-C cables</td><td>1</td><td>2</td><td>10</td></tr>
         <tr><td>Taptile for Business</td><td>Included</td><td>Included</td><td>Included</td></tr>
@@ -504,36 +526,48 @@
       <details><summary>Can I mix colours in a pack?</summary><p>[FILL IN: confirm whether mixed colourways are allowed in 2-packs and 10-packs.]</p></details>
       <details><summary>Do I need the app on every computer?</summary><p>No. Set each Dialect up once in Taptile for Business and its layout is saved on the board. After that it works as a standard USB keyboard on Windows, macOS and Linux.</p></details>
       <details><summary>What's in the box?</summary><p>Each Dialect comes with a braided USB-C cable. Taptile for Business is included.</p></details>
-      <details><summary>Can I buy one for personal use?</summary><p>Not right now. Dialect is sold for business and commercial use. Personal use is coming soon.</p></details>
+      <details><summary>Who is Dialect for?</summary><p>Dialect is built for creators, studios and businesses, and anyone can order one. If you buy it for personal use, the Consumer Guarantees Act covers you as usual. Nothing on this site takes those rights away.</p></details>
+      <details><summary>Is there GST on the price?</summary><p>No. Taptile is not GST-registered, so no GST is charged and we cannot issue a GST invoice. Prices are in New Zealand dollars.</p></details>
+      <details><summary>What about returns and warranty?</summary><p>You get a 12-month warranty on top of your Consumer Guarantees Act rights, and 7 days after it arrives to change your mind. The detail is on the <a href="returns.html">returns and warranty</a> page.</p></details>
     </div>
   </div>
 </section>
 
-<section class="fin2">
+<section class="fin2" id="waitlist">
   <div class="sky2" aria-hidden="true"><img src="cl_c.webp" alt="" style="left:30%;top:14%;width:40vw;opacity:0.34;filter:blur(1.2px);"><img src="cloud.webp" alt="" style="left:-20%;top:24%;width:38vw;opacity:0.78;"><img src="cl_b.webp" alt="" style="left:80%;top:22%;width:26vw;opacity:0.55;filter:blur(0.4px);transform:scaleX(-1);"><img src="cl_d.webp" alt="" style="left:-6%;top:48%;width:17vw;opacity:0.88;transform:scaleX(-1);"><img src="cl_b.webp" alt="" style="left:78%;top:46%;width:26vw;opacity:0.82;"><img src="cl_d.webp" alt="" style="left:90%;top:62%;width:12vw;opacity:0.7;filter:blur(0.6px);"><img src="cl_c.webp" alt="" style="left:2%;top:64%;width:18vw;opacity:0.7;filter:blur(0.4px);transform:scaleX(-1);"><img src="cloud2.webp" alt="" style="left:-16%;top:76%;width:42vw;opacity:1;"><img src="cl_a.webp" alt="" style="left:56%;top:82%;width:28vw;opacity:0.95;"><img src="cloud.webp" alt="" style="left:74%;top:72%;width:40vw;opacity:1;transform:scaleX(-1);"><img src="cloud2.webp" alt="" style="left:22%;top:84%;width:40vw;opacity:1;transform:scaleX(-1);"></div>
   <div class="in">
     <h2>One hand. <em>Your whole workflow.</em></h2>
-    <p>Available now for business and commercial use.</p>
-    <div class="ctas"><a class="bk w" href="#choose">Choose your pack</a><a class="ghost" href="index.html">Meet Dialect ›</a></div>
+    <p data-mode="soon">Dialect is not on sale yet. Leave your email and we will tell you the day it is.</p>
+    <p data-mode="preorder instock">Built for creators, studios and businesses.</p>
+    <form class="wl" data-mode="soon" data-waitlist-form novalidate>
+      <label for="wl-email" style="position:absolute;left:-9999px">Email address</label>
+      <input id="wl-email" type="email" name="email" autocomplete="email" inputmode="email" placeholder="you@example.com" required>
+      <button type="submit">Join the waitlist</button>
+      <span class="wlmsg" data-wl-msg role="status" aria-live="polite"></span>
+    </form>
+    <p class="wlnote" data-mode="soon">One email when Dialect goes on sale, from Taptile at support@trytaptile.com. Unsubscribe with one click in that email. Joining is not an order and holds no unit or price. See our <a href="privacy.html">privacy policy</a>.</p>
+    <div class="ctas"><a class="bk w" href="#choose" data-mode="preorder instock">Choose your pack</a><a class="ghost" href="index.html">Meet Dialect ›</a></div>
   </div>
 </section>
 
+</main>
 <footer class="ft">
   <div class="in">
-    <div class="ftop"><span class="lg"><img src="logo.png" alt="">Taptile</span><p>One hand. Your whole workflow.</p></div>
-    <div class="fcols">
+    <div class="ftop"><span class="lg"><img src="logo.png" alt="" width="96" height="96">Taptile</span><p>One hand. Your whole workflow.</p></div>
+    <div class="fcols" role="navigation" aria-label="Footer">
       <div><b>Shop</b><a href="index.html">Dialect</a><a href="packs.html">Packs</a></div>
-      <div><b>Software</b><a href="index.html#software">Taptile for Business</a><a href="index.html#notch">The notch</a><a href="index.html#apps">Preset packs</a></div>
-      <div><b>Support</b><a href="#pfaq">FAQ</a><a href="#">Contact</a><a href="#">Shipping</a><a href="#">Returns</a></div>
+      <div><b>Software</b><a href="support.html#software">Setting up</a><a href="index.html#apps">Preset packs</a><a href="support.html#firmware">Firmware and source</a></div>
+      <div><b>Support</b><a href="support.html">Quick start</a><a href="contact.html">Contact</a><a href="shipping.html">Shipping</a><a href="returns.html">Returns and warranty</a></div>
     </div>
-    <div class="fbot"><span>Designed and assembled in New Zealand. © 2026 Taptile</span><span><a href="#">Terms</a><a href="#">Privacy</a></span></div>
+    <div class="fbot"><span>Designed in New Zealand. Finished by hand in New Zealand. © 2026 Taptile</span><span><a href="terms.html">Terms</a><a href="privacy.html">Privacy</a></span></div>
+    <p class="flegal">Product images on this site are 3D renders of the Dialect until photos of finished units replace them. Prices in New Zealand dollars (NZD). No GST is charged: Taptile is not GST-registered, so we cannot issue a GST invoice. App and product names are trademarks of their owners; Taptile is not affiliated with or endorsed by them.</p>
   </div>
 </footer>
 
 <script>
   const nav=document.getElementById('nav');const navT=()=>nav.classList.toggle('solid',scrollY>40);addEventListener('scroll',navT,{passive:true});navT();
   const st={n:1,c:'g_white',t:'top_w'},pv=document.getElementById('pv'),tot=document.getElementById('tot');
-  const price={1:'$99.99',2:'[FILL IN]',10:'[FILL IN]'};
+  const price={1:'NZ$99.99',2:'[FILL IN]',10:'[FILL IN]'};
   const alt={g_white:'g_black',g_black:'g_white',g_bws:'g_white',g_wbb:'g_black'};
   const draw=()=>{pv.className='stg '+(st.n==1?'one':st.n==2?'two':'ten');
     pv.innerHTML=st.n==1?`<img src="r/${st.c}.webp" alt="One Dialect">`:st.n==2?`<img src="r/${st.c}.webp" alt=""><img src="r/${st.c}.webp" alt="Two Dialects">`:Array.from({length:10},(_,k)=>`<img src="r/${k%2?alt[st.c]:st.c}.webp" alt="">`).join('');
