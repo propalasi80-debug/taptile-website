@@ -1,0 +1,627 @@
+<!doctype html>
+<html lang="en" class="pos-top">
+<head>
+<meta charset="utf-8">
+<title>Taptile notch</title>
+<link rel="stylesheet" href="fonts.css">
+<style>
+/* The notch (the 0.9.1 design): a white notch hanging from the screen edge. The shape is driven by critically damped
+   springs (response .38 s) so it can be reversed mid-flight from its current size; contents materialise in after it,
+   card by card. It lives in its own transparent, always-on-top window (main.js) that only takes the mouse over the
+   notch itself. Layout (position, size, style, what it shows, panel sections, animation) comes from Settings → Notch. */
+:root{
+  --paper:#ffffff; --card:#f5f5f7; --card2:#ebebef; --ink:#1d1d1f; --ink2:#6e6e73; --ink3:#aeaeb2; --inkhi:#000000;
+  --ring:rgba(0,0,0,.075); --line:rgba(0,0,0,.1); --dotring:rgba(0,0,0,.18); --live:#34c759; --warm:#ff9500;
+  --thumb:#ffffff; --tgoff:#d9d9de; --track:#e3e3e8; --artbg:#d8d8de; --artbg2:#c4c4cc;
+  --out:cubic-bezier(.2,.9,.25,1); --edge:20px; --dy:1;
+  --sh:0 0 0 .5px var(--ring),0 1px 2px rgba(0,0,0,.05),0 6px 16px -6px rgba(0,0,0,.14);
+  --sho:0 0 0 .5px var(--ring),0 1px 2px rgba(0,0,0,.05),0 14px 30px -10px rgba(0,0,0,.20),0 34px 60px -24px rgba(0,0,0,.22);
+}
+/* Black: the same notch, inverted */
+html.theme-dark{
+  --paper:#0b0b0c; --card:#1c1c1e; --card2:#2c2c2e; --ink:#f5f5f7; --ink2:#a1a1a6; --ink3:#636366; --inkhi:#ffffff;
+  --ring:rgba(255,255,255,.09); --line:rgba(255,255,255,.12); --dotring:rgba(255,255,255,.28);
+  --thumb:#3a3a3c; --tgoff:#3a3a3c; --track:#2c2c2e; --artbg:#3a3a3c; --artbg2:#2c2c2e;
+}
+/* bottom centre: mirrored, rounded top corners, opens upward */
+html.pos-bottom{
+  --dy:-1;
+  --sh:0 0 0 .5px var(--ring),0 -1px 2px rgba(0,0,0,.05),0 -6px 16px -6px rgba(0,0,0,.14);
+  --sho:0 0 0 .5px var(--ring),0 -1px 2px rgba(0,0,0,.05),0 -14px 30px -10px rgba(0,0,0,.20),0 -34px 60px -24px rgba(0,0,0,.22);
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:transparent;overflow:hidden;font-family:'Plus Jakarta Sans',system-ui,'Segoe UI Variable','Segoe UI',sans-serif;color:var(--ink);-webkit-font-smoothing:antialiased;user-select:none}
+button{font:inherit;color:inherit;border:0;background:none;padding:0;cursor:pointer;-webkit-tap-highlight-color:transparent}
+button:focus-visible{outline:2px solid #0071e3;outline-offset:2px}
+.tab{font-variant-numeric:tabular-nums}
+
+/* ---------------------------------------------------------------- the shape */
+#n{position:absolute;left:50%;top:0;width:204px;height:34px;transform:translateX(-50%);background:var(--paper);border-radius:0 0 17px 17px;overflow:hidden;will-change:width,height;
+  box-shadow:var(--sh);transition:box-shadow .35s var(--out),background-color .3s ease}
+#n.open{box-shadow:var(--sho)}
+html.pos-top-left #n{left:var(--edge);transform:none}
+html.pos-top-right #n{left:auto;right:var(--edge);transform:none}
+html.pos-bottom #n{top:auto;bottom:0}
+
+/* ---------------------------------------------------------------- closed: the pill */
+.pill{position:absolute;left:0;right:0;top:0;height:34px;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:0 15px 0 13px;transition:opacity .16s ease,filter .16s ease}
+html.pos-bottom .pill{top:auto;bottom:0}
+#n.open .pill{opacity:0;filter:blur(4px);pointer-events:none}
+.pl,.pr{display:flex;align-items:center;gap:7px;min-width:0;font-size:12px;font-weight:600;letter-spacing:-.005em;white-space:nowrap}
+.pr{color:var(--ink2);font-weight:500}
+/* content changes slide and cross-fade: the old content leaves, the new one drops in from the screen edge */
+.swap{animation:swapin .34s var(--out)}
+.pill.leave{pointer-events:none;animation:swapout .22s ease forwards}
+@keyframes swapin{from{opacity:0;filter:blur(3px);transform:translateY(calc(var(--dy) * -7px)) scale(.96)}to{opacity:1;filter:none;transform:none}}
+@keyframes swapout{from{opacity:1}to{opacity:0;filter:blur(3px);transform:translateY(calc(var(--dy) * 7px)) scale(.97)}}
+.gdot{width:8px;height:8px;border-radius:50%;flex:none;box-shadow:0 0 0 .5px var(--dotring),0 0 7px 1px var(--gc,transparent);transition:background-color .3s ease}
+.mini{width:20px;height:20px;border-radius:5px;flex:none;background-size:cover;background-position:center;box-shadow:0 0 0 .5px rgba(0,0,0,.12)}
+.clip{max-width:160px;overflow:hidden;text-overflow:ellipsis}
+.clip.wide{max-width:220px}
+.clip.st{max-width:270px}
+.pill.meas{left:auto!important;right:auto!important;top:-200px!important;bottom:auto!important;width:max-content;visibility:hidden;pointer-events:none}
+.eq{display:flex;align-items:center;gap:2px;height:13px}
+.eq i{width:2.5px;height:4px;border-radius:2px;background:var(--ink);animation:eq 1.1s ease-in-out infinite}
+.eq i:nth-child(2){animation-delay:-.4s}.eq i:nth-child(3){animation-delay:-.8s}.eq i:nth-child(4){animation-delay:-.2s}
+.eq.paused i{animation:none;background:var(--ink3)}
+@keyframes eq{0%,100%{height:4px}50%{height:13px}}
+.kcap{height:20px;min-width:24px;padding:0 6px;border-radius:6px;background:var(--card);box-shadow:inset 0 0 0 .5px var(--line),inset 0 -1.5px 0 rgba(0,0,0,.08);font-size:10.5px;font-weight:700;display:flex;align-items:center;justify-content:center}
+.kcap svg{width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.kcap.hit{animation:hit .24s var(--out)}
+@keyframes hit{0%{transform:scale(.86) translateY(calc(var(--dy) * 1px))}100%{transform:none}}
+/* shortcut keys (Settings → Notch → Show shortcut keys): small keycaps, the only place for the mono face */
+.cks{display:flex;gap:3px}
+.ck{height:17px;min-width:17px;padding:0 4px;border-radius:5px;background:var(--card);box-shadow:inset 0 0 0 .5px var(--line);font:500 9.5px 'JetBrains Mono',ui-monospace,monospace;color:var(--ink2);display:flex;align-items:center;justify-content:center}
+
+/* ---------------------------------------------------------------- open: the panel */
+.panel{position:absolute;left:50%;top:0;width:660px;height:196px;margin-left:-330px;padding:12px;box-sizing:border-box;display:flex;flex-direction:column;gap:10px;pointer-events:none}
+html.pos-top-left .panel{left:0;margin-left:0!important}
+html.pos-top-right .panel{left:auto;right:0;margin-left:0!important}
+html.pos-bottom .panel{top:auto;bottom:0}
+#n.open .panel{pointer-events:auto}
+.mat{opacity:0;transform:scale(.97) translateY(calc(var(--dy) * -4px));filter:blur(6px);transition:opacity .14s ease,transform .3s var(--out),filter .2s ease}
+#n.open .mat{opacity:1;transform:none;filter:none;transition:opacity .28s ease,transform .5s var(--out),filter .34s ease}
+#n.open .mat.d1{transition-delay:.05s}#n.open .mat.d2{transition-delay:.09s}#n.open .mat.d3{transition-delay:.13s}#n.open .mat.d4{transition-delay:.17s}
+
+.top{display:flex;align-items:center;justify-content:space-between;height:22px;padding:0 4px 0 6px}
+.who{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:600;min-width:0;white-space:nowrap}
+.who .st{font-weight:500;color:var(--ink2)}
+.sdot{width:7px;height:7px;border-radius:50%;background:var(--live);box-shadow:0 0 0 3px rgba(52,199,89,.16);flex:none;transition:background .3s,box-shadow .3s}
+.sdot.off{background:var(--ink3);box-shadow:none}
+.meta{display:flex;align-items:center;gap:10px;font-size:12px;color:var(--ink2);font-weight:500}
+.ib{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--ink2);transition:background .15s,color .15s,transform .12s var(--out)}
+.ib:hover{background:var(--card);color:var(--ink)}.ib:active{transform:scale(.9)}
+.ib svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+
+/* one even inset all round: 12px sides, bottom and between cards; card radius 20 = outer 32 - 12 (concentric) */
+.cards{flex:1;display:grid;grid-template-columns:272px 1fr 132px;gap:12px;min-height:0}
+.c{background:var(--card);border-radius:20px;padding:12px;display:flex;flex-direction:column;min-width:0}
+.c[hidden]{display:none}
+/* rearranging the panel cards: press and drag a card, like moving apps on a phone */
+.c{touch-action:none}
+.c[data-lift]{position:relative;z-index:3;scale:1.035;cursor:grabbing;box-shadow:0 18px 34px -10px rgba(0,0,0,.28),0 0 0 .5px var(--line);transition:scale .22s var(--out),box-shadow .22s var(--out)}
+.c[data-drop]{transition:translate .34s cubic-bezier(.2,.9,.25,1),scale .26s var(--out),box-shadow .26s var(--out)!important}
+.cards.arranging .c:not([data-lift]){animation:jig .26s ease-in-out infinite alternate}
+.cards.arranging .c:not([data-lift]):nth-child(2n){animation-delay:-.13s}
+@keyframes jig{from{rotate:-.45deg}to{rotate:.45deg}}
+html.rm .cards.arranging .c{animation:none}
+.lbl{font-size:11px;font-weight:600;color:var(--ink2);display:flex;align-items:center;justify-content:space-between;height:14px}
+
+/* now playing */
+.np{flex-direction:row;gap:12px;align-items:stretch}
+.art{width:76px;height:76px;border-radius:14px;flex:none;align-self:center;background:var(--artbg);position:relative;overflow:hidden;box-shadow:0 1px 2px rgba(0,0,0,.08),0 8px 18px -8px rgba(0,0,0,.35);transition:transform .45s var(--out)}
+.art::after{content:"";position:absolute;inset:0;border-radius:inherit;box-shadow:inset 0 0 0 .5px rgba(0,0,0,.08)}
+.al{position:absolute;inset:0;background:center/cover no-repeat;opacity:0;transition:opacity .45s ease}
+.al.in{opacity:1}
+.al svg{position:absolute;left:50%;top:50%;width:26px;height:26px;transform:translate(-50%,-50%);fill:rgba(255,255,255,.95)}
+.np.paused .art{transform:scale(.92)}
+.npm{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center}
+.tt{font-size:14px;font-weight:700;letter-spacing:-.015em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:4px}
+.ar{font-size:12px;color:var(--ink2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px}
+.scrub{display:flex;align-items:center;gap:7px;margin-top:8px;font-size:9.5px;font-weight:600;color:var(--ink3)}
+.bar{flex:1;height:4px;border-radius:99px;background:var(--card2);overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--ink);border-radius:inherit}
+.ctl{display:flex;align-items:center;justify-content:center;gap:14px;margin-top:6px}
+.cb{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;transition:background .15s,transform .12s var(--out)}
+.cb:hover{background:var(--card2)}.cb:active{transform:scale(.88)}
+.cb svg{width:15px;height:15px;fill:var(--ink)}
+.cb.play{width:34px;height:34px;background:var(--ink)}
+.cb.play svg{fill:var(--paper);width:14px;height:14px}
+.cb.play:hover{background:var(--inkhi)}
+.np.none .ctl,.np.none .scrub{opacity:.35;pointer-events:none}
+
+/* pad: layouts + underglow */
+.seg{position:relative;display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-top:8px;padding:3px;border-radius:12px;background:var(--card2)}
+.thumb{position:absolute;left:3px;top:3px;border-radius:9px;background:var(--thumb);box-shadow:0 1px 2px rgba(0,0,0,.08),0 2px 6px rgba(0,0,0,.06),0 0 0 .5px rgba(0,0,0,.04);will-change:transform}
+.ly{position:relative;z-index:1;height:28px;border-radius:9px;font-size:11.5px;font-weight:600;color:var(--ink2);display:flex;align-items:center;gap:6px;padding:0 9px;white-space:nowrap;overflow:hidden;transition:color .2s,transform .12s var(--out)}
+.ly span{overflow:hidden;text-overflow:ellipsis}
+.ly:hover{color:var(--ink)}.ly.on{color:var(--ink)}
+.ly i{width:6px;height:6px;border-radius:50%;flex:none;box-shadow:0 0 0 .5px var(--dotring)}
+.ly:active{transform:scale(.96)}
+.glow{display:flex;align-items:center;gap:7px;margin-top:auto;padding-top:8px}
+.sw{width:16px;height:16px;border-radius:50%;flex:none;box-shadow:inset 0 0 0 .5px rgba(0,0,0,.18);transition:transform .2s var(--out),box-shadow .2s}
+.sw:hover{transform:scale(1.15)}.sw:active{transform:scale(.92)}
+.sw.on{box-shadow:inset 0 0 0 .5px rgba(0,0,0,.18),0 0 0 2px var(--card),0 0 0 3.5px var(--ink)}
+.tg{margin-left:auto;width:36px;height:22px;border-radius:99px;background:var(--tgoff);position:relative;flex:none;transition:background .25s,transform .12s var(--out)}
+.tg:active{transform:scale(.94)}
+.tg::after{content:"";position:absolute;left:2px;top:2px;width:18px;height:18px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.18),0 0 0 .5px rgba(0,0,0,.04);transition:transform .35s cubic-bezier(.3,1.3,.5,1)}
+.tg.on{background:var(--live)}.tg.on::after{transform:translateX(14px)}
+.auto{font-size:11px;font-weight:600;color:var(--live)}
+
+/* focus */
+.fc{align-items:center}
+.fc .lbl{align-self:stretch}
+.dial{position:relative;width:76px;height:76px;margin-top:6px}
+.dial svg{position:absolute;inset:0;transform:rotate(-90deg)}
+.dial .trk{stroke:var(--track)}
+#fring{transition:stroke-dashoffset 1s linear,stroke .3s ease}
+.dial .tm{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;letter-spacing:-.02em}
+.dial .tm.run{color:var(--warm)}
+.fbs{display:flex;gap:4px;margin-top:auto;padding-top:6px;align-self:stretch}
+.fb{flex:1;height:24px;border-radius:8px;background:var(--card2);font-size:10.5px;font-weight:700;color:var(--ink2);transition:background .15s,color .15s,transform .12s var(--out)}
+.fb:hover{color:var(--ink)}.fb:active{transform:scale(.94)}
+.fb.go{background:var(--ink);color:var(--paper)}
+
+/* Settings → Notch → Animation: Reduced (and the system's reduce-motion setting): no movement, short fades only */
+html.rm .mat,html.rm #n.open .mat{transition:opacity .2s ease!important;transform:none!important;filter:none!important}
+html.rm .eq i{animation:none}
+html.rm .swap,html.rm .pill.leave{animation:fade .18s ease}
+html.rm .pill.leave{animation-direction:reverse;opacity:0}
+html.rm .kcap.hit{animation:none}
+html.rm #fring{transition:none}
+html.rm .np.paused .art{transform:none}
+html.rm .cb,html.rm .ly,html.rm .sw,html.rm .fb,html.rm .ib,html.rm .tg{transition:background .15s,color .15s}
+html.rm .cb:active,html.rm .ly:active,html.rm .sw:active,html.rm .sw:hover,html.rm .fb:active,html.rm .ib:active,html.rm .tg:active{transform:none}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+</style>
+</head>
+<body>
+<div id="n" role="region" aria-label="Taptile notch">
+  <div class="pill" id="pill"></div>
+  <div class="panel" id="panel">
+    <div class="top mat">
+      <span class="who"><span class="sdot off" id="sdot"></span><span id="padname">Taptile</span><span class="st" id="padst">No Dialect connected</span></span>
+      <span class="meta"><span class="tab" id="time">--:--</span>
+        <button class="ib" id="openapp" title="Open Taptile for Business" aria-label="Open Taptile for Business"><svg viewBox="0 0 16 16"><path d="M6.5 3.5H4.2a.7.7 0 0 0-.7.7v7.6c0 .4.3.7.7.7h7.6c.4 0 .7-.3.7-.7V9.5M9.5 3.5h3v3M12.5 3.5L7.6 8.4"/></svg></button></span>
+    </div>
+    <div class="cards" id="cards">
+      <section class="c np none mat" id="np" aria-label="Now playing">
+        <div class="art" id="art"></div>
+        <div class="npm">
+          <div class="lbl"><span id="npapp">Now Playing</span></div>
+          <div class="tt" id="tt">Nothing playing</div>
+          <div class="ar" id="ar">Music from any app shows here</div>
+          <div class="scrub tab"><span id="tpos">0:00</span><span class="bar"><i id="tbar"></i></span><span id="tleft">0:00</span></div>
+          <div class="ctl">
+            <button class="cb" data-m="prev" aria-label="Previous"><svg viewBox="0 0 16 16"><path d="M3.5 3h1.6v10H3.5zM13 3.8v8.4a.5.5 0 0 1-.8.4L6.5 8.4a.5.5 0 0 1 0-.8l5.7-4.2a.5.5 0 0 1 .8.4z"/></svg></button>
+            <button class="cb play" data-m="playpause" aria-label="Play or pause"><svg viewBox="0 0 16 16" id="ppi"></svg></button>
+            <button class="cb" data-m="next" aria-label="Next"><svg viewBox="0 0 16 16"><path d="M12.5 3h-1.6v10h1.6zM3 3.8v8.4a.5.5 0 0 0 .8.4l5.7-4.2a.5.5 0 0 0 0-.8L3.8 3.4a.5.5 0 0 0-.8.4z"/></svg></button>
+          </div>
+        </div>
+      </section>
+      <section class="c mat" id="padc" aria-label="Your Dialect">
+        <div class="lbl"><span>Layout</span><span class="auto" id="auto"></span></div>
+        <div class="seg" id="seg"><span class="thumb" id="thumb"></span></div>
+        <div class="glow" id="glow"></div>
+      </section>
+      <section class="c fc mat" id="fc" aria-label="Focus timer">
+        <div class="lbl"><span>Focus</span><span id="fend" class="tab"></span></div>
+        <div class="dial"><svg viewBox="0 0 76 76"><circle class="trk" cx="38" cy="38" r="32" fill="none" stroke-width="6"/><circle id="fring" cx="38" cy="38" r="32" fill="none" stroke="#ff9500" stroke-width="6" stroke-linecap="round" stroke-dasharray="201.06" stroke-dashoffset="201.06"/></svg><span class="tm tab" id="ftm">25:00</span></div>
+        <div class="fbs" id="fbs"></div>
+      </section>
+    </div>
+  </div>
+</div>
+<script>
+(function () {
+  // ?preview: inside Settings → Notch (or a browser). No desktop bridge; Settings drives it through window.__notch.
+  const PREVIEW = /[?&]preview\b/.test(location.search);
+  // The notch window's bridge (notch-preload.js). window.tfb.notch is the 0.9.1 shape, kept for tests.
+  const api = PREVIEW ? null : window.tfbNotch || (window.tfb && window.tfb.notch) || null;
+  const $ = (id) => document.getElementById(id);
+  const root = document.documentElement, n = $('n'), pill = $('pill'), panel = $('panel');
+  let SW = [['White', '#FFFFFF'], ['Red', '#FF2A2A'], ['Amber', '#FF8A00'], ['Green', '#20E070'], ['Cyan', '#00D5FF'], ['Blue', '#3B5BFF']];
+  // Same defaults as TFB.notch.DEFAULT in tfb.js; every message and state update carries the saved config.
+  const DEF = { position: 'top', size: 'regular', theme: 'light', duration: 1.8, chips: false, colour: true, hover: true, motion: 'smooth',
+    show: { keys: true, knobs: true, layouts: true, status: true, media: true }, panel: { media: true, pad: true, focus: true }, order: ['media', 'pad', 'focus'] };
+  const ZOOM = { compact: 0.88, regular: 1, large: 1.15 };
+  let cfg = JSON.parse(JSON.stringify(DEF));
+  let pad = { connected: false, name: 'Your Dialect', firmware: '', layer: 0, layouts: ['Office', 'Editing', 'Streaming', 'Coding'], colors: [0, 2, 4, 3], auto: true, glow: true, col: 0 };
+  const EMPTY = { title: '', artist: '', app: '', playing: false, art: '', pos: 0, dur: 0, upd: 0, hint: '', note: '' };
+  let media = Object.assign({}, EMPTY);
+  let toast = null, toastT = 0, toastTimer = 0, seq = 0, open = false, openT = 0, closeT = 0, over = false;
+  const focus = { mins: 25, left: 25 * 60, run: false, end: 0 };
+  const APPS = { spotify: ['Spotify', '#1db954'], chrome: ['Chrome', '#4285f4'], msedge: ['Edge', '#0c8484'], firefox: ['Firefox', '#ff7139'], vlc: ['VLC', '#ff8800'], zunemusic: ['Media Player', '#e3008c'], music: ['Music', '#fa2d48'], discord: ['Discord', '#5865f2'], tidal: ['TIDAL', '#111111'], deezer: ['Deezer', '#a238ff'] };
+  const appOf = (id) => { const k = String(id || '').toLowerCase(); for (const a in APPS) if (k.indexOf(a) >= 0) return APPS[a]; const nm = k.split(/[!\\.]/).filter(Boolean)[0] || ''; return [nm ? nm.charAt(0).toUpperCase() + nm.slice(1) : 'Now Playing', '#8e8e93']; };
+  const esc = (s) => String(s == null ? '' : s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const cssUrl = (u) => 'url("' + String(u).replace(/["\\\n\r]/g, (c) => '\\' + c.charCodeAt(0).toString(16) + ' ') + '")';
+  const mmss = (s) => { s = Math.max(0, Math.round(s)); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); };
+  const mm2 = (s) => { s = Math.max(0, Math.ceil(s)); return String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0'); };
+  const hex6 = (c) => (/^#[0-9a-f]{6}$/i.test(String(c || '')) ? String(c) : /^#[0-9a-f]{3}$/i.test(String(c || '')) ? '#' + c.slice(1).split('').map((x) => x + x).join('') : '');
+  const NOTE = '<svg viewBox="0 0 24 24"><path d="M9 18.2V6.6l10-2.1v11.2a2.9 2.9 0 1 1-1.6-2.6V8.3L10.6 9.7v8.5a2.9 2.9 0 1 1-1.6-2.6z"/></svg>';
+  const ICON = { save: '<svg viewBox="0 0 16 16"><path d="M3.5 8.5l3 3 6-7"/></svg>', warn: '<svg viewBox="0 0 16 16"><path d="M8 3.5v6M8 12.3v.2"/></svg>' };
+  const shade = (hex, t) => 'rgb(' + [1, 3, 5].map((k) => Math.max(0, Math.min(255, Math.round(parseInt(hex.slice(k, k + 2), 16) * (1 + t))))).join(',') + ')';
+  const swHex = (i) => (SW[i] || SW[0])[1];
+
+  // ---------------------------------------------------------------- springs (critically damped, interruptible)
+  // response = seconds to (nearly) reach the target; damping 1 = no overshoot. A new target keeps the
+  // current value and velocity, so a reversal mid-flight is continuous.
+  const springs = [];
+  function spring(x, response, damping) {
+    const s = { x, v: 0, to: x, k: Math.pow(2 * Math.PI / response, 2), c: 4 * Math.PI * damping / response };
+    springs.push(s); return s;
+  }
+  let raf = 0, last = 0;
+  function tick(t) {
+    const dt = Math.min(0.05, (t - last) / 1000 || 0.016); last = t;
+    let moving = false;
+    for (const s of springs) {
+      for (let i = 0; i < 4; i++) { const h = dt / 4; s.v += (-s.k * (s.x - s.to) - s.c * s.v) * h; s.x += s.v * h; }
+      if (Math.abs(s.x - s.to) < 0.05 && Math.abs(s.v) < 0.05) { s.x = s.to; s.v = 0; } else moving = true;
+    }
+    paint();
+    raf = moving ? requestAnimationFrame(tick) : 0;
+  }
+  const kick = () => { if (!raf) { last = performance.now(); raf = requestAnimationFrame(tick); } };
+  const mq = matchMedia('(prefers-reduced-motion: reduce)');
+  let reduce = mq.matches;
+  const W = spring(204, 0.38, 1), H = spring(34, 0.38, 1), R = spring(17, 0.38, 1);
+  const TX = spring(0, 0.32, 1), TY = spring(0, 0.32, 1); // segmented thumb, X and Y apart
+  let sentRect = '';
+  function target(w, h, r) {
+    W.to = w; H.to = h; R.to = r;
+    if (reduce) { W.x = w; H.x = h; R.x = r; W.v = H.v = R.v = 0; }
+    // main.js decides hover from the real cursor against this rectangle (CSS px before the size zoom)
+    const key = w + 'x' + h;
+    if (api && api.rect && key !== sentRect) { sentRect = key; api.rect({ w, h }); }
+    kick();
+  }
+  function paint() {
+    n.style.width = W.x.toFixed(2) + 'px'; n.style.height = H.x.toFixed(2) + 'px';
+    const r = R.x.toFixed(2) + 'px';
+    n.style.borderRadius = cfg.position === 'bottom' ? r + ' ' + r + ' 0 0' : '0 0 ' + r + ' ' + r;
+    $('thumb').style.transform = 'translate(' + TX.x.toFixed(2) + 'px,' + TY.x.toFixed(2) + 'px)';
+  }
+
+  // ---------------------------------------------------------------- config from Settings → Notch
+  function applyCfg(c) {
+    if (!c || typeof c !== 'object') return;
+    const next = Object.assign({}, DEF, c, { show: Object.assign({}, DEF.show, c.show || {}), panel: Object.assign({}, DEF.panel, c.panel || {}) });
+    const was = JSON.stringify(cfg);
+    cfg = next;
+    if (JSON.stringify(cfg) === was && root.__set) return;
+    root.__set = true;
+    reduce = cfg.motion === 'reduced' || mq.matches;
+    const pos = ['top', 'top-left', 'top-right', 'bottom'].indexOf(cfg.position) >= 0 ? cfg.position : 'top';
+    root.className = ['pos-' + pos, cfg.theme === 'dark' ? 'theme-dark' : '', reduce ? 'rm' : '', PREVIEW ? 'pv' : ''].filter(Boolean).join(' ');
+    root.style.zoom = ZOOM[cfg.size] || 1; // the whole notch scales; main.js sizes the window to match
+    layoutPanel();
+    paint();
+    render();
+  }
+  mq.addEventListener && mq.addEventListener('change', () => { root.__set = false; applyCfg(cfg); });
+
+  // ---------------------------------------------------------------- open panel: which sections, and its size
+  const COLW = { media: 272, pad: 212, focus: 132 };
+  let openW = 660, openH = 196;
+  function layoutPanel() {
+    const EL = { media: $('np'), pad: $('padc'), focus: $('fc') };
+    const want = normOrder(drag ? drag.order : cfg.order).map((k) => [k, EL[k]]);
+    want.forEach(([, el], i) => { el.style.order = i; });
+    const on = want.filter(([k]) => cfg.panel[k] !== false);
+    want.forEach(([k, el]) => { el.hidden = cfg.panel[k] === false; el.classList.remove('d1', 'd2', 'd3'); });
+    on.forEach(([, el], i) => el.classList.add('d' + (i + 1)));
+    $('cards').style.gridTemplateColumns = on.map(([k]) => (k === 'pad' ? 'minmax(' + COLW.pad + 'px,1fr)' : COLW[k] + 'px')).join(' ');
+    $('cards').hidden = !on.length;
+    // more than four layouts: the layout grid gets another row (two layouts a row)
+    const rows = Math.ceil(Math.max(1, pad.layouts.length) / 2);
+    openW = on.length ? 24 + on.reduce((a, [k]) => a + COLW[k], 0) + 12 * (on.length - 1) : 360;
+    // height from the content itself, so the bottom inset always matches the sides
+    panel.style.width = openW + 'px'; panel.style.marginLeft = -openW / 2 + 'px';
+    panel.style.height = 'auto'; $('cards').style.flex = 'none';
+    const natural = Math.ceil(panel.offsetHeight);
+    $('cards').style.flex = ''; 
+    openH = on.length ? Math.max(natural, 150) : 48;
+    panel.style.height = openH + 'px';
+    if (open) { target(openW, openH, 32); placeThumb(); }
+  }
+
+  // ---------------------------------------------------------------- rearrange the panel cards
+  // Press a card (not a button) and drag it sideways: it lifts, the others glide out of the way and wobble gently,
+  // and it drops into the gap. The order is saved in Settings → Notch (via the main window, or Settings in preview).
+  const ALL = ['media', 'pad', 'focus'], KEY = { np: 'media', padc: 'pad', fc: 'focus' };
+  function normOrder(o) { const r = (Array.isArray(o) ? o : []).filter((k, i, a) => ALL.indexOf(k) >= 0 && a.indexOf(k) === i); ALL.forEach((k) => { if (r.indexOf(k) < 0) r.push(k); }); return r; }
+  let drag = null, hold = null;
+  const zf = () => ZOOM[cfg.size] || 1;
+  const vis = () => [...$('cards').children].filter((el) => el.classList.contains('c') && !el.hidden);
+  function reorder(order) {
+    const els = vis(), before = new Map(els.map((el) => [el, el.offsetLeft]));
+    drag.order = order; layoutPanel();
+    els.forEach((el) => {
+      const dx = before.get(el) - el.offsetLeft;
+      if (!dx) return;
+      if (el === drag.el) { drag.x0 -= dx * zf(); return; } // keep the lifted card under the pointer
+      if (reduce) return;
+      el.style.transition = 'none'; el.style.translate = dx + 'px 0'; void el.offsetWidth;
+      el.style.transition = 'translate .32s cubic-bezier(.2,.9,.25,1)'; el.style.translate = '0px 0';
+    });
+  }
+  function moveDrag(cx) {
+    const d = drag, tx = (cx - d.x0) / zf();
+    d.el.style.translate = tx + 'px 0';
+    const mid = d.el.offsetLeft + tx + d.el.offsetWidth / 2;
+    const others = vis().filter((el) => el !== d.el);
+    const before = others.filter((el) => el.offsetLeft + el.offsetWidth / 2 < mid).length;
+    const keys = others.map((el) => KEY[el.id]);
+    const hidden = d.order.filter((k) => cfg.panel[k] === false);
+    const next = keys.slice(0, before).concat(KEY[d.el.id], keys.slice(before)).concat(hidden);
+    if (next.join() !== d.order.join()) reorder(next);
+  }
+  function startDrag() {
+    const el = hold.el;
+    drag = { el, x0: hold.x, order: normOrder(cfg.order), moved: false };
+    el.dataset.lift = '1'; $('cards').classList.add('arranging');
+    try { el.setPointerCapture(hold.id); } catch (e) {}
+  }
+  function endDrag(cancel) {
+    clearTimeout(hold && hold.t); hold = null;
+    if (!drag) return;
+    const d = drag, order = cancel ? normOrder(cfg.order) : d.order;
+    drag = null;
+    $('cards').classList.remove('arranging');
+    if (cancel) { d.order = order; layoutPanel(); }
+    d.el.dataset.drop = '1'; delete d.el.dataset.lift; d.el.style.translate = '0px 0';
+    setTimeout(() => { delete d.el.dataset.drop; d.el.style.translate = ''; d.el.style.transition = ''; }, 380);
+    vis().forEach((el) => { if (el !== d.el) el.style.rotate = ''; });
+    if (!cancel && order.join() !== normOrder(cfg.order).join()) {
+      cfg.order = order;
+      if (PREVIEW) { try { window.parent.postMessage({ tfb: 'notch-order', order }, '*'); } catch (e) {} }
+      else send({ t: 'order', order });
+    }
+    if (d.moved) { window.__noClick = Date.now(); }
+    if (!over && !PREVIEW) leave();
+  }
+  $('cards').addEventListener('pointerdown', (e) => {
+    const el = e.target.closest('.c');
+    if (!el || !open || e.button !== 0 || e.target.closest('button, input, a, .bar, .prog, [data-nodrag]')) return;
+    hold = { el, x: e.clientX, id: e.pointerId, t: setTimeout(() => { if (hold && !drag) startDrag(); }, 260) };
+  });
+  window.addEventListener('pointermove', (e) => {
+    if (hold && !drag && Math.abs(e.clientX - hold.x) > 4) startDrag();
+    if (drag && e.pointerId === (hold && hold.id)) { drag.moved = true; moveDrag(e.clientX); }
+  });
+  window.addEventListener('pointerup', () => endDrag(false));
+  window.addEventListener('pointercancel', () => endDrag(true));
+  window.addEventListener('keydown', (e) => { if (e.key === 'Escape' && drag) endDrag(true); });
+
+  // ---------------------------------------------------------------- closed pill
+  let pillKey = '', pillW = 204;
+  const meas = document.createElement('div'); meas.className = 'pill meas'; meas.setAttribute('aria-hidden', 'true'); document.body.appendChild(meas);
+  const dot = (c) => { const h = hex6(c) || '#c7c7cc'; return '<span class="gdot" style="background:' + h + ';--gc:' + h + '66"></span>'; };
+  const glowCol = () => (pad.connected && pad.glow ? swHex(pad.col) : '#c7c7cc');
+  function renderPill() {
+    let kind = 'idle', L = '', R2 = '', base = 204, key = 'idle';
+    const gc = glowCol();
+    if (toast && Date.now() < toastT && toast.kind === 'layout') {
+      // a layout switch: the resting pill shows the new layout, in its colour
+      kind = 'layout'; base = 204; key = 'layout' + toast.title;
+      L = dot(toast.color || gc) + '<span class="clip wide">' + esc(toast.title) + '</span>';
+      R2 = '<span>' + (pad.auto ? 'Auto' : 'Layout ' + (pad.layer + 1)) + '</span>';
+    } else if (toast && Date.now() < toastT) {
+      kind = 'toast'; base = 300; key = 'toast' + toast.kind + toast.code + toast.label;
+      const cap = toast.kind === 'save' || toast.kind === 'warn' ? ICON[toast.kind] : esc(toast.code);
+      L = '<span class="kcap" id="kcap">' + cap + '</span><span class="clip' + (/^(save|usb|warn)$/.test(toast.kind) ? ' st' : '') + '">' + esc(toast.label) + '</span>';
+      const chips = cfg.chips && toast.chips && toast.chips.length ? '<span class="cks">' + toast.chips.slice(0, 4).map((c) => '<span class="ck">' + esc(c) + '</span>').join('') + '</span>' : '';
+      R2 = chips + dot(toast.kind === 'warn' ? '#ff9f0a' : toast.kind === 'save' || toast.kind === 'usb' ? '#34c759' : gc);
+    } else if (focus.run) {
+      kind = 'focus'; base = 236; key = 'focus';
+      const f = 1 - focus.left / (focus.mins * 60);
+      L = '<svg width="16" height="16" viewBox="0 0 16 16" style="transform:rotate(-90deg)"><circle cx="8" cy="8" r="6" fill="none" stroke="var(--track)" stroke-width="2.4"/><circle cx="8" cy="8" r="6" fill="none" stroke="#ff9500" stroke-width="2.4" stroke-linecap="round" stroke-dasharray="37.7" stroke-dashoffset="' + (37.7 * (1 - f)).toFixed(2) + '"/></svg><span>Focus</span>';
+      R2 = '<span class="tab" style="color:#ff9500;font-weight:700">' + mm2(focus.left) + '</span>';
+    } else if (cfg.show.media !== false && media.title) {
+      kind = 'media'; base = 276; key = 'media' + media.title;
+      const a = appOf(media.app);
+      const bg = media.art ? 'background-image:' + cssUrl(media.art) : 'background:linear-gradient(145deg,' + a[1] + ',' + shade(a[1], -0.35) + ')';
+      L = '<span class="mini" style=\'' + bg.replace(/'/g, '%27') + '\'></span><span class="clip">' + esc(media.title) + '</span>';
+      R2 = '<span class="eq' + (media.playing ? '' : ' paused') + '"><i></i><i></i><i></i><i></i></span>';
+    } else {
+      L = dot(gc) + '<span class="clip wide">' + esc(pad.connected ? pad.layouts[pad.layer] || 'Layout ' + (pad.layer + 1) : 'Taptile') + '</span>';
+      R2 = '<span>' + (pad.connected ? (pad.auto ? 'Auto' : 'Layout ' + (pad.layer + 1)) : 'No pad') + '</span>';
+    }
+    const html = '<span class="pl">' + L + '</span><span class="pr">' + R2 + '</span>';
+    if (pill.__h !== html) {
+      const changed = key !== pillKey;
+      if (changed && pill.__h) {
+        // the old content slides out while the new one drops in
+        const old = document.createElement('div');
+        old.className = 'pill leave'; old.setAttribute('aria-hidden', 'true'); old.innerHTML = pill.__h;
+        n.insertBefore(old, pill);
+        setTimeout(() => old.remove(), 260);
+      }
+      pill.innerHTML = html; pill.__h = html;
+      if (changed) { pillKey = key; pill.classList.remove('swap'); void pill.offsetWidth; pill.classList.add('swap'); }
+      // grow for long names or shortcut keys; the usual cases keep the 0.9.1 widths
+      meas.innerHTML = html;
+      pillW = Math.min(460, Math.max(base, Math.ceil(meas.getBoundingClientRect().width / (parseFloat(root.style.zoom) || 1)) + 2));
+    }
+    if (kind === 'toast' && toast.seq !== pill.__seq) {
+      // the same key again: the keycap presses
+      if (pill.__seq && !reduce && key === pill.__tk) { const k = $('kcap'); if (k) { k.classList.remove('hit'); void k.offsetWidth; k.classList.add('hit'); } }
+      pill.__seq = toast.seq; pill.__tk = key;
+    }
+    if (!open) target(pillW, 34, 17);
+  }
+
+  // ---------------------------------------------------------------- open panel
+  let artKey = '';
+  function setArt(bg, inner) {
+    const art = $('art'), layer = document.createElement('i');
+    layer.className = 'al'; layer.style.backgroundImage = bg; layer.innerHTML = inner;
+    art.appendChild(layer);
+    const olds = [].slice.call(art.querySelectorAll('.al')).filter((x) => x !== layer);
+    // cross-fade on track change
+    requestAnimationFrame(() => requestAnimationFrame(() => { layer.classList.add('in'); olds.forEach((o) => o.classList.remove('in')); }));
+    setTimeout(() => olds.forEach((o) => o.remove()), 520);
+  }
+  function renderPanel() {
+    $('sdot').className = 'sdot' + (pad.connected ? '' : ' off');
+    $('padname').textContent = pad.connected ? pad.name : 'Taptile';
+    $('padst').textContent = pad.connected ? (pad.firmware ? pad.firmware : 'Connected') : 'No Dialect connected';
+    // now playing
+    const a = appOf(media.app), has = !!media.title;
+    $('np').className = 'c np mat ' + ['d1', 'd2', 'd3'].filter((d) => $('np').classList.contains(d)).join(' ') + (has ? '' : ' none') + (has && !media.playing ? ' paused' : '');
+    $('npapp').textContent = has ? a[0] : 'Now Playing';
+    $('tt').textContent = has ? media.title : 'Nothing playing';
+    $('ar').textContent = has ? media.artist || '' : media.note || media.hint || 'Music from any app shows here';
+    const want = has && media.art ? cssUrl(media.art) : '';
+    const ak = want + a[1] + has;
+    if (artKey !== ak) {
+      artKey = ak;
+      setArt(want || (has ? 'linear-gradient(145deg,' + a[1] + ',' + shade(a[1], -0.4) + ')' : 'linear-gradient(145deg,var(--artbg),var(--artbg2))'), want ? '' : NOTE);
+    }
+    const ppi = media.playing ? '<path d="M4.5 3h2.6v10H4.5zM8.9 3h2.6v10H8.9z"/>' : '<path d="M5 3.2v9.6a.6.6 0 0 0 .9.5l7.6-4.8a.6.6 0 0 0 0-1L5.9 2.7a.6.6 0 0 0-.9.5z"/>';
+    if ($('ppi').__h !== ppi) { $('ppi').innerHTML = ppi; $('ppi').__h = ppi; }
+    timeline();
+    // layouts: a segmented control whose thumb slides on two springs
+    $('auto').textContent = pad.auto ? 'Auto' : '';
+    const sh = pad.layouts.map((nm, i) => '<button class="ly' + (i === pad.layer ? ' on' : '') + '" data-l="' + i + '" aria-pressed="' + (i === pad.layer) + '"><i style="background:' + swHex(pad.colors[i] || 0) + '"></i><span>' + esc(nm) + '</span></button>').join('');
+    const seg = $('seg');
+    if (seg.__h !== sh) { seg.querySelectorAll('.ly').forEach((b) => b.remove()); seg.insertAdjacentHTML('beforeend', sh); seg.__h = sh; }
+    placeThumb();
+    const gh = SW.map((w, i) => '<button class="sw' + (pad.glow && i === pad.col ? ' on' : '') + '" data-c="' + i + '" title="' + esc(w[0]) + '" aria-label="Underglow ' + esc(w[0]) + '" aria-pressed="' + (pad.glow && i === pad.col) + '" style="background:' + w[1] + '"></button>').join('') + '<button class="tg' + (pad.glow ? ' on' : '') + '" id="gtog" role="switch" aria-label="Underglow" aria-checked="' + pad.glow + '"></button>';
+    if ($('glow').__h !== gh) { $('glow').innerHTML = gh; $('glow').__h = gh; }
+    // focus
+    const f = 1 - focus.left / (focus.mins * 60);
+    $('fring').setAttribute('stroke-dashoffset', (201.06 * (1 - f)).toFixed(2));
+    $('fring').setAttribute('stroke', focus.run ? '#ff9500' : '#ffbf66');
+    $('ftm').textContent = mm2(focus.left); $('ftm').className = 'tm tab' + (focus.run ? ' run' : '');
+    $('fend').textContent = focus.run ? new Date(focus.end).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }) : '';
+    const fh = focus.run || focus.left < focus.mins * 60
+      ? '<button class="fb go" data-f="toggle">' + (focus.run ? 'Pause' : 'Resume') + '</button><button class="fb" data-f="reset">Reset</button>'
+      : [15, 25, 50].map((m) => '<button class="fb' + (m === focus.mins ? ' go' : '') + '" data-f="' + m + '">' + m + '</button>').join('');
+    if ($('fbs').__h !== fh) { $('fbs').innerHTML = fh; $('fbs').__h = fh; }
+  }
+  function placeThumb() {
+    const seg = $('seg'), b = seg.querySelector('.ly[data-l="' + pad.layer + '"]'), th = $('thumb');
+    th.style.visibility = b ? '' : 'hidden';
+    if (!b || !open) return;
+    th.style.width = b.offsetWidth + 'px'; th.style.height = b.offsetHeight + 'px';
+    TX.to = b.offsetLeft - 3; TY.to = b.offsetTop - 3;
+    if (!th.__placed || reduce) { TX.x = TX.to; TY.x = TY.to; TX.v = TY.v = 0; th.__placed = true; }
+    kick();
+  }
+  let tl = '';
+  function timeline() {
+    let a = '0:00', b = '0:00', w = 0;
+    if (media.title && media.dur) {
+      const pos = Math.min(media.dur, media.pos + (media.playing && media.upd ? (Date.now() - media.upd) / 1000 : 0));
+      a = mmss(pos); b = '-' + mmss(media.dur - pos); w = 100 * pos / media.dur;
+    }
+    if (tl !== a + b) { tl = a + b; $('tpos').textContent = a; $('tleft').textContent = b; }
+    $('tbar').style.width = w.toFixed(3) + '%';
+  }
+  // the progress bar moves every frame while the panel is open and music plays
+  let prog = 0;
+  function progLoop() { prog = 0; if (!open || reduce || !media.playing || !media.dur) return; timeline(); prog = requestAnimationFrame(progLoop); }
+  const kickProg = () => { if (!prog && open && !reduce && media.playing && media.dur) prog = requestAnimationFrame(progLoop); };
+  function render() { renderPill(); if (open) { renderPanel(); kickProg(); } }
+
+  // ---------------------------------------------------------------- open on hover, with a little intent delay
+  function setOpen(v) {
+    v = !!v;
+    if (open === v) return;
+    open = v; n.classList.toggle('open', v);
+    if (v) { renderPanel(); layoutPanel(); target(openW, openH, 32); placeThumb(); kickProg(); } else renderPill();
+  }
+  const enter = () => { clearTimeout(closeT); clearTimeout(openT); if (cfg.hover === false) return; openT = setTimeout(() => setOpen(true), 70); };
+  const leave = () => { clearTimeout(openT); if (PREVIEW || drag) return; clearTimeout(closeT); closeT = setTimeout(() => setOpen(false), 300); };
+  const hover = (v) => { over = !!v; if (!over && drag) endDrag(false); if (over) enter(); else leave(); };
+  // The desktop app reports hover from the real cursor; in a browser the mouse events do it.
+  if (api && api.onHover) api.onHover(hover);
+  else { n.addEventListener('mouseenter', () => hover(true)); n.addEventListener('mouseleave', () => hover(false)); }
+
+  // ---------------------------------------------------------------- actions
+  n.addEventListener('click', (e) => {
+    if (window.__noClick && Date.now() - window.__noClick < 250) return;
+    const b = e.target.closest('button');
+    if (!b) { if (!open) { clearTimeout(closeT); setOpen(true); } return; } // "Open on hover" off: click the notch to open it
+    if (b.dataset.m) {
+      if (api && api.media) api.media(b.dataset.m);
+      if (b.dataset.m === 'playpause' && media.title) { if (media.playing) media.pos = Math.min(media.dur, media.pos + (Date.now() - media.upd) / 1000); media.upd = Date.now(); media.playing = !media.playing; render(); }
+      return;
+    }
+    if (b.dataset.l) { pad.layer = +b.dataset.l; pad.auto = false; send({ t: 'layer', n: pad.layer }); render(); return; }
+    if (b.dataset.c) { pad.col = +b.dataset.c; pad.glow = true; pad.colors[pad.layer] = pad.col; send({ t: 'color', i: pad.col }); render(); return; }
+    if (b.id === 'gtog') { pad.glow = !pad.glow; send({ t: 'glow', on: pad.glow }); render(); return; }
+    if (b.id === 'openapp') { send({ t: 'open' }); return; }
+    const f = b.dataset.f;
+    if (f === 'toggle') { if (focus.run) focus.run = false; else { focus.run = true; focus.end = Date.now() + focus.left * 1000; } }
+    else if (f === 'reset') { focus.run = false; focus.left = focus.mins * 60; }
+    else if (f) { focus.mins = +f; focus.left = focus.mins * 60; focus.run = true; focus.end = Date.now() + focus.left * 1000; }
+    render();
+  });
+  function send(c) { if (api && api.cmd) api.cmd(c); }
+
+  // ---------------------------------------------------------------- feeds
+  // A message from the app (TFB.notch.show): kind key/knob/layout/save/usb/warn with code/title/sub/color/chips/ms, and cfg.
+  function show(m) {
+    m = m || {};
+    if (m.cfg) applyCfg(m.cfg);
+    const kind = m.icon === 'knob' ? 'knob' : m.kind;
+    if (!kind) { render(); return; }
+    const ms = Math.max(600, Number(m.ms) || cfg.duration * 1000);
+    if (kind === 'layout') {
+      const i = parseInt(String(m.code || '').replace(/\D/g, ''), 10) - 1;
+      if (i >= 0 && i < 8) { pad.layer = i; if (m.title) pad.layouts[i] = m.title; }
+      toast = { kind, title: m.title || pad.layouts[pad.layer] || 'Layout', color: cfg.colour !== false ? hex6(m.color) : '' };
+    } else {
+      toast = { kind, code: m.code || (kind === 'usb' ? 'USB' : kind === 'knob' ? 'D' : 'K'), label: m.title || '', chips: Array.isArray(m.chips) ? m.chips : [] };
+    }
+    toast.seq = ++seq; toastT = Date.now() + ms;
+    clearTimeout(toastTimer); toastTimer = setTimeout(render, ms + 40);
+    render();
+  }
+  // 0.9.1-style press {id: 'K5', label: 'Play / pause'}
+  function press(p) {
+    if (!p) return;
+    const knob = /^D/i.test(p.id || '');
+    if (cfg.show[knob ? 'knobs' : 'keys'] === false) return;
+    show({ kind: knob ? 'knob' : 'key', code: p.id, title: p.label, chips: p.chips });
+  }
+  function state(s) {
+    if (!s || typeof s !== 'object') return;
+    if (s.cfg) applyCfg(s.cfg);
+    if (Array.isArray(s.swatches) && s.swatches.length) SW = s.swatches;
+    const rows = Math.ceil(pad.layouts.length / 2);
+    pad = Object.assign(pad, s);
+    delete pad.cfg; delete pad.swatches;
+    if (!Array.isArray(pad.layouts)) pad.layouts = [];
+    if (Math.ceil(pad.layouts.length / 2) !== rows) layoutPanel();
+    render();
+  }
+  function setMedia(m) { media = Object.assign({}, EMPTY, m || {}); if (!media.upd) media.upd = Date.now(); render(); }
+  if (api) {
+    if (api.on) api.on(show);
+    if (api.onState) api.onState(state);
+    if (api.onMedia) api.onMedia(setMedia);
+    if (api.onPress) api.onPress(press);
+    if (api.ask) api.ask(); // the main window answers with the pad's state
+  }
+  if (PREVIEW) { pad.connected = true; pad.firmware = ''; if (/[?&]open\b/.test(location.search)) setTimeout(() => setOpen(true), 0); }
+  const clock = () => { $('time').textContent = new Date().toLocaleString([], { weekday: 'short', hour: 'numeric', minute: '2-digit' }); };
+  setInterval(() => {
+    clock();
+    if (focus.run) { focus.left = (focus.end - Date.now()) / 1000; if (focus.left <= 0) { focus.run = false; send({ t: 'focusDone', mins: focus.mins }); focus.left = focus.mins * 60; } }
+    render();
+  }, 1000);
+  root.__set = false; applyCfg(DEF);
+  clock(); layoutPanel(); render(); paint();
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => layoutPanel());
+  window.__notchShow = show; // used by tests and the Settings preview
+  window.__notch = { setOpen, render, show, press, state, media: setMedia, hover, config: applyCfg, get: () => ({ pad, media, focus, cfg, open, w: W.to, h: H.to }) };
+  // website embed: the product page drives the notch by postMessage (works even when the frame is cross-origin)
+  if (PREVIEW) window.addEventListener('message', (e) => { const d = e.data; if (d && d.tn && typeof window.__notch[d.tn] === 'function') window.__notch[d.tn].apply(null, d.a || []); });
+})();
+</script>
+</body>
+</html>
