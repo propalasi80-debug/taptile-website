@@ -64,3 +64,7 @@ nav.solid .navcta{background:#0B0B0C;color:#fff!important}
 @media (max-width:640px){.fcols{grid-template-columns:1fr 1fr}.fin2{padding:120px 20px 140px}.fbot a{margin:0 16px 0 0}}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}.a4names{opacity:1;translate:0 0}}
 main#main{overflow-x:clip}
+/* contrast fixes (axe WCAG AA, 23 Nov) */
+.ft .fcols a,.ft .fbot,.ft .fbot a,.fcols a,.fbot a{color:#515154!important}
+.ft .flegal{color:#515154!important}
+.note2,.ey{color:#6E6E73!important}

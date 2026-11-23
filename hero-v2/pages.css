@@ -32,3 +32,4 @@ nav#nav{position:fixed;top:0;left:0;right:0;z-index:10;padding:14px 24px}
 .keys{display:grid;grid-template-columns:repeat(3,64px);gap:8px;margin:16px 0}
 .keys span{height:64px;border-radius:14px;background:#F5F5F7;display:grid;place-items:center;font-weight:700;font-size:20px}
 @media (max-width:640px){.links{display:none}.ph{padding:120px 20px 50px}.doc{font-size:16px;line-height:26px}}
+.ft .fcols a,.ft .fbot,.ft .fbot a,.ft .flegal{color:#A1A1A6!important}
